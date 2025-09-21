@@ -66,7 +66,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
               <button
                 type="button"
                 onClick={() => setShow1((s) => !s)}
-                className="absolute right-3 top-3 text-gray-500"
+                className="cursor-pointer absolute right-3 top-3 text-gray-500"
               >
                 {show1 ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -86,7 +86,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
               <button
                 type="button"
                 onClick={() => setShow2((s) => !s)}
-                className="absolute right-3 top-3 text-gray-500"
+                className="absolute cursor-pointer right-3 top-3 text-gray-500"
               >
                 {show2 ? <FaEyeSlash /> : <FaEye />}
               </button>
