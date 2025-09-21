@@ -3,18 +3,16 @@ import React from "react";
 import Link from "next/link";
 const SuccessPage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0E545F] overflow-hidden">
+    <div className=" relative flex items-center justify-center min-h-screen bg-[#0E545F] overflow-hidden">
       <div className="absolute top-10 left-10 w-15">
           <img src="/Images/Tlogo.png" alt=""/>
       </div>
-<div className="absolute top-10 left-10 w-15">
-          <img src="/Images/Tlogo.png" alt=""/>
-      </div>
-           <div className="absolute -bottom-45 -right-20 w-100 h-100 rounded-full border-[10px] border-[#011d1f]  opacity-40"></div>
-            <div className="absolute -bottom-70 -right-45 w-150 h-150 rounded-full border-[100px] border-[#05393a]  opacity-40"></div>
-            <div className="absolute -bottom-70 -right-45 w-150 h-150 rounded-full border-[10px] border-[#011d1f]  opacity-40"></div>
+
+           <div className="absolute -bottom-45 -right-30 w-100 h-100 rounded-full border-[10px] border-[#011d1f]  opacity-40"></div>
+            <div className="absolute -bottom-70 -right-55 w-150 h-150 rounded-full border-[100px] border-[#05393a]  opacity-40"></div>
+            <div className="absolute -bottom-70 -right-55 w-150 h-150 rounded-full border-[10px] border-[#011d1f]  opacity-40"></div>
        
-      <div className="bg-[#00353D] py-15 px-15 rounded-2xl shadow-lg flex flex-col items-center space-y-6">
+      <div className="bg-[#00353D] py-15 px-15 rounded-2x shadow-white shadow-sm flex flex-col items-center space-y-6">
 
       
         <div className="w-20 h-20 rounded-full bg-[#d4af37] flex items-center justify-center">
@@ -38,7 +36,7 @@ const SuccessPage = () => {
         </p>
        
         <Link href="/dashboard">
-          <button className="mt-4 px-6 py-2 bg-[#d4af37] text-[#015c63] font-semibold rounded-md hover:bg-yellow-500 transition">
+          <button className="mt-4 px-6 py-2 cursor-pointer bg-[#d4af37] text-[#015c63] font-semibold rounded-md hover:bg-yellow-500 transition">
             Back To Dashboard
           </button>
         </Link>

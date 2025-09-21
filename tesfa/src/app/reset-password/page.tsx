@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
        
         <button
           onClick={() => router.back()}
-          className="absolute left-4 top-10 text-bg-active-gradient hover:text-[#]"
+          className="absolute left-4 top-10 text-bg-active-gradient cursor-pointer hover:text-[#]"
         >
           <FaArrowLeft />
         </button>
@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#d4af37] text-white py-2 rounded-xl font-medium hover:bg-yellow-600 disabled:opacity-50"
+            className="w-full bg-[#d4af37] text-white py-2 rounded-xl cursor-pointer font-medium hover:bg-yellow-600 disabled:opacity-50"
           >
             {loading ? "Sending..." : "Send"}
           </button>

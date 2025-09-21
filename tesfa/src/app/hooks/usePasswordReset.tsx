@@ -1,25 +1,21 @@
-"use client";
 import { useState } from "react";
-import { post } from "../utils/fetchPassword"; 
-
+import { fetchPasswordReset } from "../utils/fetchPassworReset";
 export function usePasswordReset() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
   const requestReset = async (email: string) => {
     setLoading(true);
     setError(null);
     setMessage(null);
     try {
-      const res = await post("/password-reset/", { email }); 
-      setMessage(res.message);
+      const res = await fetchPasswordReset({ email });
+      setMessage(res.message || "Password reset link sent!");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
-
   return { loading, message, error, requestReset };
 }

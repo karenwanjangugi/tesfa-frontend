@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { usePasswordResetConfirm } from "@/app/hooks/usePasswordConfirm";
+import usePasswordResetConfirm from "@/app/hooks/usePasswordConfirm";
 import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 
 
@@ -26,34 +26,33 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
       return;
     }
     try {
-      const payload = {
+      await confirmReset({
        uidb64: uid,
         token,
         new_password: password,
          confirm_password: confirm,
-      };
-      await confirmReset(payload);
+      });
 
-      setTimeout(() => router.push("/resetsucess"), 1500);
+      setTimeout(() => router.push("/resetsuccess"), 150);
     } catch (err) {
     
     }
   };
 
   return (
-    <div className=" relative w-full max-w-md overflow-hidden">
+    <div className=" relative w-full max-w-sm overflow-hidden">
 
       <div className="bg-[#00353D] p-10 rounded-2xl shadow-2xl ring-2 ring-teal-700/30">
 
 
         <button onClick={() => router.back()} 
          aria-label="Go back"
-        className="absolute left-6 top-12 text-white-400">
+        className="absolute left-3 top-12 text-white-400 cursor-pointer">
           <FaArrowLeft />
         </button>
         <h1 className="text-center text-[#d4af37] text-3xl font-medium mb-8">Reset Your Password</h1>
         <p className="text-center text-teal-100 mb-10">Your new password must be different from your previous password</p>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4 text-sm">
           <div>
             <label className="sr-only">New Password</label>
             <div className="relative">
@@ -97,7 +96,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
             <button
               type="submit"
               disabled={loading}
-              className="w-3/4  rounded-xl py-3 bg-[#d4af37] text-white font-medium disabled:opacity-60"
+              className="w-3/4  cursor-pointer rounded-xl py-3 bg-[#d4af37] text-white font-medium disabled:opacity-60"
             >
               {loading ? "Resetting..." : "Reset Password"}
             </button>
@@ -106,7 +105,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
         {(localError || error) && (
           <div className="mt-4 text-center text-red-300">{localError || error}</div>
         )}
-        {message && <div className="mt-4 text-center text-green-300">{message} Redirecting to login...</div>}
+       
       </div>
 
       

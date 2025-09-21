@@ -3,10 +3,12 @@ import userEvent from "@testing-library/user-event";
 import ResetFormClient from "./index"; 
 import { useRouter } from "next/navigation";
 
-
-jest.mock("../../../../app/hooks/usePasswordConfirm", () => ({
-  usePasswordResetConfirm: jest.fn(),
-}));
+jest.mock("../../../../app/hooks/usePasswordConfirm", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(),
+  };
+});
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
@@ -18,12 +20,14 @@ describe("ResetFormClient", () => {
 
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue(mockRouter);
-    jest.mocked(require("../../../../app/hooks/usePasswordConfirm").usePasswordResetConfirm).mockReturnValue({
+    const mockHook = require("../../../../app/hooks/usePasswordConfirm").default as jest.Mock;
+    mockHook.mockReturnValue({
       loading: false,
       error: null,
       message: null,
       confirmReset: mockConfirmReset,
     });
+
     jest.clearAllMocks();
   });
 
@@ -44,8 +48,7 @@ describe("ResetFormClient", () => {
     await user.type(screen.getByPlaceholderText("New Password"), "short");
     await user.type(screen.getByPlaceholderText("Confirm New Password"), "short");
     await user.click(screen.getByRole("button", { name: /Reset Password/i }));
-    const errorMessages = screen.getAllByText("Must be at least 8 characters");
-    expect(errorMessages.length).toBe(2);
+    expect(screen.getAllByText("Must be at least 8 characters").length).toBe(2);
     expect(mockConfirmReset).not.toHaveBeenCalled();
   });
 
@@ -63,18 +66,19 @@ describe("ResetFormClient", () => {
     setup();
     const user = userEvent.setup();
     mockConfirmReset.mockResolvedValue({});
+
     await user.type(screen.getByPlaceholderText("New Password"), "password123");
     await user.type(screen.getByPlaceholderText("Confirm New Password"), "password123");
     await user.click(screen.getByRole("button", { name: /Reset Password/i }));
+
     expect(mockConfirmReset).toHaveBeenCalledWith({
       uidb64: "test-uid",
       token: "test-token",
       new_password: "password123",
       confirm_password: "password123",
     });
-
     await waitFor(() => {
-      expect(mockRouter.push).toHaveBeenCalledWith("/resetsucess");
+      expect(mockRouter.push).toHaveBeenCalledWith("/resetsuccess");
     }, { timeout: 2000 });
   });
 

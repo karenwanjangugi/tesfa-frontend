@@ -2,7 +2,7 @@ import ResetFormClient from "@/app/resetPassword/components/ResetForm";
 export default function ResetPage({ params }: { params: { uid: string; token: string } }) {
   const { uid, token } = params;
   return (
-    <div className="min-h-screen bg-[#0E545F] flex items-center justify-center px-4 ${josefinSans.className}">
+    <div className="overflow-hidden relative min-h-screen bg-[#0E545F] flex items-center justify-center px-4 ${josefinSans.className}">
       <div className="absolute top-10 left-10 w-15">
           <img src="/Images/Tlogo.png" alt=""/>
       </div>
