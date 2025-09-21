@@ -23,9 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${ josefinSans}`}
-      >
+      <body className={`${josefinSans.variable}`}>
         {children}
       </body>
     </html>
