@@ -1,11 +1,11 @@
-import Image from "next/image";
-import Sidebar from "./sharedcomponents/SideBar";
-import Layout from "./sharedcomponents/Layout";
+import SplashScreen from "./onboarding/splash/page";
 
 
 export default function Home() {
   return (
-<div></div>
+<div>
+  <SplashScreen/>
+</div>
 
   );
 }
