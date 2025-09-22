@@ -130,7 +130,7 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="p-5 px-25 bg-gray-50 relative">
+      <div className="p-5 px-25 bg-gray-50 md:overflow-hidden relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-semibold text-gray-900">Task Tracking</h1>
         </div>
@@ -147,7 +147,7 @@ export default function KanbanBoard() {
               <div className={`${column.color} px-4 py-3 rounded-tl-[20px] rounded-tr-[20px]`}>
                 <h3 className="font-large text-center text-black">{column.title}</h3>
               </div>
-              <DropZone id={column.id} className="p-4 min-h-[400px] h-[80vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
+              <DropZone id={column.id} className="p-4 min-h-[40vh] lg:h-[80vh] md:h-[60vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
                 <div className="space-y-3">
                   {getTasksByStatus(column.id as Task['status']).map((task, index) => (
                     <TaskCard key={task.id} task={task} index={index} onDelete={handleDeleteTask} />
