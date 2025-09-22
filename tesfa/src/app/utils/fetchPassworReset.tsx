@@ -9,13 +9,14 @@ export async function fetchPasswordReset(payload: { email: string }) {
     });
 
     if (!response.ok) {
+
       const errorText = await response.text();
-      throw new Error(errorText || response.statusText);
+      throw new Error('Failed to request password reset: ' + (errorText || response.statusText));
     }
 
-    return await response.json();
+    const result = await response.json();
+    return result;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Error requesting password reset: ${message}`);
+    throw new Error(`Error requesting password reset: ${(error as Error).message}`);
   }
 }

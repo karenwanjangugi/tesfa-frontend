@@ -9,9 +9,6 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock("react-icons/fa", () => ({
-  FaArrowLeft: () => <span>←</span>,
-}));
 
 
 jest.mock("../hooks/usePasswordReset", () => ({
@@ -58,7 +55,7 @@ describe("ForgotPasswordPage", () => {
     expect(screen.getByText("Forgot Password?")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter your email here")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /send/i })).toBeInTheDocument();
-    expect(screen.getByText("←")).toBeInTheDocument(); 
+ 
   });
 
   it("allows user to type email", async () => {

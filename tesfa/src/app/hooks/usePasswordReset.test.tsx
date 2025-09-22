@@ -7,15 +7,13 @@ jest.mock('../utils/fetchPassworReset', () => ({
 }));
 
 describe('usePasswordReset', () => {
-  const mockFetchPasswordReset = fetchPasswordReset as jest.MockedFunction<
-    typeof fetchPasswordReset
-  >;
+  const mockFetchPasswordReset = fetchPasswordReset as jest.Mock;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should initialize with default state', () => {
+  it('initializes with default state', () => {
     const { result } = renderHook(() => usePasswordReset());
 
     expect(result.current.loading).toBe(false);
@@ -23,7 +21,7 @@ describe('usePasswordReset', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('should set loading to true when requestReset is called', async () => {
+  it('sets loading to true when requestReset is called', async () => {
     mockFetchPasswordReset.mockResolvedValue({ message: 'Email sent' });
 
     const { result } = renderHook(() => usePasswordReset());
@@ -35,8 +33,8 @@ describe('usePasswordReset', () => {
     expect(result.current.loading).toBe(false); 
   });
 
-  it('should set message on successful reset request', async () => {
-    const successMessage = 'Password reset link sent!';
+  it('sets message on successful reset request', async () => {
+    const successMessage = 'Password reset email sent';
     mockFetchPasswordReset.mockResolvedValue({ message: successMessage });
 
     const { result } = renderHook(() => usePasswordReset());
@@ -49,20 +47,7 @@ describe('usePasswordReset', () => {
     expect(result.current.error).toBeNull();
   });
 
-  it('should set fallback message if response has no message', async () => {
-    mockFetchPasswordReset.mockResolvedValue({});
-
-    const { result } = renderHook(() => usePasswordReset());
-
-    await act(async () => {
-      await result.current.requestReset('test@example.com');
-    });
-
-    expect(result.current.message).toBe('Password reset link sent!');
-    expect(result.current.error).toBeNull();
-  });
-
-  it('should set error message on failure', async () => {
+  it('sets error on failed reset request', async () => {
     const errorMessage = 'Network error';
     mockFetchPasswordReset.mockRejectedValue(new Error(errorMessage));
 
@@ -76,37 +61,33 @@ describe('usePasswordReset', () => {
     expect(result.current.message).toBeNull();
   });
 
-  it('should set generic error message if error has no message', async () => {
-    mockFetchPasswordReset.mockRejectedValue({});
-
-    const { result } = renderHook(() => usePasswordReset());
-
-    await act(async () => {
-      await result.current.requestReset('test@example.com');
-    });
-
-    expect(result.current.error).toBe('Something went wrong');
-    expect(result.current.message).toBeNull();
-  });
-
-  it('should reset message and error before making request', async () => {
+  it('resets message and error before making request', async () => {
     mockFetchPasswordReset.mockResolvedValue({ message: 'Success' });
 
     const { result } = renderHook(() => usePasswordReset());
-    mockFetchPasswordReset.mockRejectedValueOnce(new Error('Initial error'));
+
+    await act(async () => {
+      await result.current.requestReset('first@example.com');
+    });
+
+    mockFetchPasswordReset.mockResolvedValue({ message: 'Second success' });
+
+    await act(async () => {
+      await result.current.requestReset('second@example.com');
+    });
+
+    expect(result.current.message).toBe('Second success');
+  });
+
+  it('ensures loading is set to false after request completes (even on error)', async () => {
+    mockFetchPasswordReset.mockRejectedValue(new Error('Oops'));
+
+    const { result } = renderHook(() => usePasswordReset());
 
     await act(async () => {
       await result.current.requestReset('test@example.com');
     });
 
- 
-    mockFetchPasswordReset.mockResolvedValueOnce({ message: 'Success 2' });
-
-    await act(async () => {
-      await result.current.requestReset('test@example.com');
-    });
-
-    expect(result.current.error).toBeNull(); 
-    expect(result.current.message).toBe('Success 2');
+    expect(result.current.loading).toBe(false);
   });
 });

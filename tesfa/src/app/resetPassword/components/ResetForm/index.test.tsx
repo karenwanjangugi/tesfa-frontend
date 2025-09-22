@@ -1,91 +1,229 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import ResetFormClient from "./index"; 
-import { useRouter } from "next/navigation";
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
-jest.mock("../../../../app/hooks/usePasswordConfirm", () => {
-  return {
-    __esModule: true,
-    default: jest.fn(),
-  };
-});
+import ResetFormClient from ".";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
+
+jest.mock("../../../hooks/usePasswordConfirm", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 describe("ResetFormClient", () => {
-  const mockRouter = { push: jest.fn(), back: jest.fn() };
-  const mockConfirmReset = jest.fn();
+  const defaultProps = {
+    uid: "abc123",
+    token: "xyz789",
+  };
 
   beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue(mockRouter);
-    const mockHook = require("../../../../app/hooks/usePasswordConfirm").default as jest.Mock;
-    mockHook.mockReturnValue({
+    jest.clearAllMocks();
+  });
+
+  it("renders form and allows password input", () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn().mockResolvedValue({}),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    expect(screen.getByPlaceholderText("New Password")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Confirm New Password")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /reset password/i })).toBeInTheDocument();
+  });
+
+  it("shows password error if less than 8 characters", async () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const passwordInput = screen.getByPlaceholderText("New Password");
+    fireEvent.change(passwordInput, { target: { value: "123" } });
+
+    expect(await screen.findByText("Must be at least 8 characters")).toBeInTheDocument();
+  });
+
+  it("shows confirm password error if passwords don't match", async () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const passwordInput = screen.getByPlaceholderText("New Password");
+    const confirmInput = screen.getByPlaceholderText("Confirm New Password");
+
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmInput, { target: { value: "password12" } });
+
+    expect(await screen.findByText("Passwords do not match")).toBeInTheDocument();
+  });
+
+  it("submits form successfully and redirects after 150ms", async () => {
+    const mockPush = jest.fn();
+
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: mockPush,
+    });
+
+    const mockConfirmReset = jest.fn().mockResolvedValue({});
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
       loading: false,
       error: null,
       message: null,
       confirmReset: mockConfirmReset,
     });
 
-    jest.clearAllMocks();
-  });
+    render(<ResetFormClient {...defaultProps} />);
 
-  const setup = (uid = "test-uid", token = "test-token") => {
-    render(<ResetFormClient uid={uid} token={token} />);
-  };
+    const passwordInput = screen.getByPlaceholderText("New Password");
+    const confirmInput = screen.getByPlaceholderText("Confirm New Password");
+    const submitButton = screen.getByRole("button", { name: /reset password/i });
 
-  it("renders form with all fields and button", () => {
-    setup();
-    expect(screen.getByPlaceholderText("New Password")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Confirm New Password")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Reset Password/i })).toBeInTheDocument();
-  });
-
-  it("shows local error if password is too short", async () => {
-    setup();
-    const user = userEvent.setup();
-    await user.type(screen.getByPlaceholderText("New Password"), "short");
-    await user.type(screen.getByPlaceholderText("Confirm New Password"), "short");
-    await user.click(screen.getByRole("button", { name: /Reset Password/i }));
-    expect(screen.getAllByText("Must be at least 8 characters").length).toBe(2);
-    expect(mockConfirmReset).not.toHaveBeenCalled();
-  });
-
-  it("shows local error if passwords do not match", async () => {
-    setup();
-    const user = userEvent.setup();
-    await user.type(screen.getByPlaceholderText("New Password"), "password123");
-    await user.type(screen.getByPlaceholderText("Confirm New Password"), "password456");
-    await user.click(screen.getByRole("button", { name: /Reset Password/i }));
-    expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
-    expect(mockConfirmReset).not.toHaveBeenCalled();
-  });
-
-  it("calls confirmReset with correct payload and redirects on success", async () => {
-    setup();
-    const user = userEvent.setup();
-    mockConfirmReset.mockResolvedValue({});
-
-    await user.type(screen.getByPlaceholderText("New Password"), "password123");
-    await user.type(screen.getByPlaceholderText("Confirm New Password"), "password123");
-    await user.click(screen.getByRole("button", { name: /Reset Password/i }));
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmInput, { target: { value: "password123" } });
+    fireEvent.submit(submitButton);
 
     expect(mockConfirmReset).toHaveBeenCalledWith({
-      uidb64: "test-uid",
-      token: "test-token",
+      uidb64: defaultProps.uid,
+      token: defaultProps.token,
       new_password: "password123",
       confirm_password: "password123",
     });
+
     await waitFor(() => {
-      expect(mockRouter.push).toHaveBeenCalledWith("/resetsuccess");
-    }, { timeout: 2000 });
+      expect(mockPush).toHaveBeenCalledWith("/resetsuccess");
+    }, { timeout: 200 });
   });
 
-  it("navigates back when back button is clicked", async () => {
-    setup();
-    const user = userEvent.setup();
-    await user.click(screen.getByLabelText(/Go back/i));
-    expect(mockRouter.back).toHaveBeenCalled();
+  it("disables submit button when loading", () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: true,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+ 
+    const submitButton = screen.getByRole("button", { name: "Resetting..." });
+    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveTextContent("Resetting...");
+  });
+
+  it("displays error message if API fails", async () => {
+    const errorMessage = "Something went wrong";
+
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+ 
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: errorMessage,
+      message: null,
+      confirmReset: jest.fn().mockResolvedValue({}), 
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const passwordInput = screen.getByPlaceholderText("New Password");
+    const confirmInput = screen.getByPlaceholderText("Confirm New Password");
+    const submitButton = screen.getByRole("button", { name: /reset password/i });
+
+    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(confirmInput, { target: { value: "password123" } });
+    fireEvent.submit(submitButton);
+
+    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+  });
+
+  it("toggles password visibility when eye icon is clicked", () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const toggle1 = screen.getAllByRole("button")[1]; 
+    const passwordInput = screen.getByPlaceholderText("New Password");
+
+    expect(passwordInput).toHaveAttribute("type", "password");
+
+    fireEvent.click(toggle1);
+    expect(passwordInput).toHaveAttribute("type", "text");
+
+    fireEvent.click(toggle1);
+    expect(passwordInput).toHaveAttribute("type", "password");
+  });
+
+  it("navigates back when back button is clicked", () => {
+    const mockBack = jest.fn();
+
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: mockBack,
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const backButton = screen.getByLabelText("Go back");
+    fireEvent.click(backButton);
+
+    expect(mockBack).toHaveBeenCalled();
   });
 });

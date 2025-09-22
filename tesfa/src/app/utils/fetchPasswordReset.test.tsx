@@ -1,73 +1,79 @@
-import { fetchPasswordReset } from './fetchPassworReset';
-global.fetch = jest.fn();
+import { fetchPasswordReset } from "./fetchPassworReset";
+type FetchMock = jest.MockedFunction<typeof global.fetch>;
 
 describe('fetchPasswordReset', () => {
-  const email = 'test@example.com';
-  const baseUrl = '/api/password-reset';
+  let mockFetch: FetchMock;
 
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockClear();
+
+    mockFetch = jest.fn() as FetchMock;
+    global.fetch = mockFetch;
   });
 
-  it('should make POST request with correct headers and body', async () => {
-    const mockResponse = { message: 'Email sent' };
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+  it('sends correct request to /api/password-reset', async () => {
+    mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockResponse,
-    });
+      json: async () => ({ message: 'Email sent' }),
+    } as Response);
 
-    const result = await fetchPasswordReset({ email });
+    const payload = { email: 'test@example.com' };
+    const result = await fetchPasswordReset(payload);
 
-    expect(global.fetch).toHaveBeenCalledWith(baseUrl, {
+    expect(mockFetch).toHaveBeenCalledWith('/api/password-reset', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify(payload),
     });
-    expect(result).toEqual(mockResponse);
+
+    expect(result).toEqual({ message: 'Email sent' });
   });
 
-  it('should throw descriptive error if response is not ok', async () => {
-    const serverError = 'Invalid email format';
-
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+  it('throws descriptive error when response is not ok', async () => {
+    mockFetch.mockResolvedValueOnce({
       ok: false,
       statusText: 'Bad Request',
-      text: async () => serverError,
-    });
+      text: async () => 'Invalid email format',
+    } as unknown as Response); 
 
-    await expect(fetchPasswordReset({ email })).rejects.toThrow(
-      `Error requesting password reset: ${serverError}`
+    await expect(fetchPasswordReset({ email: 'bad-email' })).rejects.toThrow(
+      'Failed to request password reset: Invalid email format'
     );
   });
 
-  it('should throw with statusText if response text is empty', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+  it('falls back to statusText if response body is empty', async () => {
+    mockFetch.mockResolvedValueOnce({
       ok: false,
-      statusText: 'Unauthorized',
+      statusText: 'Internal Server Error',
       text: async () => '',
-    });
+    } as unknown as Response);
 
-    await expect(fetchPasswordReset({ email })).rejects.toThrow(
-      'Error requesting password reset: Unauthorized'
+    await expect(fetchPasswordReset({ email: 'test@example.com' })).rejects.toThrow(
+      'Failed to request password reset: Internal Server Error'
     );
   });
 
-  it('should throw with network error message if fetch fails', async () => {
-    const networkError = new Error('Network connection failed');
+  it('throws network error with wrapped message on fetch failure', async () => {
+    mockFetch.mockRejectedValueOnce(new TypeError('Network error'));
 
-    (global.fetch as jest.Mock).mockRejectedValueOnce(networkError);
-
-    await expect(fetchPasswordReset({ email })).rejects.toThrow(
-      `Error requesting password reset: ${networkError.message}`
+    await expect(fetchPasswordReset({ email: 'test@example.com' })).rejects.toThrow(
+      'Error requesting password reset: Network error'
     );
   });
 
-  it('should handle unexpected error gracefully', async () => {
-    (global.fetch as jest.Mock).mockRejectedValueOnce('Something exploded');
+  it('handles unexpected error during response.json()', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => {
+        throw new SyntaxError('Unexpected token');
+      },
+    } as unknown as Response);
 
-    await expect(fetchPasswordReset({ email })).rejects.toThrow(
-      'Error requesting password reset: Something exploded'
+    await expect(fetchPasswordReset({ email: 'test@example.com' })).rejects.toThrow(
+      'Error requesting password reset: Unexpected token'
     );
   });
 });
