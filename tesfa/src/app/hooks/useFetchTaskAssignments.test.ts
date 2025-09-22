@@ -1,8 +1,8 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useFetchTaskAssignments } from './useFetchTaskAssignment';
-import { TaskStatus } from '@/utils/type';
-import { fetchTaskAssignments, updateTaskAssignmentStatus } from '@/utils/fetchtaskAssignment';
-import { mapApiTask } from '@/utils/fetchTasks';
+import { TaskStatus } from '../utils/type';
+import { fetchTaskAssignments, updateTaskAssignmentStatus } from '../utils/fetchtaskAssignment';
+import { mapApiTask } from '../utils/fetchTasks';
 
 process.env.NEXT_PUBLIC_API_URL = 'https://api.example.com';
 process.env.NEXT_PUBLIC_API_TOKEN = 'fake-token';

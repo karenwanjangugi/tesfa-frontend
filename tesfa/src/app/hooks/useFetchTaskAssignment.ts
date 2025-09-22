@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Task, ApiTask } from "@/utils/type";
-import { fetchTaskAssignments, updateTaskAssignmentStatus } from "@/utils/fetchtaskAssignment";
-import { TaskStatus } from '@/utils/type'; 
-import { mapApiTask } from "@/utils/fetchTasks";
+import { Task, ApiTask } from "../utils/type";
+import { fetchTaskAssignments, updateTaskAssignmentStatus } from "../utils/fetchtaskAssignment";
+import { TaskStatus } from '../utils/type'; 
+import { mapApiTask } from "../utils/fetchTasks";
 
 
 export const useFetchTaskAssignments = () => {

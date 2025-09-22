@@ -1,7 +1,7 @@
  import { useState, useEffect } from 'react';
 import { mapApiTask, fetchTasks } from '../utils/fetchTasks';
 import { fetchTaskAssignments } from '../utils/fetchtaskAssignment';
-import { Task } from '@/utils/type';
+import { Task } from '../utils/type';
 
 export const useFetchTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);

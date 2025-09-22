@@ -15,10 +15,10 @@ import {
 } from '@dnd-kit/core';
 import { TaskCard } from '../Taskcard';
 import { DropZone } from '../Dropzone';
-import { useFetchTaskAssignments } from '../../../../hooks/useFetchTaskAssignment';
-import { Task } from '../../../../utils/type';
-import { TaskStatus } from '../../../../utils/type';
-import { deleteTaskAssignment } from '../../../../utils/fetchtaskAssignment';
+import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
+import { Task } from '../../../utils/type';
+import { TaskStatus } from '../../../utils/type';
+import { deleteTaskAssignment } from '../../../utils/fetchtaskAssignment';
 
 
 const columns = [

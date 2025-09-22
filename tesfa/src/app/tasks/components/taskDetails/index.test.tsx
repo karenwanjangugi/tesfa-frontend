@@ -3,8 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useRouter } from 'next/navigation';
 import TasksPage from '../../page';
-import { useFetchTasks } from '../../../../hooks/useFetchTasks';
-import { createTaskAssignment } from '../../../../utils/fetchtaskAssignment';
+import { useFetchTasks } from '../../../hooks/useFetchTasks';
+import { createTaskAssignment } from '../../../utils/fetchtaskAssignment';
 
 // Mock child components and libraries
 jest.mock('../../../sharedcomponents/Button', () => ({

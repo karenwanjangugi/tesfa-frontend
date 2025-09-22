@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { useDraggable } from '@dnd-kit/core';
 import { LuTrash2 } from "react-icons/lu";
-import { TaskStatus } from '../../../../utils/type';
+import { TaskStatus } from '../../../utils/type';
 
 
 interface Task {

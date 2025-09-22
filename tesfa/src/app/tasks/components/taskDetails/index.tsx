@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { FaSearch } from "react-icons/fa";
-import { createTaskAssignment } from "../../../../utils/fetchtaskAssignment";
+import { createTaskAssignment } from "../../../utils/fetchtaskAssignment";
 import { Button } from "../../../sharedcomponents/Button";
 import { Checkbox } from "../Checkbox/index";
-import { useFetchTasks } from "../../../../hooks/useFetchTasks";
+import { useFetchTasks } from "../../../hooks/useFetchTasks";
 
 
 export default function TasksDetails() {

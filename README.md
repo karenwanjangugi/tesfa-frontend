@@ -1,1 +1,1 @@
-# fe-sample-template
+# fe sample template

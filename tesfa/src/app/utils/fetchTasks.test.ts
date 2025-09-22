@@ -1,5 +1,5 @@
 import { ApiTask, Task } from './type';
-import { mapApiTask } from "@/utils/fetchTasks";
+import { mapApiTask } from "../utils/fetchTasks";
 
 
 

@@ -3,8 +3,8 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import '@testing-library/jest-dom';
 import { useRouter, useSearchParams } from 'next/navigation';
 import  KanbanBoard  from './index';
-import { useFetchTaskAssignments } from '../../../../hooks/useFetchTaskAssignment';
-import { deleteTaskAssignment } from '../../../../utils/fetchtaskAssignment';
+import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
+import { deleteTaskAssignment } from '../../../utils/fetchtaskAssignment';
 
 jest.mock('../Taskcard', () => ({
   TaskCard: ({ task, onDelete }: { task: any; onDelete: any }) => (
