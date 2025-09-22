@@ -22,8 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={josefinSans.variable}>
-      <body>
+    <html lang="en">
+      <body
+        className={`${ josefinSans.variable}`}
+      >
         {children}
       </body>
     </html>

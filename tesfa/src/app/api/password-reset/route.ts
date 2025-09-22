@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const body = await req.json();
-  const response = await fetch(`${process.env.BASE_URL}password-reset/`, {
+  const response = await fetch(`${process.env.BASE_URL}/password-reset/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
