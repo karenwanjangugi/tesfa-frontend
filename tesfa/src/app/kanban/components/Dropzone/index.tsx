@@ -12,17 +12,17 @@ export function DropZone({ id, children, className = '' }: DropZoneProps) {
     id,
   });
 
-  const style = {
-    // border: '2px dashed',
-    // borderColor: isOver ? '#3b82f6' : 'rgba(0,0,0,0.2)',
-    backgroundColor: isOver ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-    borderRadius: '0.5rem',
-    transition: 'all 0.2s ease',
-  };
-
+  
+  const baseClasses = 'rounded-md transition-all duration-200 ease-in-out';
+  const overClasses = 'bg-blue-100';
+  
   return (
-    <div ref={setNodeRef} style={style} className={className}>
+    <div
+      ref={setNodeRef}
+      className={`${baseClasses} ${isOver ? overClasses : 'bg-transparent' } ${className}`}
+    >
       {children}
     </div>
   );
+  
 }

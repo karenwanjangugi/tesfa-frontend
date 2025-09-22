@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { FaSearch } from "react-icons/fa";
+import { Search } from "lucide-react";
 import { createTaskAssignment } from "../../../utils/fetchtaskAssignment";
-import { Button } from "../../../sharedcomponents/Button";
+import { Button } from "../../../sharedComponents/Button";
 import { Checkbox } from "../Checkbox/index";
 import { useFetchTasks } from "../../../hooks/useFetchTasks";
 
@@ -17,10 +17,16 @@ export default function TasksDetails() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleClick = () => {
+    setIsVisible(false); 
+    setIsAddMode(true)
+  };
 
   const handleTaskToggle = (taskId: string) => {
     if (isSubmitting) return;
@@ -51,14 +57,14 @@ export default function TasksDetails() {
 
 
       setSelectedTasks(new Set());
-      const newTasksForKanban = newAssignments.map(ass => {
-      const originalTask = tasks.find(t => t.id === ass.task.toString())
+      const newTasksForKanban = newAssignments.map(assignment => {
+      const originalTask = tasks.find(t => t.id === assignment.task.toString())
       return{
-        id: ass.task.toString(),
+        id: assignment.task.toString(),
         title: originalTask? originalTask.title : 'New Task',
         description: originalTask ? originalTask.description: '',
-        status: ass.status,
-        assignmentId: ass.id
+        status: assignment.status,
+        assignmentId: assignment.id
       }
       })
       const newTasksParam = encodeURIComponent(
@@ -97,27 +103,32 @@ export default function TasksDetails() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-semibold text-gray-900">Tasks</h1>
-        <div className="relative mt-3 -ml-90 mb-2 ">
-          <FaSearch className="absolute left-3 text-black" size={20} />
-          <input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setSearchQuery(e.target.value)
-            }
-            className="pl-10 bg-white border-gray-500 text-black rounded-lg"
-          />
+        <div className="relative mt-3 mb-2 flex items-center">
+  <Search className="absolute left-3 text-black" size={20} />
+  <input
+    type="text"
+    placeholder="Search"
+    value={searchQuery}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+      setSearchQuery(e.target.value)
+    }
+    className="pl-10 bg-white border-gray-500 h-[3vh] text-black rounded-lg"
+  />
+</div>
+
+        <div className="flex items-center gap-4">
+          {isVisible && <p className="text-gray-600 text-lg">Click "Select Tasks" to start choosing tasks from the list. ➤</p>}
+          {!isAddMode && (
+            <Button
+              onClick={handleClick}
+              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full cursor-pointer"
+              aria-label="Add Task"
+            >
+              Select Tasks
+            </Button>
+          )}
         </div>
-        {!isAddMode && (
-          <Button
-            onClick={() => setIsAddMode(true)}
-            className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full"
-            aria-label="Add Task"
-          >
-            Add Task
-          </Button>
-        )}
+        
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
 
@@ -162,14 +173,14 @@ export default function TasksDetails() {
             <Button
               variant="outline"
               onClick={handleCancel}
-              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full"
+              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               onClick={handleAddTasks}
               disabled={selectedTasks.size === 0}
-              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               Add ({selectedTasks.size}) to my tasks
             </Button>
@@ -179,3 +190,4 @@ export default function TasksDetails() {
     </div>
   );
 }
+

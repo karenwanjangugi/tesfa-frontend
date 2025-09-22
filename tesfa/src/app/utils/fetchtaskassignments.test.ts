@@ -37,7 +37,7 @@ import {
 
         const result = await fetchTaskAssignments();
 
-        expect(global.fetch).toHaveBeenCalledWith('/api/task-assignments/');
+        expect(global.fetch).toHaveBeenCalledWith('/api/task-assignments/',{"headers":{}});
         expect(result).toEqual([mockAssignment]);
       });
 

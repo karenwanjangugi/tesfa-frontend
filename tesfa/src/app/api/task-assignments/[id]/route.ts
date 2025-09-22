@@ -1,12 +1,14 @@
 import { NextRequest } from "next/server";
+import { getToken } from "../../../utils/getToken";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export async function PATCH(
   request: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const token = getToken(request);
+  const { id } = (await context.params);
   const bodyData = await request.json();
   const { status } = bodyData;
 
@@ -20,7 +22,7 @@ export async function PATCH(
     const response = await fetch(`${baseUrl}/task-assignments/${id}/`, {
       method: "PATCH",
       headers: {
-        Authorization: `Token ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+        Authorization: `Token ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ status }),

@@ -1,5 +1,5 @@
-import Layout from "../sharedcomponents/Layout";
-import TasksDetails from "./components/taskDetails";
+import Layout from "../sharedComponents/Layout";
+import TasksDetails from "./components/TaskDetails";
 
 export default function TasksPage() {
   return (

@@ -26,8 +26,8 @@ jest.mock('framer-motion', () => ({
 }));
 jest.mock('next/navigation');
 
-jest.mock('../../../../hooks/useFetchTaskAssignment');
-jest.mock('../../../../utils/fetchtaskAssignment');
+jest.mock('../../../hooks/useFetchTaskAssignment');
+jest.mock('../../../utils/fetchtaskAssignment');
 
 
 jest.mock('@dnd-kit/core', () => ({

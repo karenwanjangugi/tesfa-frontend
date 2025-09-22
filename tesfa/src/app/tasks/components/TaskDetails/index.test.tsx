@@ -6,9 +6,9 @@ import TasksPage from '../../page';
 import { useFetchTasks } from '../../../hooks/useFetchTasks';
 import { createTaskAssignment } from '../../../utils/fetchtaskAssignment';
 
-// Mock child components and libraries
-jest.mock('../../../sharedcomponents/Button', () => ({
-  Button: ({ children, onClick, disabled, className }: any) => (
+
+jest.mock('../../../sharedComponents/Button', () => ({
+  Button: ({ children, onClick, disabled, className }: { children: React.ReactNode; onClick: () => void; disabled: boolean; className: string }) => (
     <button onClick={onClick} disabled={disabled} className={className}>{children}</button>
   ),
 }));
@@ -24,8 +24,8 @@ jest.mock('framer-motion', () => ({
 }));
 
 jest.mock('next/navigation');
-jest.mock('../../../../hooks/useFetchTasks');
-jest.mock('../../../../utils/fetchtaskAssignment');
+jest.mock('../../../hooks/useFetchTasks');
+jest.mock('../../../utils/fetchtaskAssignment');
 
 describe('TasksPage', () => {
   const mockUseRouter = useRouter as jest.Mock;
@@ -38,8 +38,8 @@ describe('TasksPage', () => {
     mockUseRouter.mockReturnValue({ push: mockPush, replace: jest.fn() });
     mockUseTasks.mockReturnValue({
       tasks: [
-        { id: '1', title: 'Design Homepage', description: 'Create wireframes', status: 'pending' },
-        { id: '2', title: 'Fix Login Bug', description: 'User auth issue', status: 'pending' },
+        { id: '1', title: 'Food Distribution', description: 'Distribute food', status: 'pending' },
+        { id: '2', title: 'Vaccines', description: 'Give Vaccines', status: 'pending' },
       ],
       setTasks: jest.fn(),
       loading: false,
@@ -62,7 +62,7 @@ describe('TasksPage', () => {
   it('submits selected tasks and redirects', async () => {
     const mockSetTasks = jest.fn();
     mockUseTasks.mockReturnValue({
-      tasks: [{ id: '1', title: 'Design Homepage', description: '...', status: 'pending' }],
+      tasks: [{ id: '1', title: 'Food Distribution', description: '...', status: 'pending' }],
       setTasks: mockSetTasks,
       loading: false,
       error: null,
@@ -77,9 +77,8 @@ describe('TasksPage', () => {
     render(<TasksPage />);
 
 
-    fireEvent.click(screen.getByRole('button', { name: /add task/i }));
-    fireEvent.click(screen.getByText('Design Homepage'));
-
+    fireEvent.click(screen.getByRole('button', { name: /select task/i }));
+    fireEvent.click(screen.getByText('Food Distribution'));
     fireEvent.click(screen.getByRole('button', { name: /add \(1\) to my tasks/i }));
 
 
