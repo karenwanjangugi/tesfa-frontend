@@ -1,7 +1,7 @@
-import { ApiTask, Task } from './type';
-import { mapApiTask } from "../utils/fetchTasks";
+import { ApiTask, Task, TaskAssignment } from './type';
+import { mapApiTask, fetchTasksForAssignments } from "./fetchTasks";
 
-
+global.fetch = jest.fn();
 
 describe('fetchtasks utilities', () => {
 
@@ -75,6 +75,73 @@ describe('fetchtasks utilities', () => {
 
       const result = await mapApiTask(apiTaskWithNoAssignments as ApiTask);
       expect(result.status).toBe('pending');
+    });
+  });
+
+  describe('fetchTasksForAssignments', () => {
+    const mockAssignments: TaskAssignment[] = [
+      { id: 1, task: 1, organization: 1, status: 'completed', created_at: '', updated_at: '' },
+      { id: 2, task: 2, organization: 1, status: 'in_progress', created_at: '', updated_at: '' },
+    ];
+
+    const mockApiTasks: ApiTask[] = [
+      { id: 1, title: 'Task One', description: 'Desc One', assignments: [] },
+      { id: 2, title: 'Task Two', description: 'Desc Two', assignments: [] },
+    ];
+
+    const mockHeaders: HeadersInit = {
+      'Authorization': 'Token test-token',
+      'Content-Type': 'application/json',
+    };
+
+    let fetchSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      fetchSpy = jest.spyOn(global, 'fetch');
+    });
+
+    afterEach(() => {
+      fetchSpy.mockRestore();
+    });
+
+    it('should fetch tasks for given assignments successfully', async () => {
+      fetchSpy
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockApiTasks[0]),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockApiTasks[1]),
+        });
+
+      const taskPromises = fetchTasksForAssignments(mockAssignments, mockHeaders);
+      const fetchedTasks = await Promise.all(taskPromises);
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(fetchSpy).toHaveBeenCalledWith('/api/tasks/1/', { headers: mockHeaders });
+      expect(fetchSpy).toHaveBeenCalledWith('/api/tasks/2/', { headers: mockHeaders });
+      expect(fetchedTasks).toEqual(mockApiTasks);
+    });
+
+    it('should throw an error if any task fetch fails', async () => {
+      fetchSpy
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockApiTasks[0]),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+        });
+
+      const taskPromises = fetchTasksForAssignments(mockAssignments, mockHeaders);
+
+      await expect(Promise.all(taskPromises)).rejects.toThrow('Failed to fetch task 2');
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+      expect(fetchSpy).toHaveBeenCalledWith('/api/tasks/1/', { headers: mockHeaders });
+      expect(fetchSpy).toHaveBeenCalledWith('/api/tasks/2/', { headers: mockHeaders });
     });
   });
 });

@@ -3,9 +3,8 @@ import { getToken } from "../../../utils/getToken";
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id:string }> }) {
     const { id } = (await context.params);
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.BASE_URL;
     const token = getToken(request);
-    console.log("Request headers:", request.headers);
     
     if (!token) {
      return new Response("Unauthorized", { status: 401 });

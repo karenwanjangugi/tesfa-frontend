@@ -1,9 +1,11 @@
-import Layout from "./sharedComponents/Layout";
+import SplashScreen from "./onboarding/splash/page";
+
 
 export default function Home() {
   return (
-    <Layout>
-    <div></div>
-    </Layout>
+<div>
+  <SplashScreen/>
+</div>
+
   );
 }

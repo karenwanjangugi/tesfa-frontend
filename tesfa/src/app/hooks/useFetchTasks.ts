@@ -1,6 +1,6 @@
  import { useState, useEffect } from 'react';
 import { mapApiTask, fetchTasks } from '../utils/fetchTasks';
-import { fetchTaskAssignments } from '../utils/fetchtaskAssignment';
+import { fetchTaskAssignments } from '../utils/fetchTaskAssignment';
 import { Task } from '../utils/type';
 
 export const useFetchTasks = () => {
@@ -13,7 +13,7 @@ export const useFetchTasks = () => {
        setLoading(true);
        try {
          const assignments = await fetchTaskAssignments();
-         const assignedTaskIds = new Set(assignments.map(a => a.task.toString()));
+         const assignedTaskIds = new Set(assignments.map(assignment => assignment.task.toString()));
  
          const data = await fetchTasks();
          const allformattedTasks = await Promise.all(data.map(mapApiTask));

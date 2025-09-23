@@ -4,13 +4,13 @@ import { TaskStatus } from "../utils/type";
 import {
   fetchTaskAssignments,
   updateTaskAssignmentStatus,
-} from "../utils/fetchtaskAssignment";
+} from "../utils/fetchTaskAssignment";
 import { mapApiTask } from "../utils/fetchTasks";
 
 process.env.NEXT_PUBLIC_API_URL = "https://api.example.com";
 process.env.NEXT_PUBLIC_API_TOKEN = "fake-token";
 
-jest.mock("../utils/fetchtaskAssignment");
+jest.mock("../utils/fetchTaskAssignment");
 
 jest.mock("../utils/fetchTasks", () => ({
   ...jest.requireActual("../utils/fetchTasks"),
@@ -99,7 +99,7 @@ describe("useTaskAssignments", () => {
     ]);
   });
 
-  it("updateTaskStatus updates local state when successful", async () => {
+  it("updateTaskStatus updates local status when successful", async () => {
     (updateTaskAssignmentStatus as jest.Mock).mockResolvedValue({});
     const { result } = renderHook(() => useFetchTaskAssignments());
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -151,11 +151,13 @@ describe("useTaskAssignments", () => {
   });
 
   it('handles fetch error', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const error = new Error('Failed to fetch');
     (fetchTaskAssignments as jest.Mock).mockRejectedValue(error);
     const { result } = renderHook(() => useFetchTaskAssignments());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toEqual(error);
     expect(result.current.assignedTasks).toEqual([]);
+    consoleErrorSpy.mockRestore();
   });
 });

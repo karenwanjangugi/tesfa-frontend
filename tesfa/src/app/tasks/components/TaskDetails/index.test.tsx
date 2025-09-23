@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { useRouter } from 'next/navigation';
 import TasksPage from '../../page';
 import { useFetchTasks } from '../../../hooks/useFetchTasks';
-import { createTaskAssignment } from '../../../utils/fetchtaskAssignment';
+import { createTaskAssignment } from '../../../utils/fetchTaskAssignment';
 
 
 jest.mock('../../../sharedComponents/Button', () => ({
@@ -25,7 +25,7 @@ jest.mock('framer-motion', () => ({
 
 jest.mock('next/navigation');
 jest.mock('../../../hooks/useFetchTasks');
-jest.mock('../../../utils/fetchtaskAssignment');
+jest.mock('../../../utils/fetchTaskAssignment');
 
 describe('TasksPage', () => {
   const mockUseRouter = useRouter as jest.Mock;
@@ -74,6 +74,7 @@ describe('TasksPage', () => {
       status: 'pending',
     });
 
+    localStorage.setItem('user_id', '7');
     render(<TasksPage />);
 
 
@@ -83,7 +84,7 @@ describe('TasksPage', () => {
 
 
     await waitFor(() => {
-      expect(mockCreateTaskAssignment).toHaveBeenCalledWith('1', 7);
+      expect(mockCreateTaskAssignment).toHaveBeenCalledWith('1', '7');
     });
     await waitFor(() => {
       expect(mockSetTasks).toHaveBeenCalled();
