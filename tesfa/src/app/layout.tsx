@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Josefin_Sans } from "next/font/google";
+import Sidebar from "./sharedcomponents/SideBar";
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
@@ -22,11 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en"  className={`${ josefinSans.variable}`}>
       <body
-        className={`${ josefinSans}`}
+       
       >
-        {children}
+          <div className="flex min-h-screen">
+    <Sidebar/>
+        <main className="flex  w-full">{children}</main>
+      </div>
       </body>
     </html>
   );
