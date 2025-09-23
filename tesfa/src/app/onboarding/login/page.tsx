@@ -53,7 +53,7 @@ export default function LoginPage() {
             <span className="absolute left-0 -bottom-1 w-full h-[2px] bg-gradient-to-r from-transparent via-[#CDA12B] to-transparent"></span>
           </h2>
           <p className="text-[#00353D] text-4xl font-normal text-center">Login</p>
-          <form onSubmit={handleSubmit} className="space-y-5 mt-15">
+          <form onSubmit={handleSubmit} className="space-y-5 mt-15 text-black ">
             <div>
               <label htmlFor="email" className="block text-2xl font-light text-[#00353D] mb-1">
                 Email
@@ -95,7 +95,7 @@ export default function LoginPage() {
             </div>
 
             <Link
-            href="/forgot-password"
+            href="/reset-password"
             className="text-sm text-gray-500 hover:underline mb-4 inline-block cursor-pointer"
             >
               Forgot password?

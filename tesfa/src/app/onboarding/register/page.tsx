@@ -80,7 +80,7 @@ export default function RegisterPage() {
             Create Account
             <span className="absolute left-0 -bottom-1 w-full h-[2px] bg-gradient-to-r from-transparent via-[#CDA12B] to-transparent"></span>
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-5 mt-12">
+          <form onSubmit={handleSubmit} className="space-y-5 mt-12 text-black">
             <div>
               <label htmlFor="organization" className="block text-2xl font-light text-[#00353D] mb-1">
                 Organization name
