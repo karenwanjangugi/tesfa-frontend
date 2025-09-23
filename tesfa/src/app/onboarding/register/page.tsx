@@ -92,7 +92,7 @@ export default function RegisterPage() {
                 placeholder="Enter organization name"
                 value={formData.organization}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition"
+                className="w-full p-3 border border-gray-300 rounded-xl text-[#00353D] focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition"
                 required
               />
             </div>
@@ -107,7 +107,7 @@ export default function RegisterPage() {
                 placeholder="Enter your Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition"
+                className="w-full p-3 border border-gray-300 rounded-xl text-[#00353D] focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition"
                 required
               />
             </div>
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
+                className="w-full p-3 border border-gray-300 rounded-xl text-[#00353D] focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
                 required
               />
               <button
@@ -146,7 +146,7 @@ export default function RegisterPage() {
                 placeholder="Confirm Password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
+                className="w-full p-3 border border-gray-300 text-[#00353D] rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
                 required
               />
               <button

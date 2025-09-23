@@ -65,7 +65,7 @@ export default function LoginPage() {
                 placeholder="Enter your Email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition"
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2  text-[#00353D] focus:ring-[#CDA12B] focus:border-transparent transition"
                 required
               />
             </div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
+                className="w-full p-3 border border-gray-300 rounded-xl  text-[#00353D] focus:ring-2 focus:ring-[#CDA12B] focus:border-transparent transition pr-12"
                 required
               />
               <button

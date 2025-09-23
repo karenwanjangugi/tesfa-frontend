@@ -7,7 +7,7 @@ export default function Layout({
   return (
    <div className="flex min-h-screen">
     <Sidebar/>
-        <main className="flex p-6">{children}</main>
+        <main className="flex-1 p-5 overflow-y-hidden">{children}</main>
       </div>
   )
 }
