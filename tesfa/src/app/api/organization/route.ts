@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId");
     if (!userId) throw new Error("userId required");
 
-    const response = await fetch(`${baseUrl}users/${userId}`, {
+    const response = await fetch(`${baseUrl}/users/${userId}`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     });
 
@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest) {
       bodyData = await request.json();
     }
 
-    const response = await fetch(`${baseUrl}users/${userId}/`, {
+    const response = await fetch(`${baseUrl}/users/${userId}/`, {
       method: "PUT",
       headers: {
         ...(token ? { Authorization: `Token ${token}` } : {}),

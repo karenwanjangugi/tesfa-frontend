@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { User as UserIcon, Mail, Calendar, Edit2 } from "lucide-react";
 import useFetchOrganization from "../../hooks/useFetchOrganization";
+import Layout from "../sharedComponents/Layout";
 
 function formatDate(isoString: string | undefined) {
   if (!isoString) return "N/A";
@@ -14,15 +15,16 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user: profile, loading, error } = useFetchOrganization();
 
-  if (loading) return <div className="flex justify-center items-center ml-175 text-center text-3xl">Loading...</div>;
-  if (error) return <div className="flex justify-center items-center ml-175 text-center text-3xl text-red-500">{error}</div>;
+  if (loading) return <div className="flex justify-center items-center text-center min-h-screen"><p>Loading...</p></div>;
+  if (error) return <div className="flex justify-center items-center text-center min-h-screen text-red-500">{error}</div>;
   if (!profile) return null;
 
   return (
+    <Layout>
     <main className="flex w-full flex-col items-center min-h-screen bg-[#FCF6F7] overflow-x-hidden">
-      <div className="w-full px-12 mx-auto ml-40 mt-28">
-        <h1 className="text-5xl font-medium text-[#00353D] mb-2">Profile</h1>
-        <div className="w-300 h-[6px] bg-[#8BB2B5] rounded" />
+      <div className="w-full px-10 mx-auto m-10">
+        <h1 className="text-4xl font-medium text-[#00353D] mb-2">Profile</h1>
+        <div className="w-full h-[6px] bg-[#8BB2B5] rounded" />
       </div>
       <div className="flex flex-col items-center mt-16 w-full">
         <div className="relative mb-8 flex flex-col items-center">
@@ -74,5 +76,6 @@ export default function ProfilePage() {
         </div>
       </div>
     </main>
+    </Layout>
   );
 }

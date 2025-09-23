@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useFetchOrganization from "../../hooks/useFetchOrganization";
 import { updateUser } from "../../utils/fetchOrganization";
-import { CameraIcon, Eye, EyeOff } from "lucide-react";
+import { CameraIcon, Eye, EyeOff, Sidebar } from "lucide-react";
+import Layout from "../sharedComponents/Layout";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -92,7 +93,7 @@ export default function EditProfilePage() {
 
   if (loading && !submitting) 
     return (
-      <div className="flex justify-center items-center ml-175 text-center text-3xl">Loading...</div>
+      <div className="lex justify-center items-center text-center min-h-screen"><p>Loading...</p></div>
     );
   if (error)
     return (
@@ -103,12 +104,13 @@ export default function EditProfilePage() {
   if (!profile) return null;
 
   return (
+    <Layout>
     <main className="w-full flex flex-col items-center min-h-screen bg-[#FCF6F7] overflow-x-hidden">
-      <div className="w-full px-12 ml-80 mt-28">
+      <div className="w-full px-12 m-10">
         <h1 className="text-5xl font-medium text-[#00353D] mb-2">
           Edit Profile
         </h1>
-        <div className="w-300 h-[6px] bg-[#8BB2B5] rounded" />
+        <div className="w-full h-[6px] bg-[#8BB2B5] rounded" />
       </div>
       <div className="flex flex-col items-center mt-16 w-full">
         <div
@@ -234,5 +236,6 @@ export default function EditProfilePage() {
         </form>
       </div>
     </main>
+    </Layout>
   );
 }

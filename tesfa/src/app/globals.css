@@ -15,7 +15,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    /* --background: #0a0a0a; */
     --foreground: #ededed;
   }
 }
@@ -24,10 +24,36 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-josefin-sans),sans-serif;
+  font-family: var(--font-josefin-sans),sans-serif;
 }
 .bg-active-gradient {
   background: linear-gradient(to right, #E6C362, #D3AC45);
 }
+
+
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  margin-left: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #D3AC45;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #D3AC45;
+}
+
 
  
         .animate-fade-in {

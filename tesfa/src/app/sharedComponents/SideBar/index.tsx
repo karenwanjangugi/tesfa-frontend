@@ -83,14 +83,6 @@ const Sidebar = () => {
             onClick={() => handleNavigation("/dashboard")}
           />
           <SidebarItem
-            icon={<LuClock3 size={30} />}
-            label="Task Tracking"
-            isOpen={isOpen}
-            active={pathname === ""}
-            path="/tasktracking"
-            onClick={() => handleNavigation("/tasktracking")}
-          />
-          <SidebarItem
             icon={<LuClipboardList size={30} />}
             label="Tasks"
             isOpen={isOpen}
@@ -98,6 +90,15 @@ const Sidebar = () => {
             path="/tasks"
             onClick={() => handleNavigation("/tasks")}
           />
+          <SidebarItem
+            icon={<LuClock3 size={30} />}
+            label="Task Tracking"
+            isOpen={isOpen}
+            active={pathname === ""}
+            path="/kanban"
+            onClick={() => handleNavigation("/kanban")}
+          />
+  
           <SidebarItem
             icon={<LuUser size={30} />}
             label="Profile"

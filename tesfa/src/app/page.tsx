@@ -1,12 +1,12 @@
-import Layout from "./sharedcomponents/Layout";
-import ProfilePage from "./profile/page";
-import EditProfilePage from "./edit-profile/page";
+import SplashScreen from "./onboarding/splash/page";
 
+import ForgotPasswordPage from "./reset-password/page";
 
 export default function Home() {
   return (
+<div>
+  <SplashScreen/>
+</div>
 
-    <ProfilePage />
-  
-  ); 
+  );
 }
