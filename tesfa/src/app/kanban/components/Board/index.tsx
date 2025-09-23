@@ -130,9 +130,9 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="p-5 xl:px-10 bg-gray-50 md:overflow-hidden relative">
+      <div className="p-10 xl:px-10 bg-gray-50 md:overflow-hidden relative">
         <div className="flex items-center justify-between xl:mb-6 lg:mb-3">
-          <h1 className="text-3xl font-semibold text-gray-900">Task Tracking</h1>
+          <h1 className="text-4xl font-semibold text-[#00353D]">Task Tracking</h1>
         </div>
         <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
         <div className="grid grid-cols-4 gap-10 xl:h-[75.5vh] lg:h-[73vh]">
