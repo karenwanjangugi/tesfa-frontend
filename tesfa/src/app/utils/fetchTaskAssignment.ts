@@ -41,7 +41,7 @@ export const updateTaskAssignmentStatus = async (
   return response.json();
 };
 
-export async function createTaskAssignment(task: string, organization: number) {
+export async function createTaskAssignment(task: string, organization: string | null ) {
   const token = getTokenFromLocalStorage();
   const headers: HeadersInit = {
     "Content-Type": "application/json",

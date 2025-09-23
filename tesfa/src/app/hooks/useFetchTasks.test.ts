@@ -1,12 +1,12 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { useFetchTasks } from "./useFetchTasks";
 import { mapApiTask } from "../utils/fetchTasks";
-import { fetchTaskAssignments } from "../utils/fetchtaskAssignment";
+import { fetchTaskAssignments } from "../utils/fetchTaskAssignment";
 
 process.env.NEXT_PUBLIC_API_URL = "https://api.example.com";
 process.env.NEXT_PUBLIC_API_TOKEN = "fake-token";
 
-jest.mock("../utils/fetchtaskAssignment", () => ({
+jest.mock("../utils/fetchTaskAssignment", () => ({
   fetchTaskAssignments: jest.fn(),
 }));
 

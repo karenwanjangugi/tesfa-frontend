@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { getToken } from "../../utils/getToken";
 
 export async function GET(request: NextRequest) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.BASE_URL;
   const token = getToken(request);
 
   if (!token) {

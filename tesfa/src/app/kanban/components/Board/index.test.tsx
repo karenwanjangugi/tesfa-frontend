@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { useRouter, useSearchParams } from 'next/navigation';
 import  KanbanBoard  from './index';
 import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
-import { deleteTaskAssignment } from '../../../utils/fetchtaskAssignment';
+import { deleteTaskAssignment } from '../../../utils/fetchTaskAssignment';
 
 jest.mock('../Taskcard', () => ({
   TaskCard: ({ task, onDelete }: { task: any; onDelete: any }) => (
@@ -27,7 +27,7 @@ jest.mock('framer-motion', () => ({
 jest.mock('next/navigation');
 
 jest.mock('../../../hooks/useFetchTaskAssignment');
-jest.mock('../../../utils/fetchtaskAssignment');
+jest.mock('../../../utils/fetchTaskAssignment');
 
 
 jest.mock('@dnd-kit/core', () => ({

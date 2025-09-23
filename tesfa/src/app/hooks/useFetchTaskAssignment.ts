@@ -3,10 +3,11 @@ import { Task, ApiTask } from "../utils/type";
 import {
   fetchTaskAssignments,
   updateTaskAssignmentStatus,
-} from "../utils/fetchtaskAssignment";
+} from "../utils/fetchTaskAssignment";
 import { TaskStatus } from "../utils/type";
 import { mapApiTask } from "../utils/fetchTasks";
 import { getTokenFromLocalStorage } from "../utils/getToken";
+import { fetchTasksForAssignments } from '../utils/fetchTasks';
 
 
 export const useFetchTaskAssignments = () => {
@@ -19,7 +20,6 @@ export const useFetchTaskAssignments = () => {
       setLoading(true);
       try {
         const assignments = await fetchTaskAssignments();
-        console.log("API Response:", assignments);
 
         if (!assignments || assignments.length === 0) {
           setLoading(false);
@@ -31,27 +31,13 @@ export const useFetchTaskAssignments = () => {
         if (token) {
           headers["Authorization"] = `Token ${token}`;
         }
-
-        const taskPromises = assignments.map((assignment) =>
-          fetch(`api/tasks/${assignment.task}/`, { headers }).then((response) => {
-            if (!response.ok) {
-              console.error(
-                `Failed to fetch task ${assignment.task}`,
-                response
-              );
-              throw new Error(`Failed to fetch task ${assignment.task}`);
-            }
-            return response.json();
-          })
-        );
-
+        const taskPromises = fetchTasksForAssignments(assignments, headers)
+        
         const tasksData: ApiTask[] = await Promise.all(taskPromises);
-
         const formattedTasks = await Promise.all(tasksData.map(mapApiTask));
-
         const tasksWithAssignments = formattedTasks.map((task) => {
           const assignment = assignments.find(
-            (a) => a.task === parseInt(task.id)
+            (assignment) => assignment.task === parseInt(task.id)
           );
           return {
             ...task,
@@ -61,9 +47,9 @@ export const useFetchTaskAssignments = () => {
         });
 
         setAssignedTasks(tasksWithAssignments);
-      } catch (err) {
-        console.error("An error occurred during the fetching process:", err);
-        setError(err as Error);
+      } catch (error) {
+        console.error("An error occurred during the fetching process:", error);
+        setError(error as Error);
       } finally {
         setLoading(false);
       }
@@ -73,13 +59,13 @@ export const useFetchTaskAssignments = () => {
 
   const updateTaskStatus = useCallback(
     async (taskId: string, newStatus: TaskStatus) => {
-      const task = assignedTasks.find((t) => t.id === taskId);
+      const task = assignedTasks.find((task) => task.id === taskId);
       if (task && task.assignmentId) {
         try {
           await updateTaskAssignmentStatus(task.assignmentId, newStatus);
           setAssignedTasks((prevTasks) =>
-            prevTasks.map((t) =>
-              t.id === taskId ? { ...t, status: newStatus } : t
+            prevTasks.map((task) =>
+              task.id === taskId ? { ...task, status: newStatus } : task
             )
           );
         } catch (error) {

@@ -18,7 +18,7 @@ import { DropZone } from '../Dropzone';
 import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
 import { Task } from '../../../utils/type';
 import { TaskStatus } from '../../../utils/type';
-import { deleteTaskAssignment } from '../../../utils/fetchtaskAssignment';
+import { deleteTaskAssignment } from '../../../utils/fetchTaskAssignment';
 
 
 const columns = [
@@ -50,8 +50,8 @@ export default function KanbanBoard() {
 
     router.replace('/kanban')
 
-  } catch (e){
-    console.error("failed to parse tasks from URL", e)
+  } catch (error){
+    console.error("failed to parse tasks from URL", error)
   }
 }
 }, [searchParams, setAssignedTasks, router])
@@ -59,7 +59,7 @@ export default function KanbanBoard() {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = assignedTasks.find((t) => t.id === active.id)
+    const task = assignedTasks.find((task) => task.id === active.id)
     if (task) {
       setActiveTask(task)
     }
@@ -130,12 +130,12 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="p-5 px-25 bg-gray-50 md:overflow-hidden relative">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-5 xl:px-10 bg-gray-50 md:overflow-hidden relative">
+        <div className="flex items-center justify-between xl:mb-6 lg:mb-3">
           <h1 className="text-3xl font-semibold text-gray-900">Task Tracking</h1>
         </div>
-        <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
-        <div className="grid grid-cols-4 gap-10 h-[80vh]">
+        <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
+        <div className="grid grid-cols-4 gap-10 xl:h-[75.5vh] lg:h-[73vh]">
           {columns.map((column) => (
             <motion.div
               key={column.id}
@@ -147,7 +147,7 @@ export default function KanbanBoard() {
               <div className={`${column.color} px-4 py-3 rounded-tl-[20px] rounded-tr-[20px]`}>
                 <h3 className="font-large text-center text-black">{column.title}</h3>
               </div>
-              <DropZone id={column.id} className="p-4 min-h-[40vh] lg:h-[80vh] md:h-[60vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
+              <DropZone id={column.id} className="p-4 min-h-[40vh] xl:h-[80vh] lg:h-[72vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
                 <div className="space-y-3">
                   {getTasksByStatus(column.id as Task['status']).map((task, index) => (
                     <TaskCard key={task.id} task={task} index={index} onDelete={handleDeleteTask} />

@@ -4,11 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Search } from "lucide-react";
-import { createTaskAssignment } from "../../../utils/fetchtaskAssignment";
+import { createTaskAssignment } from "../../../utils/fetchTaskAssignment";
 import { Button } from "../../../sharedComponents/Button";
 import { Checkbox } from "../Checkbox/index";
 import { useFetchTasks } from "../../../hooks/useFetchTasks";
-
 
 export default function TasksDetails() {
   const router = useRouter();
@@ -24,8 +23,8 @@ export default function TasksDetails() {
   );
 
   const handleClick = () => {
-    setIsVisible(false); 
-    setIsAddMode(true)
+    setIsVisible(false);
+    setIsAddMode(true);
   };
 
   const handleTaskToggle = (taskId: string) => {
@@ -43,7 +42,7 @@ export default function TasksDetails() {
 
   const handleAddTasks = async () => {
     setIsSubmitting(true);
-    const organizationId = 7; 
+    const organizationId = localStorage.getItem("user_id");
 
     const assignmentPromises = Array.from(selectedTasks).map((taskId) =>
       createTaskAssignment(taskId, organizationId)
@@ -55,18 +54,19 @@ export default function TasksDetails() {
         prevTasks.filter((task) => !selectedTasks.has(task.id))
       );
 
-
       setSelectedTasks(new Set());
-      const newTasksForKanban = newAssignments.map(assignment => {
-      const originalTask = tasks.find(t => t.id === assignment.task.toString())
-      return{
-        id: assignment.task.toString(),
-        title: originalTask? originalTask.title : 'New Task',
-        description: originalTask ? originalTask.description: '',
-        status: assignment.status,
-        assignmentId: assignment.id
-      }
-      })
+      const newTasksForKanban = newAssignments.map((assignment) => {
+        const originalTask = tasks.find(
+          (task) => task.id === assignment.task.toString()
+        );
+        return {
+          id: assignment.task.toString(),
+          title: originalTask ? originalTask.title : "New Task",
+          description: originalTask ? originalTask.description : "",
+          status: assignment.status,
+          assignmentId: assignment.id,
+        };
+      });
       const newTasksParam = encodeURIComponent(
         JSON.stringify(newTasksForKanban)
       );
@@ -86,7 +86,9 @@ export default function TasksDetails() {
   if (error) {
     return (
       <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-red-600">Something went Wrong, Please reload your page</p>
+        <p className="text-red-600">
+          Something went Wrong, Please reload your page
+        </p>
       </div>
     );
   }
@@ -100,24 +102,28 @@ export default function TasksDetails() {
   }
 
   return (
-    <div>
+    <div className="px-10 p-5">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-semibold text-gray-900">Tasks</h1>
         <div className="relative mt-3 mb-2 flex items-center">
-  <Search className="absolute left-3 text-black" size={20} />
-  <input
-    type="text"
-    placeholder="Search"
-    value={searchQuery}
-    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-      setSearchQuery(e.target.value)
-    }
-    className="pl-10 bg-white border-gray-500 h-[3vh] text-black rounded-lg"
-  />
-</div>
+          <Search className="absolute left-3 text-black" size={20} />
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearchQuery(e.target.value)
+            }
+            className="pl-10 bg-white border-gray-500 h-[3vh] text-black rounded-lg"
+          />
+        </div>
 
         <div className="flex items-center gap-4">
-          {isVisible && <p className="text-gray-600 text-lg">Click "Select Tasks" to start choosing tasks from the list. ➤</p>}
+          {isVisible && (
+            <p className="text-gray-600 text-lg">
+              Click "Select Tasks" to start choosing tasks from the list. ➤
+            </p>
+          )}
           {!isAddMode && (
             <Button
               onClick={handleClick}
@@ -128,11 +134,10 @@ export default function TasksDetails() {
             </Button>
           )}
         </div>
-        
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
 
-      <div className="space-y-3 mb-6 overflow-y-scroll h-[80vh]">
+      <div className="lg:h-[60vh] space-y-3 mb-6 overflow-y-scroll xl:h-[70vh]">
         {filteredTasks.map((task, index) => (
           <motion.div
             key={task.id}
@@ -190,4 +195,3 @@ export default function TasksDetails() {
     </div>
   );
 }
-

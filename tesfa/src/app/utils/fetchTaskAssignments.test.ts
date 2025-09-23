@@ -3,7 +3,7 @@ import {
     updateTaskAssignmentStatus,
     createTaskAssignment,
     deleteTaskAssignment,
-  } from './fetchtaskAssignment';
+  } from './fetchTaskAssignment';
   import { TaskStatus } from './type';
 
 
@@ -18,7 +18,7 @@ import {
     const mockAssignment = {
       id: 101,
       task: 1,
-      organization: 7,
+      organization: '7',
       status: 'pending' as TaskStatus,
       created_at: '2025-01-01T00:00:00Z',
       updated_at: '2025-01-01T00:00:00Z',
@@ -79,13 +79,13 @@ import {
           json: () => Promise.resolve(mockAssignment),
         });
 
-        await createTaskAssignment('1', 7);
+        await createTaskAssignment('1', '7');
 
         expect(global.fetch).toHaveBeenCalledWith(
           '/api/task-assignments',
           expect.objectContaining({
             method: 'POST',
-            body: JSON.stringify({ task: '1', organization: 7 }),
+            body: JSON.stringify({ task: '1', organization: '7' }),
           })
         );
       });
@@ -96,7 +96,7 @@ import {
             ok: false,
             json: () => Promise.resolve({error: 'validation error'})
         });
-        await expect(createTaskAssignment('1', 7)).rejects.toThrow('Failed to create task assignment');
+        await expect(createTaskAssignment('1', '7')).rejects.toThrow('Failed to create task assignment');
         consoleErrorSpy.mockRestore();
       });
     });

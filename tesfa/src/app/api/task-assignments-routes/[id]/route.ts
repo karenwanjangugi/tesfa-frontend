@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { getToken } from "../../../utils/getToken";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = process.env.BASE_URL;
 
 export async function PATCH(
   request: NextRequest,
