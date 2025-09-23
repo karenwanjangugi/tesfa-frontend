@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 
 export default function ResetFormClient({ uid, token }: { uid: string; token: string }) {
   const router = useRouter();
-  const { loading, error, message, confirmReset } = usePasswordResetConfirm();
+  const { loading, error, confirmReset } = usePasswordResetConfirm();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show1, setShow1] = useState(false);
