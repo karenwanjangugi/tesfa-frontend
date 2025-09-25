@@ -2,8 +2,6 @@
 'use client';
 import { useState } from 'react';
 import { fetchLogin } from '../utils/loginUtils';
-import { useRouter } from 'next/navigation';
-
 
 interface LoginCredentials {
   email: string;
@@ -17,7 +15,6 @@ interface LoginResponse {
 }
 
 const useLogin = () => {
-  const router = useRouter()
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,16 +25,12 @@ const useLogin = () => {
 
     try {
       const data = await fetchLogin(credentials);
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("userRole", data.role);
+      if(data?.token && data?.role){
+        localStorage.setItem("authToken",data.token);
+        localStorage.setItem("userRole", data.role);
 
-      if(data.role === "admin"){
-        router.push("/admin/dashboard");
-
-      }else{
-        router.push("/dashboard");
+        return{ token: data.token, role: data.role};
       }
-
      
     } catch (err) {
       setError((err as Error).message || 'Login failed');
