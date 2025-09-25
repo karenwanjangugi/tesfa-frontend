@@ -29,7 +29,7 @@ export default function LoginPage() {
     const result = await login(formData);
 
     if (result?.token) {
-  
+      localStorage.setItem("token", result.token);
       router.push("/dashboard");
     }
   };
