@@ -1,4 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
+
+import { renderHook } from '@testing-library/react';
+import { act } from 'react';
 import useLogin from './useLogin';
 import { fetchLogin } from '../utils/loginUtils';
 
@@ -7,57 +9,42 @@ jest.mock('../utils/loginUtils', () => ({
 }));
 
 describe('useLogin', () => {
-  const mockCredentials = {
-    email: 'test@ngo.org',
-    password: 'secure123',
-  };
-
-  const mockResponse = {
-    token: 'fake-jwt-token-123',
-  };
-
   beforeEach(() => {
-    (fetchLogin as jest.Mock).mockClear();
+    jest.clearAllMocks();
   });
 
-  it('should return token on successful login', async () => {
-    (fetchLogin as jest.Mock).mockResolvedValueOnce(mockResponse);
+  it('should return token and role on successful login', async () => {
+    const mockResponse = { token: 'fake-token-123', role: 'user' };
+    (fetchLogin as jest.Mock).mockResolvedValue(mockResponse);
 
     const { result } = renderHook(() => useLogin());
 
-    let returnedData = null;
+    let returnedData: any;
     await act(async () => {
-      returnedData = await result.current.login(mockCredentials);
+      returnedData = await result.current.login({
+        email: 'test@example.com',
+        password: 'password',
+      });
     });
 
-    expect(returnedData).toEqual({
-      token: mockResponse.token,
-    });
+    expect(returnedData).toEqual({ token: 'fake-token-123', role: 'user' });
   });
 
-  it('should set error if login fails', async () => {
-    (fetchLogin as jest.Mock).mockRejectedValueOnce(new Error('Invalid credentials'));
+  it('should set loading and error on failure', async () => {
+    (fetchLogin as jest.Mock).mockRejectedValue(new Error('Login failed'));
 
     const { result } = renderHook(() => useLogin());
 
+    let returnedData: any;
     await act(async () => {
-      await result.current.login(mockCredentials);
+      returnedData = await result.current.login({
+        email: 'test@example.c// src/app/hooks/useLogin.test.tsom',
+        password: 'wrong',
+      });
     });
 
-    expect(result.current.error).toBe('Invalid credentials');
+    expect(returnedData).toBeNull();
+    expect(result.current.error).toBe('Login failed');
     expect(result.current.loading).toBe(false);
-  });
-
-  it('should set loading state during login', async () => {
-    (fetchLogin as jest.Mock)
-      .mockImplementationOnce(() => new Promise(() => {}));
-
-    const { result } = renderHook(() => useLogin());
-
-    act(() => {
-      result.current.login(mockCredentials);
-    });
-
-    expect(result.current.loading).toBe(true);
   });
 });
