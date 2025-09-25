@@ -5,10 +5,11 @@ import EditProfilePage from "./page";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
+  usePathname: jest.fn(),
 }));
 
 
-jest.mock("../../hooks/useFetchOrganization", () => ({
+jest.mock("@/app/hooks/useFetchOrganization.tsx", () => ({
   __esModule: true,
   default: jest.fn(() => ({
     user: null,
@@ -18,7 +19,7 @@ jest.mock("../../hooks/useFetchOrganization", () => ({
   })),
 }));
 
-jest.mock("../../utils/fetchOrganization", () => ({
+jest.mock("@/app/utils/fetchOrganization", () => ({
   updateUser: jest.fn(),
 }));
 
@@ -37,7 +38,7 @@ describe("EditProfilePage", () => {
   });
 
   it("renders profile data and logo when loaded", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         email: "ngo@example.com",
         org_name: "Hope NGO",
@@ -63,7 +64,7 @@ describe("EditProfilePage", () => {
 
 
   it("toggles password visibility", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: { email: "ngo@example.com", org_name: "Hope NGO" },
       loading: false,
       error: null,
@@ -95,14 +96,14 @@ describe("EditProfilePage", () => {
       push: mockPush,
     });
 
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: { email: "ngo@example.com", org_name: "Hope NGO" },
       loading: false,
       error: null,
       refetch: jest.fn().mockResolvedValue(undefined),
     });
 
-    require("../../utils/fetchOrganization").updateUser.mockResolvedValue({});
+    require("@/app/utils/fetchOrganization").updateUser.mockResolvedValue({});
 
     render(<EditProfilePage />);
 
@@ -113,7 +114,7 @@ describe("EditProfilePage", () => {
     await user.type(screen.getByPlaceholderText("password"), "newPass123");
     await user.click(screen.getByRole("button", { name: /Save/i }));
 
-    expect(require("../../utils/fetchOrganization").updateUser).toHaveBeenCalled();
+    expect(require("@/app/utils/fetchOrganization").updateUser).toHaveBeenCalled();
     expect(await screen.findByText("Successfully updated!")).toBeInTheDocument();
 
     await waitFor(() => {
@@ -122,14 +123,14 @@ describe("EditProfilePage", () => {
   });
 
   it("shows error message on update failure", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: { email: "ngo@example.com", org_name: "Hope NGO" },
       loading: false,
       error: null,
       refetch: jest.fn(),
     });
 
-    require("../../utils/fetchOrganization").updateUser.mockRejectedValue(
+    require("@/app/utils/fetchOrganization").updateUser.mockRejectedValue(
       new Error("Invalid credentials")
     );
 
@@ -158,7 +159,7 @@ describe("EditProfilePage", () => {
       push: mockPush,
     });
 
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: { email: "ngo@example.com", org_name: "Hope NGO" },
       loading: false,
       error: null,

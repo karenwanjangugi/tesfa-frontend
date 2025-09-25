@@ -1,7 +1,7 @@
 
 export async function fetchProfile() {
 
-  const token = localStorage.getItem('Token');
+  const token = localStorage.getItem('authToken');
   const userId = localStorage.getItem('user_id');
 
   if (!token) {
@@ -36,7 +36,7 @@ export async function fetchProfile() {
 }
 
 export async function updateUser(data: any) {
-  const token = localStorage.getItem('Token');
+  const token = localStorage.getItem('authToken');
   const userId = localStorage.getItem('user_id');
 
   if (!token) {

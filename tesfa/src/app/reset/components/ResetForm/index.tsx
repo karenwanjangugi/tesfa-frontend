@@ -35,7 +35,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
     confirm_password: confirm,
   });
 
-  setTimeout(() => router.push("/resetsuccess"), 150);
+  router.push("/resetsuccess");
 };
 
   return (

@@ -4,10 +4,11 @@ import ProfilePage from "./page";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
+  usePathname: jest.fn(),
 }));
 
 
-jest.mock("../../hooks/useFetchOrganization", () => ({
+jest.mock("@/app/hooks/useFetchOrganization.tsx", () => ({
   __esModule: true,
   default: jest.fn(() => ({
     user: null,
@@ -32,7 +33,7 @@ describe("ProfilePage", () => {
   });
 
   it("shows error state", () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: null,
       loading: false,
       error: "Failed to load profile",
@@ -47,7 +48,7 @@ describe("ProfilePage", () => {
     const mockPush = jest.fn();
     require("next/navigation").useRouter.mockReturnValue({ push: mockPush });
 
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         org_name: "Hope NGO",
         email: "hope@ngo.org",
@@ -79,7 +80,7 @@ describe("ProfilePage", () => {
   });
 
   it("handles absolute logo URL", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         org_name: "Global Aid",
         email: "contact@globalaid.org",
@@ -104,7 +105,7 @@ describe("ProfilePage", () => {
     const mockPush = jest.fn();
     require("next/navigation").useRouter.mockReturnValue({ push: mockPush });
 
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         org_name: "Hope NGO",
         email: "hope@ngo.org",
@@ -128,7 +129,7 @@ describe("ProfilePage", () => {
   });
 
   it("handles missing or empty logo gracefully", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         org_name: "No Logo Org",
         email: "no@logo.org",
@@ -150,7 +151,7 @@ describe("ProfilePage", () => {
   });
 
   it("formats date correctly with invalid/missing date", async () => {
-    require("../../hooks/useFetchOrganization").default.mockReturnValue({
+    require("@/app/hooks/useFetchOrganization.tsx").default.mockReturnValue({
       user: {
         org_name: "Date Test Org",
         email: "date@test.org",

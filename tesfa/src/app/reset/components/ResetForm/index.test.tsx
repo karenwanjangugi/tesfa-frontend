@@ -101,7 +101,7 @@ describe("ResetFormClient", () => {
     (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
       loading: false,
       error: null,
-      message: null,
+      message: "Password has been reset successfully.",
       confirmReset: mockConfirmReset,
     });
 
