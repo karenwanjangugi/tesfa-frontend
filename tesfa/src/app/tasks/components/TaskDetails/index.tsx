@@ -102,9 +102,9 @@ export default function TasksDetails() {
   }
 
   return (
-    <div className="px-10 p-5">
+    <div className="p-10">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-semibold text-gray-900">Tasks</h1>
+        <h1 className="text-4xl font-semibold text-[#00353D]">Tasks</h1>
         <div className="relative mt-3 mb-2 flex items-center">
           <Search className="absolute left-3 text-black" size={20} />
           <input

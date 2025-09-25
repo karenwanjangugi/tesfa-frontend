@@ -1,4 +1,4 @@
-import Sidebar from "../SideBar"
+import Sidebar from "../Sidebar"
 export default function Layout({
   children,
 }: {
@@ -7,9 +7,7 @@ export default function Layout({
   return (
    <div className="flex min-h-screen">
     <Sidebar/>
-
         <main className="flex-1 p-5 overflow-y-hidden">{children}</main>
-
       </div>
   )
 }
