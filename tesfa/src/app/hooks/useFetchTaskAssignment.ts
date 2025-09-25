@@ -32,7 +32,7 @@ export const useFetchTaskAssignments = () => {
           headers["Authorization"] = `Token ${token}`;
         }
         const taskPromises = fetchTasksForAssignments(assignments, headers)
-        
+
         const tasksData: ApiTask[] = await Promise.all(taskPromises);
         const formattedTasks = await Promise.all(tasksData.map(mapApiTask));
         const tasksWithAssignments = formattedTasks.map((task) => {

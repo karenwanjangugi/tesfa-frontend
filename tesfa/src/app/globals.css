@@ -15,7 +15,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: #0a0a0a; */
+    --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
@@ -25,6 +25,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-josefin-sans),sans-serif;
   font-family: var(--font-josefin-sans),sans-serif;
+   overflow-y: hidden;
 }
 .bg-active-gradient {
   background: linear-gradient(to right, #E6C362, #D3AC45);
