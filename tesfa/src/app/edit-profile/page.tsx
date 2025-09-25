@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useFetchOrganization from "../../hooks/useFetchOrganization";
-import { updateUser } from "../../utils/fetchOrganization";
+import useFetchOrganization from "../hooks/useFetchOrganization";
+import { updateUser } from "../utils/fetchOrganization";
 import { CameraIcon, Eye, EyeOff, Sidebar } from "lucide-react";
 import Layout from "../sharedComponents/Layout";
 
