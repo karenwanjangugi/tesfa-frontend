@@ -76,10 +76,7 @@ export default function EditProfilePage() {
       setUpdateStatus("");
       setUpdateMessage("");
       refetch().finally(() => setSubmitting(false)); 
-      setTimeout(() => {
-        setShowSuccess(false);
-        router.push("/profile");
-      }, 1500);
+      router.push("/profile");
     } catch (err: any) {
       setSubmitting(false); 
       setUpdateStatus("error");
@@ -182,8 +179,9 @@ export default function EditProfilePage() {
           className="w-full max-w-md bg-[#F3FBFD] rounded-2xl shadow-[12px_12px_32px_rgba(0,0,0,0.15)] px-7 py-8 flex flex-col gap-7"
         >
           <div className="flex flex-col gap-2">
-            <label className="text-xl text-[#00353D] font-medium">Email</label>
+            <label htmlFor="email" className="text-xl text-[#00353D] font-medium">Email</label>
             <input
+              id="email"
               type="email"
               name="email"
               value={formData.email}
