@@ -5,7 +5,7 @@ import { LayoutDashboard, ClipboardList, Users, Bot, User } from "lucide-react";
 const menuItems = [
   { id: 1, href: "/dashboard", icon: LayoutDashboard, name: "Dashboard" },
   { id: 2, href: "/admin/task-tracking", icon: ClipboardList , name: "Tasks"},
-  { id: 3, href: "/organizations", icon: Users, name: "Organizations" },
+  { id: 3, href: "/admin/organizations", icon: Users, name: "Organizations" },
   { id: 4, href: "/performance", icon: Bot, name: "Performance" },
 ];
 export default function Sidebar() {
@@ -26,7 +26,7 @@ export default function Sidebar() {
               key={item.id}
               href={item.href}
               className={`cursor-pointer  px-6  py-3 mt-4 rounded-l-4xl gap-8 transition-colors flex   items-center ${
-                isActive ? "bg-yellow-500 text-black" : "hover:bg-teal-700 w-63"
+                isActive ? "bg-yellow-500 text-black w-63" : "hover:bg-teal-700 w-63"
               }`}
             >
               <Icon size={28} />

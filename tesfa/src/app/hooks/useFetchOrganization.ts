@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from "react";
-import { fetchProfile } from "../utils/fetchOrganization";
+import { fetchProfile } from "../utils/fetchOrganizations";
 
 export type User = {
   email: string;

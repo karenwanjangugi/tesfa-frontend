@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchTasksAssignmentsAdmin } from "../utils/fetchTasksAssignmentsAdmin";
-import { fetchTasksDetailsAdmin } from "../utils/fetchTaskDetailsAdmin";
-import { fetchOrganizationsAdmin } from "../utils/fetchOrganizationsAdmin";
+import { fetchTasksAssignmentsAdmin } from "../utils/fetchTaskAssignment";
+import { fetchTasksDetailsAdmin } from "../utils/fetchTasks";
+import { fetchOrganizationsAdmin } from "../utils/fetchOrganizations";
 import { fetchPredictionsAdmin } from "../utils/fetchPredictionsAdmin";
 import { TaskAssignment, TaskDetail, User, Prediction } from "../utils/type";
 
@@ -38,15 +38,15 @@ export const useDashboardData = () => {
                 ]);
 
                 const organizations = allUsersResponse.filter(
-                    (user) => user.role === "organization"
+                    (user: User) => user.role === "organization"
                 );
                 const organizationNameMap = new Map<number, string>();
-                organizations.forEach((org) => {
+                organizations.forEach((org: User) => {
                     organizationNameMap.set(org.id, org.org_name);
                 });
 
                 const taskTitleMap = new Map<number, string>();
-                allTasksResponse.forEach((task) => {
+                allTasksResponse.forEach((task: TaskDetail) => {
                     taskTitleMap.set(task.id, task.title);
                 });
 

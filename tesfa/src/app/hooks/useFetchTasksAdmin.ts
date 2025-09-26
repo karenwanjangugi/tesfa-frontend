@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { TaskAssignment } from "../utils/type";
-import { fetchTasksAssignmentsAdmin } from "../utils/fetchTasksAssignmentsAdmin";
+import { fetchTasksAssignmentsAdmin } from "../utils/fetchTaskAssignment";
 
 
 

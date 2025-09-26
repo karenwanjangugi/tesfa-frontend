@@ -28,9 +28,15 @@ export default function LoginPage() {
 
     const result = await login(formData);
 
-    if (result?.token) {
-      localStorage.setItem("token", result.token);
-      router.push("/dashboard");
+    if (result) {
+      localStorage.setItem("token", result.token);    
+      if(result.role === "admin"){
+        router.push("/admin/dashboard");
+      }else{
+        router.push("/dashboard");
+      }
+  
+      
     }
   };
 

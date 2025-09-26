@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 
 export default function ResetFormClient({ uid, token }: { uid: string; token: string }) {
   const router = useRouter();
-  const { loading, error, confirmReset } = usePasswordResetConfirm();
+  const { loading, error, setError, confirmReset } = usePasswordResetConfirm();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show1, setShow1] = useState(false);
@@ -15,28 +15,31 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setPasswordError(null);
-  setConfirmError(null);
+    e.preventDefault();
+    setPasswordError(null);
+    setConfirmError(null);
 
-  if (password.length < 8) {
-    setPasswordError("Must be at least 8 characters");
-    return;
-  }
-  if (password !== confirm) {
-    setConfirmError("Passwords do not match");
-    return;
-  }
+    if (password.length < 8) {
+      setPasswordError("Must be at least 8 characters");
+      return;
+    }
+    if (password !== confirm) {
+      setConfirmError("Passwords do not match");
+      return;
+    }
 
-  await confirmReset({
-    uidb64: uid,
-    token,
-    new_password: password,
-    confirm_password: confirm,
-  });
-
-  setTimeout(() => router.push("/resetsuccess"), 150);
-};
+    try {
+      await confirmReset({
+        uidb64: uid,
+        token,
+        new_password: password,
+        confirm_password: confirm,
+      });
+      router.push("/resetsuccess");
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-sm overflow-hidden">
@@ -77,6 +80,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
                 type="button"
                 onClick={() => setShow1((s) => !s)}
                 className="cursor-pointer absolute right-3 top-3 text-gray-500"
+                data-testid="toggle-password-visibility"
               >
                 {show1 ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -109,6 +113,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
                 type="button"
                 onClick={() => setShow2((s) => !s)}
                 className="absolute cursor-pointer right-3 top-3 text-gray-500"
+                data-testid="toggle-confirm-password-visibility"
               >
                 {show2 ? <FaEyeSlash /> : <FaEye />}
               </button>

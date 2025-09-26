@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { User as UserIcon, Mail, Calendar, Edit2 } from "lucide-react";
-import useFetchOrganization from "../hooks/useFetchOrganization";
+import useFetchOrganization from "@/app/hooks/useFetchOrganization";
 import Layout from "../sharedComponents/Layout";
 
 function formatDate(isoString: string | undefined) {
