@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useFetchOrganization from "../hooks/useFetchOrganization";
-import { updateUser } from "../utils/fetchOrganization";
+import { updateUser } from "../utils/fetchOrganizations";
 import { CameraIcon, Eye, EyeOff, Sidebar } from "lucide-react";
 import Layout from "../sharedComponents/Layout";
 
