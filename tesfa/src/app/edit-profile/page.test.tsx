@@ -2,13 +2,10 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import '@testing-library/jest-dom';
 import EditProfilePage from './page';
 import { useRouter } from 'next/navigation';
-
-// Import the actual hook (for mocking reference)
 import useFetchOrganization from '../hooks/useFetchOrganization';
 
 import { updateUser } from '../utils/fetchOrganizations';
 
-// Mock next/navigation
 jest.mock('next/navigation', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({
