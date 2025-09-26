@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 export default function CalendarPicker({ onDateChange }: { onDateChange: (date: Date) => void }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   return (
-    <div className="top-4 flex items-center gap-2">
+    <div className=" absolute top-34 right-34">
       <DatePicker
         selected={selectedDate}
         onChange={(date: Date | null) => {

@@ -10,7 +10,7 @@ export type User = {
 
 
 export async function fetchUsers(): Promise<User[]> {
- const token = localStorage.getItem('Token');
+ const token = localStorage.getItem('authToken');
  if (!token) throw new Error('No token found in localStorage.');
 
 

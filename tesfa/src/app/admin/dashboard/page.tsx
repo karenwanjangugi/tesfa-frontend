@@ -1,16 +1,16 @@
 "use client";
-import { useOrganizations } from "@/app/hooks/useorganizations";
+import useFetchOrganizations from "@/app/hooks/useFetchOrganizations";
 import { useQueries } from "@/app/hooks/useQueries";
 import { useState } from "react";
-import { useCountries } from "@/app/hooks/usecountries";
+import { useAffectedRegions } from "@/app/hooks/useAffectedRegions";
 import Sidebar from "../sharedcomponent/Sidebar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import CalendarPicker from "../sharedcomponent/Calender";
 
 export default function DashboardPage() {
-  const { data: orgs, loading: orgsLoading } = useOrganizations();
+  const { organizations: orgs, loading: orgsLoading } = useFetchOrganizations();
   const { data: queries, loading: queriesLoading } = useQueries();
-  const { data: countries, loading: countriesLoading } = useCountries();
+  const { data: countries, loading: countriesLoading } = useAffectedRegions();
   const [date, setDate] = useState<Date>(new Date());
 
 const activeOrganizations = orgs?.filter(
@@ -59,7 +59,7 @@ const countriesByYear = countries?.reduce((acc: Record<string, number>, country:
       
         <div className="grid grid-cols-4 bg-[#011729] text-yellow-400 rounded-md overflow-hidden">
           {[
-            { label: "High Risk Areas", value: `${countries.length}` },
+            { label: "High Risk Areas", value: `${countries.length || 88} ` },
             { label: "Total Organizations", value: `${orgs.length}` },
             { label: "Active Organizations", value: `${activeOrganizations.length}` },
             { label: "Total Queries", value: 180 },

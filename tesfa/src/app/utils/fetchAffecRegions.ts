@@ -1,9 +1,11 @@
-export async function getCountries() {
-  const token = typeof window !== "undefined" 
-    ? localStorage.getItem("authToken") 
-    : null;
+// app/utils/fetchAffectedRegions.ts
 
-  const res = await fetch(`${process.env.BASE_URL}/countries/`, {
+export async function fetchAffectedRegions() {
+  // Only runs on client
+  const token = localStorage.getItem("authToken") 
+  
+
+  const res = await fetch("/api/countries", {
     headers: {
       ...(token && { Authorization: `Token ${token}` }),
     },
@@ -17,7 +19,8 @@ export async function getCountries() {
       }
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to fetch countries");
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to fetch affected regions");
   }
 
   return res.json();
