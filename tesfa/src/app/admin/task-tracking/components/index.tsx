@@ -57,7 +57,7 @@ export default function TasksAdmin() {
     const taskTitle = taskTitleMap.get(assignment.task)?.toLowerCase() || "";
     const orgName =
       organizationNameMap.get(assignment.organization)?.toLowerCase() || "";
-    const status = assignment.status.toLowerCase();
+    const status = assignment.status ? assignment.status.toLowerCase() : "";
     const query = searchQuery.toLowerCase();
 
     return (
@@ -75,7 +75,10 @@ export default function TasksAdmin() {
   );
   const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
+    if (!status) {
+      return "text-gray-600";
+    }
     switch (status.toLowerCase()) {
       case "completed":
         return "text-green-600";
@@ -97,7 +100,10 @@ export default function TasksAdmin() {
     pending: "Pending",
    };
 
-   const getStatusDisplayName = (status: string) => {
+   const getStatusDisplayName = (status?: string) => {
+    if (!status) {
+      return "Unknown";
+    }
     return statusDisplayNames[status] || status;
       };
 
@@ -135,7 +141,7 @@ export default function TasksAdmin() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setSearchQuery(e.target.value)
           }
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 rounded-[20px] border border-gray-300 bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
           aria-label="Search"
         />
       </div>

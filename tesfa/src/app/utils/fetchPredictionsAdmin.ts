@@ -1,5 +1,5 @@
 import { Prediction } from "./type";
-import { getToken } from './getTokenAdmin';
+import { getToken } from './getToken';
 
 export const fetchPredictionsAdmin = async (): Promise<Prediction[]> => {
     const token = getToken();

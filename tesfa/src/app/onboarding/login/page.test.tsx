@@ -1,45 +1,44 @@
-
-
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react';
 import { useRouter } from 'next/navigation';
 import LoginPage from './page';
-import { fetchLogin } from '../../utils/loginUtils'; 
-
+import { fetchLogin } from '../../../app/utils/loginUtils';
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
 }));
 
-
 jest.mock('../../../app/utils/loginUtils', () => ({
   fetchLogin: jest.fn(),
 }));
 
-
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: any) => {
-    const { src, alt, width, height, ...rest } = props;
-    return `<img src="${src}" alt="${alt || 'Mocked Image'}" width="${width || 'auto'}" height="${height || 'auto'}" />`;
+    const { src, alt = 'Mocked Image' } = props;
+    return <img src={src} alt={alt} />;
   },
 }));
+
+const setItemSpy = jest.spyOn(Storage.prototype, 'setItem');
+const getItemSpy = jest.spyOn(Storage.prototype, 'getItem');
+
+afterEach(() => {
+  jest.clearAllMocks();
+  setItemSpy.mockClear();
+  getItemSpy.mockClear();
+});
 
 describe('LoginPage', () => {
   const mockPush = jest.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
     (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-    (fetchLogin as jest.Mock).mockResolvedValue({
-      token: 'fake-jwt-token',
-      user: { id: 1, email: 'test@ngo.org' },
-    });
   });
 
   it('should render login form with all fields', () => {
     render(<LoginPage />);
-
     expect(screen.getByText(/Welcome Back!/i)).toBeInTheDocument();
     expect(screen.getByText(/Login/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
@@ -50,73 +49,74 @@ describe('LoginPage', () => {
   it('should toggle password visibility when eye icon is clicked', async () => {
     const user = userEvent.setup();
     render(<LoginPage />);
-
     const passwordInput = screen.getByLabelText(/^Password$/i) as HTMLInputElement;
-
     expect(passwordInput).toHaveAttribute('type', 'password');
-
-    const showPasswordBtn = screen.getByRole('button', {
-      name: /Show password/i,
-    });
+    const showPasswordBtn = screen.getByLabelText(/Show password/i);
     await user.click(showPasswordBtn);
-
     expect(passwordInput).toHaveAttribute('type', 'text');
-
     await user.click(showPasswordBtn);
     expect(passwordInput).toHaveAttribute('type', 'password');
   });
 
-  it('should submit form and redirect on success', async () => {
+  it('should submit form, save to localStorage, and redirect to /dashboard for regular user', async () => {
     const user = userEvent.setup();
+    (fetchLogin as jest.Mock).mockResolvedValue({ token: 'fake-jwt-token-123', role: 'user' });
     render(<LoginPage />);
-
-    await user.type(screen.getByLabelText(/Email/i), 'test@ngo.org');
-    await user.type(screen.getByLabelText(/^Password$/i), 'secure123');
-
-    const submitButton = screen.getByRole('button', { name: /Sign in/i });
-    await user.click(submitButton);
-
-    expect(fetchLogin).toHaveBeenCalledWith({
-      email: 'test@ngo.org',
-      password: 'secure123',
+    await act(async () => {
+      await user.type(screen.getByLabelText(/Email/i), 'user@example.com');
+      await user.type(screen.getByLabelText(/^Password$/i), 'password123');
+      await user.click(screen.getByRole('button', { name: /Sign in/i }));
     });
-
+    expect(fetchLogin).toHaveBeenCalledWith({ email: 'user@example.com', password: 'password123' });
+    expect(setItemSpy).toHaveBeenCalledWith('authToken', 'fake-jwt-token-123');
+    expect(setItemSpy).toHaveBeenCalledWith('userRole', 'user');
     expect(mockPush).toHaveBeenCalledWith('/dashboard');
   });
 
+  it('should redirect to /admin/dashboard for admin user', async () => {
+    const user = userEvent.setup();
+    (fetchLogin as jest.Mock).mockResolvedValue({ token: 'admin-token-456', role: 'admin' });
+    render(<LoginPage />);
+    await act(async () => {
+      await user.type(screen.getByLabelText(/Email/i), 'admin@example.com');
+      await user.type(screen.getByLabelText(/^Password$/i), 'adminpass');
+      await user.click(screen.getByRole('button', { name: /Sign in/i }));
+    });
+    expect(mockPush).toHaveBeenCalledWith('/admin/dashboard');
+    expect(setItemSpy).toHaveBeenCalledWith('authToken', 'admin-token-456');
+    expect(setItemSpy).toHaveBeenCalledWith('userRole', 'admin');
+  });
 
   it('should disable button and show loading text during submission', async () => {
     const user = userEvent.setup();
-  
-    (fetchLogin as jest.Mock).mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ token: 'fake' }), 100)));
-
+    (fetchLogin as jest.Mock).mockImplementation(
+      () => new Promise(resolve => setTimeout(() => resolve({ token: 't', role: 'user' }), 100))
+    );
     render(<LoginPage />);
-
-    await user.type(screen.getByLabelText(/Email/i), 'test@ngo.org');
-    await user.type(screen.getByLabelText(/^Password$/i), 'secure123');
-
-    const submitButton = screen.getByRole('button', { name: /Sign in/i });
-    await user.click(submitButton);
-
-   
-    expect(submitButton).toBeDisabled();
-    expect(submitButton).toHaveTextContent(/Signing in.../i);
+    await user.type(screen.getByLabelText(/Email/i), 'test@test.com');
+    await user.type(screen.getByLabelText(/^Password$/i), '123');
+    const button = screen.getByRole('button', { name: /Sign in/i });
+    await act(async () => {
+      await user.click(button);
+    });
+    expect(button).toBeDisabled();
+    expect(button).toHaveTextContent(/Signing in.../i);
+    await new Promise(resolve => setTimeout(resolve, 150));
+    expect(mockPush).toHaveBeenCalledWith('/dashboard');
   });
-
 
   it('should display error message if login fails', async () => {
     const user = userEvent.setup();
     (fetchLogin as jest.Mock).mockRejectedValue(new Error('Invalid credentials'));
-
     render(<LoginPage />);
-
-    await user.type(screen.getByLabelText(/Email/i), 'test@ngo.org');
-    await user.type(screen.getByLabelText(/^Password$/i), 'wrongpassword');
-
-    const submitButton = screen.getByRole('button', { name: /Sign in/i });
-    await user.click(submitButton);
-
-  
+    await user.type(screen.getByLabelText(/Email/i), 'bad@test.com');
+    await user.type(screen.getByLabelText(/^Password$/i), 'wrong');
+    const button = screen.getByRole('button', { name: /Sign in/i });
+    await act(async () => {
+      await user.click(button);
+    });
     expect(screen.getByText(/Invalid credentials/i)).toBeInTheDocument();
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(setItemSpy).not.toHaveBeenCalled();
   });
 });

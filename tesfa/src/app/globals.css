@@ -22,8 +22,9 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-josefin-sans), sans-serif;
-  font-family: var(--font-josefin-sans), sans-serif;
+
+  font-family: var(--font-josefin-sans),sans-serif;
+   overflow-y: hidden;
 }
 .bg-active-gradient {
   background: linear-gradient(to right, #e6c362, #d3ac45);
