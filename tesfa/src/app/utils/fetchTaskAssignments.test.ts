@@ -43,7 +43,7 @@ import {
 
       it('throws an error on non-ok response', async () => {
         (global.fetch as jest.Mock).mockResolvedValueOnce({ ok: false });
-        await expect(fetchTaskAssignments()).rejects.toThrow('failed to fetch task assignments from API');
+        await expect(fetchTaskAssignments()).rejects.toThrow('Failed to fetch task assignments from API');
       });
     });
 

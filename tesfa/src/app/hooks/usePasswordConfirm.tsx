@@ -26,7 +26,8 @@ export default function usePasswordResetConfirm() {
     } finally {
       setLoading(false);
     }
+
   };
 
-  return { loading, error, message, confirmReset };
+  return { loading, error, message, confirmReset, setError };
 }

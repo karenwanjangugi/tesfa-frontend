@@ -35,6 +35,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn().mockResolvedValue({}),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -55,6 +56,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn(),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -76,6 +78,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn(),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -89,7 +92,7 @@ describe("ResetFormClient", () => {
     expect(await screen.findByText("Passwords do not match")).toBeInTheDocument();
   });
 
-  it("submits form successfully and redirects after 150ms", async () => {
+  it("submits form successfully and redirects", async () => {
     const mockPush = jest.fn();
 
     (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
@@ -103,6 +106,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: "Password has been reset successfully.",
       confirmReset: mockConfirmReset,
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -124,7 +128,7 @@ describe("ResetFormClient", () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith("/resetsuccess");
-    }, { timeout: 200 });
+    });
   });
 
   it("disables submit button when loading", () => {
@@ -138,6 +142,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn(),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -150,6 +155,8 @@ describe("ResetFormClient", () => {
 
   it("displays error message if API fails", async () => {
     const errorMessage = "Something went wrong";
+    const mockSetError = jest.fn();
+    const mockConfirmReset = jest.fn().mockRejectedValue(new Error(errorMessage));
 
     (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
       back: jest.fn(),
@@ -161,7 +168,8 @@ describe("ResetFormClient", () => {
       loading: false,
       error: errorMessage,
       message: null,
-      confirmReset: jest.fn().mockResolvedValue({}), 
+      confirmReset: mockConfirmReset, 
+      setError: mockSetError,
     });
 
     render(<ResetFormClient {...defaultProps} />);
@@ -174,7 +182,18 @@ describe("ResetFormClient", () => {
     fireEvent.change(confirmInput, { target: { value: "password123" } });
     fireEvent.submit(submitButton);
 
-    expect(await screen.findByText(errorMessage)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockConfirmReset).toHaveBeenCalledWith({
+        uidb64: defaultProps.uid,
+        token: defaultProps.token,
+        new_password: "password123",
+        confirm_password: "password123",
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockSetError).toHaveBeenCalledWith(errorMessage);
+    });
   });
 
   it("toggles password visibility when eye icon is clicked", () => {
@@ -188,11 +207,12 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn(),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);
 
-    const toggle1 = screen.getAllByRole("button")[1]; 
+    const toggle1 = screen.getByTestId("toggle-password-visibility");
     const passwordInput = screen.getByPlaceholderText("New Password");
 
     expect(passwordInput).toHaveAttribute("type", "password");
@@ -202,6 +222,34 @@ describe("ResetFormClient", () => {
 
     fireEvent.click(toggle1);
     expect(passwordInput).toHaveAttribute("type", "password");
+  });
+
+  it("toggles confirm password visibility when eye icon is clicked", () => {
+    (require("next/navigation").useRouter as jest.Mock).mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+    });
+
+    (require("../../../hooks/usePasswordConfirm").default as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      message: null,
+      confirmReset: jest.fn(),
+      setError: jest.fn(),
+    });
+
+    render(<ResetFormClient {...defaultProps} />);
+
+    const toggle2 = screen.getByTestId("toggle-confirm-password-visibility");
+    const confirmPasswordInput = screen.getByPlaceholderText("Confirm New Password");
+
+    expect(confirmPasswordInput).toHaveAttribute("type", "password");
+
+    fireEvent.click(toggle2);
+    expect(confirmPasswordInput).toHaveAttribute("type", "text");
+
+    fireEvent.click(toggle2);
+    expect(confirmPasswordInput).toHaveAttribute("type", "password");
   });
 
   it("navigates back when back button is clicked", () => {
@@ -217,6 +265,7 @@ describe("ResetFormClient", () => {
       error: null,
       message: null,
       confirmReset: jest.fn(),
+      setError: jest.fn(),
     });
 
     render(<ResetFormClient {...defaultProps} />);

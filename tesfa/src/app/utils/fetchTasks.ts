@@ -1,5 +1,5 @@
-import { ApiTask, Task, TaskAssignment } from "./type";
-import { getTokenFromLocalStorage } from "./getToken";
+import { ApiTask, Task, TaskAssignment, TaskDetail } from "./type";
+import { getToken } from "./getToken";
 
 export const getKanbanStatus = (apiStatus: string): Task["status"] => {
   switch (apiStatus) {
@@ -31,7 +31,7 @@ export async function mapApiTask(apiTask: ApiTask): Promise<Task> {
 }
 
 export const fetchTasks = async (): Promise<ApiTask[]> => {
-  const token = getTokenFromLocalStorage();
+  const token = getToken();
 
   const headers: HeadersInit = {};
   if (token) {
@@ -59,4 +59,28 @@ export const fetchTasksForAssignments = (
     })
   );
   return taskPromises;
+};
+
+export const fetchTasksDetailsAdmin = async (): Promise<TaskDetail[]> => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("Authentication token not found in local storage.");
+  }
+
+  const response = await fetch("/api/tasks", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response
+      .json()
+      .catch(() => ({ message: "Failed to fetch all tasks" }));
+    throw new Error(errorData.message);
+  }
+
+  return response.json();
 };
