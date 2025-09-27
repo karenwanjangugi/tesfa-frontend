@@ -1,5 +1,4 @@
-import { renderHook } from '@testing-library/react';
-import { act } from 'react';
+import { renderHook, act } from '@testing-library/react';
 import useLogin from './useLogin';
 import { fetchLogin } from '../utils/loginUtils';
 
@@ -27,6 +26,10 @@ describe('useLogin', () => {
     });
 
     expect(returnedData).toEqual({ token: 'fake-token-123', role: 'user' });
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBeNull();
+    expect(localStorage.getItem('authToken')).toBe('fake-token-123');
+    expect(localStorage.getItem('userRole')).toBe('user');
   });
 
   it('should set loading and error on failure', async () => {
