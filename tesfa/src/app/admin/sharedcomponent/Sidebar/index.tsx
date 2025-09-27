@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, ClipboardList, Users, Bot, User } from "lucide-react";
 const menuItems = [
   { id: 1, href: "/admin/dashboard", icon: LayoutDashboard, name: "Dashboard" },
-  { id: 2, href: "/tasks", icon: ClipboardList , name: "Tasks"},
+  { id: 2, href: "admin/tasks", icon: ClipboardList , name: "Tasks"},
   { id: 3, href: "/admin/organizations", icon: Users, name: "Organizations" },
   { id: 4, href: "/performance", icon: Bot, name: "Performance" },
 ];
