@@ -28,7 +28,7 @@ jest.mock('@dnd-kit/core', () => ({
 }));
 
 jest.mock('../Taskcard', () => ({
-  TaskCard: ({ task, onDelete }: { task: any; onDelete: (id: string) => void }) => (
+  TaskCard: ({ task, onDelete }: { task: { id: string; title: string }, onDelete: (id: string) => void }) => (
     <div data-testid={`task-${task.id}`} className="select-none group w-full">
       <button
         aria-label="Delete task"
@@ -106,7 +106,6 @@ describe('KanbanBoard', () => {
     expect(screen.getByText('Completed')).toBeInTheDocument();
     expect(screen.getByText('Task 1')).toBeInTheDocument();
     expect(screen.getByText('Task 2')).toBeInTheDocument();
-
     expect(screen.getAllByText('Drop tasks here')).toHaveLength(2);
   });
 
@@ -130,17 +129,12 @@ describe('KanbanBoard', () => {
     await userEvent.click(deleteButtons[0]);
 
     await waitFor(() => {
-    
       expect(deleteTaskAssignment).toHaveBeenCalledWith('a1');
-  
       expect(setAssignedTasks).toHaveBeenCalled();
-      
       const stateUpdater = setAssignedTasks.mock.calls[0][0];
       const newState = stateUpdater(mockTasks);
       expect(newState).toHaveLength(1);
-      expect(newState).toEqual([
-        expect.objectContaining({ id: '2' })
-      ]);
+      expect(newState).toEqual([expect.objectContaining({ id: '2' })]);
     });
   });
 });
