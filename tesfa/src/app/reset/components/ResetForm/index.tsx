@@ -36,11 +36,14 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
         confirm_password: confirm,
       });
       router.push("/resetsuccess");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
-
 
   return (
     <div className="relative w-full max-w-sm overflow-hidden">
@@ -53,7 +56,9 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
           <FaArrowLeft />
         </button>
         <h1 className="text-center text-[#d4af37] text-3xl font-medium mb-8">Reset Your Password</h1>
-        <p className="text-center text-teal-100 mb-10">Your new password must be different from your previous password</p>
+        <p className="text-center text-teal-100 mb-10">
+          Your new password must be different from your previous password
+        </p>
         <form onSubmit={onSubmit} className="space-y-4 text-sm">
           <div>
             <label className="sr-only">New Password</label>
@@ -86,9 +91,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
                 {show1 ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            {passwordError && (
-              <p className="text-sm text-red-300 mt-2 ml-2">{passwordError}</p>
-            )}
+            {passwordError && <p className="text-sm text-red-300 mt-2 ml-2">{passwordError}</p>}
           </div>
           <div>
             <label className="sr-only">Confirm Password</label>
@@ -119,9 +122,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
                 {show2 ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            {confirmError && (
-              <p className="text-sm text-red-300 mt-2 ml-2">{confirmError}</p>
-            )}
+            {confirmError && <p className="text-sm text-red-300 mt-2 ml-2">{confirmError}</p>}
           </div>
           <div className="mt-10 items-center flex justify-center">
             <button
@@ -133,9 +134,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
             </button>
           </div>
         </form>
-        {error && (
-          <div className="mt-4 text-center text-red-300">{error}</div>
-        )}
+        {error && <div className="mt-4 text-center text-red-300">{error}</div>}
       </div>
     </div>
   );

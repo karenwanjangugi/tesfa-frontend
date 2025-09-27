@@ -1,4 +1,3 @@
-
 import { renderHook } from '@testing-library/react';
 import { act } from 'react';
 import useLogin from './useLogin';
@@ -19,7 +18,7 @@ describe('useLogin', () => {
 
     const { result } = renderHook(() => useLogin());
 
-    let returnedData: any;
+    let returnedData: { token: string; role: string } | null | undefined = undefined;
     await act(async () => {
       returnedData = await result.current.login({
         email: 'test@example.com',
@@ -35,10 +34,10 @@ describe('useLogin', () => {
 
     const { result } = renderHook(() => useLogin());
 
-    let returnedData: any;
+    let returnedData: { token: string; role: string } | null | undefined = undefined;
     await act(async () => {
       returnedData = await result.current.login({
-        email: 'test@example.c// src/app/hooks/useLogin.test.tsom',
+        email: 'test@example.com',
         password: 'wrong',
       });
     });

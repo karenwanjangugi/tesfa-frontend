@@ -1,3 +1,4 @@
+
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
@@ -15,7 +16,7 @@ jest.mock('../../../app/utils/loginUtils', () => ({
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ComponentProps<'img'>) => {
     const { src, alt = 'Mocked Image' } = props;
     return <img src={src} alt={alt} />;
   },

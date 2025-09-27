@@ -121,7 +121,7 @@ export default function TasksDetails() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {isVisible && (
             <p className="text-gray-600 text-sm sm:text-xs md:text-sm text-center sm:text-left">
-              Click "Select Tasks" to start choosing tasks from the list. ➤
+              Click &quot;Select Tasks&quot; to start choosing tasks from the list. ➤
             </p>
           )}
           {!isAddMode && (
