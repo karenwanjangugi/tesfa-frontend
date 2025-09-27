@@ -28,17 +28,6 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
       return;
     }
 
-<<<<<<< HEAD
-  await confirmReset({
-    uidb64: uid,
-    token,
-    new_password: password,
-    confirm_password: confirm,
-  });
-
-  router.push("/resetsuccess");
-};
-=======
     try {
       await confirmReset({
         uidb64: uid,
@@ -51,7 +40,7 @@ export default function ResetFormClient({ uid, token }: { uid: string; token: st
       setError(error.message);
     }
   };
->>>>>>> 643eca5c94eef7137bb988ea35701e0e04bc3b7f
+
 
   return (
     <div className="relative w-full max-w-sm overflow-hidden">
