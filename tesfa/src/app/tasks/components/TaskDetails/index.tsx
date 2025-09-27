@@ -85,8 +85,8 @@ export default function TasksDetails() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-red-600">
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+        <p className="text-red-600 text-center">
           Something went Wrong, Please reload your page
         </p>
       </div>
@@ -95,18 +95,18 @@ export default function TasksDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
         <p className="text-gray-600">Loading tasks...</p>
       </div>
     );
   }
 
   return (
-    <div className="p-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-4xl font-semibold text-[#00353D]">Tasks</h1>
-        <div className="relative mt-3 mb-2 flex items-center">
-          <Search className="absolute left-3 text-black" size={20} />
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">Tasks</h1>
+        <div className="relative w-full sm:w-auto mt-0 sm:mt-0">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
           <input
             type="text"
             placeholder="Search"
@@ -114,20 +114,20 @@ export default function TasksDetails() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="pl-10 bg-white border-gray-500 h-[3vh] text-black rounded-lg"
+            className="w-full sm:w-auto pl-10 pr-4 py-2 bg-white border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
           />
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {isVisible && (
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-sm sm:text-xs md:text-sm text-center sm:text-left">
               Click "Select Tasks" to start choosing tasks from the list. ➤
             </p>
           )}
           {!isAddMode && (
             <Button
               onClick={handleClick}
-              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full cursor-pointer"
+              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-4 sm:px-6 py-2 rounded-full cursor-pointer w-full sm:w-auto"
               aria-label="Add Task"
             >
               Select Tasks
@@ -135,16 +135,16 @@ export default function TasksDetails() {
           )}
         </div>
       </div>
-      <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
+      <div className="h-1.5 bg-[#266A74] opacity-50 mb-8"></div>
 
-      <div className="lg:h-[60vh] space-y-3 mb-6 overflow-y-scroll xl:h-[70vh]">
+      <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 mb-6 overflow-y-auto pr-2">
         {filteredTasks.map((task, index) => (
           <motion.div
             key={task.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.06 }}
-            className={`bg-white rounded-[50px] p-3 mr-10 drop-shadow-lg border border-gray-200 flex items-center gap-4 ${
+            className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 flex items-center gap-3 sm:gap-4 ${
               isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
             }`}
             onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
@@ -165,8 +165,8 @@ export default function TasksDetails() {
               )}
             </AnimatePresence>
 
-            <div className="flex-1">
-              <p className="text-gray-800">{task.title}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-gray-800 truncate">{task.title}</p>
             </div>
           </motion.div>
         ))}
@@ -174,18 +174,18 @@ export default function TasksDetails() {
 
       <AnimatePresence>
         {isAddMode && (
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+          <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col sm:flex-row gap-3 sm:gap-4 w-[90vw] sm:w-auto bg-white p-3 sm:p-4 rounded-lg shadow-lg border border-gray-200">
             <Button
               variant="outline"
               onClick={handleCancel}
-              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full cursor-pointer"
+              className="px-4 sm:px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-full cursor-pointer w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={handleAddTasks}
               disabled={selectedTasks.size === 0}
-              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-4 sm:px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto"
             >
               Add ({selectedTasks.size}) to my tasks
             </Button>

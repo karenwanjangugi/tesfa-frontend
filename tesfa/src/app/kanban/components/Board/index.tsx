@@ -107,7 +107,7 @@ export default function KanbanBoard() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
         <p className="text-gray-600">Loading board...</p>
       </div>
     )
@@ -115,8 +115,8 @@ export default function KanbanBoard() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-red-600">Something went Wrong, Please reload your page</p>
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+        <p className="text-red-600 text-center">Something went Wrong, Please reload your page</p>
       </div>
     )
   }
@@ -130,30 +130,35 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="p-10 xl:px-10 bg-gray-50 md:overflow-hidden relative">
-        <div className="flex items-center justify-between xl:mb-6 lg:mb-3">
-          <h1 className="text-4xl font-semibold text-[#00353D]">Task Tracking</h1>
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 bg-gray-50 overflow-x-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">Task Tracking</h1>
         </div>
-        <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
-        <div className="grid grid-cols-4 gap-10 xl:h-[75.5vh] lg:h-[73vh]">
+        <div className="h-1.5 bg-[#266A74] opacity-50 mb-6 sm:mb-8"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {columns.map((column) => (
             <motion.div
               key={column.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-[#E7EDEE] rounded-lg shadow-sm overflow-hidden"
+              className="bg-[#E7EDEE] rounded-lg shadow-sm overflow-hidden flex flex-col"
             >
-              <div className={`${column.color} px-4 py-3 rounded-tl-[20px] rounded-tr-[20px]`}>
-                <h3 className="font-large text-center text-black">{column.title}</h3>
+              <div className={`${column.color} px-3 sm:px-4 py-2 sm:py-3 rounded-tl-[20px] rounded-tr-[20px]`}>
+                <h3 className="font-medium text-center text-black text-sm sm:text-base">{column.title}</h3>
               </div>
-              <DropZone id={column.id} className="p-4 min-h-[40vh] xl:h-[80vh] lg:h-[72vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
+              <DropZone 
+                id={column.id} 
+                className={`p-3 sm:p-4 bg-gray-100 relative overflow-y-auto no-scrollbar ${
+                  'min-h-[30vh] sm:min-h-[40vh] md:min-h-[50vh] lg:min-h-[60vh] xl:min-h-[70vh]'
+                }`}
+              >
                 <div className="space-y-3">
                   {getTasksByStatus(column.id as Task['status']).map((task, index) => (
                     <TaskCard key={task.id} task={task} index={index} onDelete={handleDeleteTask} />
                   ))}
                   {getTasksByStatus(column.id as Task['status']).length === 0 && (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-gray-500 py-6 text-sm">
                       Drop tasks here
                     </div>
                   )}
@@ -169,4 +174,3 @@ export default function KanbanBoard() {
     </DndContext>
   )
 }
-
