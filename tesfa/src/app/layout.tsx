@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Josefin_Sans } from "next/font/google";
+import Layout from "./sharedcomponents/Layout";
 
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
@@ -24,10 +25,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${ josefinSans}`}
+        className={`${ josefinSans.variable}`}
       >
-        {children}
+     
+       {children}
       </body>
     </html>
   );
 }
+
+

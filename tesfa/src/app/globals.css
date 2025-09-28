@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #f1e6e6;
   
 }
 
@@ -15,7 +15,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #f5f0f0;
     --foreground: #ededed;
   }
 }
@@ -23,7 +23,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-josefin),sans-serif;
+  font-family: var(--font-josefin-sans),sans-serif;
 }
 .bg-active-gradient {
   background: linear-gradient(to right, #E6C362, #D3AC45);
