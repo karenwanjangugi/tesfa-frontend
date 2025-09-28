@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchAffectedRegions } from "../utils/fetchAffecRegions";
+import { fetchAffectedRegions } from "../utils/fetchAffectedCountries";
 
 export type Region = {
   region_id: string;

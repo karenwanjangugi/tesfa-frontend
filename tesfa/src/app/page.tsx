@@ -1,11 +1,9 @@
-import Sidebar from "./admin/sharedcomponent/Sidebar";
+import React from 'react'
 
-
-export default function Home() {
+const page = () => {
   return (
-<div>
-
-</div>
-
-  );
+    <div>page</div>
+  )
 }
+
+export default page

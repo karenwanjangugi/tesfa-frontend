@@ -1,46 +1,38 @@
 
-export async function GET(request: Request) {
-  const baseUrl = process.env.BASE_URL;
-
-  if (!baseUrl) {
-    return new Response(JSON.stringify({ error: "Backend URL not configured" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+import { NextRequest } from "next/server";
+export async function GET(request:NextRequest) {
+  const baseUrl = process.env.BASE_URL
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader){
+    return new Response(JSON.stringify({error: 'Missing authorization token'}),{
+      status:401,
+      headers:{'Content-Type':'application/json'},
     });
   }
-
-  const authHeader = request.headers.get("Authorization");
-
-  try {
-    const response = await fetch(`${baseUrl}/countries`, {
-      cache: "no-store",
+  try{
+    const response = await fetch(`${baseUrl}/countries`,{
       headers: {
-        ...(authHeader && { Authorization: authHeader }),
-      },
+        Authorization: authHeader,
+        'Content-Type':'application/json',
+      }
     });
+if (!response.ok){
+  const errorText = await response.text();
+  console.error('API error:', errorText)
+  return new Response(JSON.stringify({error:'Failed to fetch'}), {
+    status: response.status,
+    headers:{'Content-Type':'application/json'},
+  })
+}
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return new Response(
-        JSON.stringify({ error: "Failed to fetch regions", detail: errorText }),
-        {
-          status: response.status,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+    const result = await response.json();
+    return new Response(JSON.stringify(result),{
+      status:200,
+    })
+  }catch(error){
+    return new Response((error as Error).message),{
+      status:500
     }
-
-    const regions = await response.json();
-    const affected = regions.filter((region: any) => region.is_affected === true);
-
-    return new Response(JSON.stringify(affected), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: (error as Error).message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
   }
+  
 }

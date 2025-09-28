@@ -79,25 +79,20 @@ export async function updateUser(data: any) {
   }
 }
 
-
-
-
-
-// src/app/utilis/fetchorganization.ts
 export async function getOrganizations() {
-  // Get token from localStorage (client-side only)
+
   const token = typeof window !== "undefined" 
     ? localStorage.getItem("authToken") 
     : null;
 
-  const res = await fetch(`${process.env.BASE_URL}users/`, {
+  const res = await fetch(`${process.env.BASE_URL}/users/`, {
     headers: {
       ...(token && { Authorization: `Token ${token}` }),
     },
   });
 
   if (!res.ok) {
-    // Handle 401: redirect to login
+  
     if (res.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("authToken");

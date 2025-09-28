@@ -29,7 +29,7 @@ export default function LoginPage() {
     const result = await login(formData);
 
     if (result) {
-      
+      localStorage.setItem("token", result.token);    
       if(result.role === "admin"){
         router.push("/admin/dashboard");
       }else{

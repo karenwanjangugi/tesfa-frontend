@@ -1,4 +1,8 @@
-import { fetchProfile, updateUser } from './fetchOrganization';
+import { fetchProfile, updateUser } from './fetchOrganizations';
+import { getToken } from './getToken';
+
+jest.mock('./getToken');
+
 const mockLocalStorage = (() => {
   let store: Record<string, string> = {};
   return {
@@ -24,9 +28,9 @@ beforeEach(() => {
   (global.fetch as jest.Mock).mockClear();
 });
 
-
 describe('fetchProfile', () => {
   it('throws if no token in localStorage', async () => {
+    (getToken as jest.Mock).mockReturnValue(null);
     mockLocalStorage.getItem.mockImplementation((key) =>
       key === 'user_id' ? '123' : null
     );
@@ -35,6 +39,7 @@ describe('fetchProfile', () => {
   });
 
   it('throws if no user_id in localStorage', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) =>
       key === 'Token' ? 'abc123' : null
     );
@@ -43,8 +48,8 @@ describe('fetchProfile', () => {
   });
 
   it('fetches profile successfully', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -57,15 +62,15 @@ describe('fetchProfile', () => {
 
     const result = await fetchProfile();
     expect(result).toEqual(mockResponse);
-    expect(global.fetch).toHaveBeenCalledWith('/api/organization?userId=123', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/organizations?userId=123', {
       headers: { Authorization: 'Token abc123' },
       cache: 'no-store',
     });
   });
 
   it('throws on non-ok response', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -79,8 +84,8 @@ describe('fetchProfile', () => {
   });
 
   it('throws with original error message on network error', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -95,6 +100,7 @@ describe('updateUser', () => {
   const mockData = { name: 'New Name' };
 
   it('throws if no token in localStorage', async () => {
+    (getToken as jest.Mock).mockReturnValue(null);
     mockLocalStorage.getItem.mockImplementation((key) =>
       key === 'user_id' ? '123' : null
     );
@@ -103,6 +109,7 @@ describe('updateUser', () => {
   });
 
   it('throws if no user_id in localStorage', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) =>
       key === 'Token' ? 'abc123' : null
     );
@@ -111,8 +118,8 @@ describe('updateUser', () => {
   });
 
   it('sends JSON data correctly', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -126,7 +133,7 @@ describe('updateUser', () => {
     const result = await updateUser(mockData);
 
     expect(result).toEqual(mockResponse);
-    expect(global.fetch).toHaveBeenCalledWith('/api/organization?userId=123', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/organizations?userId=123', {
       method: 'PUT',
       headers: {
         Authorization: 'Token abc123',
@@ -138,8 +145,8 @@ describe('updateUser', () => {
   });
 
   it('sends FormData without Content-Type', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -156,7 +163,7 @@ describe('updateUser', () => {
     const result = await updateUser(formData);
 
     expect(result).toEqual(mockResponse);
-    expect(global.fetch).toHaveBeenCalledWith('/api/organization?userId=123', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/organizations?userId=123', {
       method: 'PUT',
       headers: {
         Authorization: 'Token abc123',
@@ -167,8 +174,8 @@ describe('updateUser', () => {
   });
 
   it('throws on non-ok response', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });
@@ -182,8 +189,8 @@ describe('updateUser', () => {
   });
 
   it('throws with original error message on network error', async () => {
+    (getToken as jest.Mock).mockReturnValue('abc123');
     mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'Token') return 'abc123';
       if (key === 'user_id') return '123';
       return null;
     });

@@ -6,7 +6,7 @@ import {
 } from "../utils/fetchTaskAssignment";
 import { TaskStatus } from "../utils/type";
 import { mapApiTask } from "../utils/fetchTasks";
-import { getTokenFromLocalStorage } from "../utils/getToken";
+import { getToken } from "../utils/getToken";
 import { fetchTasksForAssignments } from '../utils/fetchTasks';
 
 
@@ -26,7 +26,7 @@ export const useFetchTaskAssignments = () => {
           return;
         }
 
-        const token = getTokenFromLocalStorage();
+        const token = getToken();
         const headers: HeadersInit = {};
         if (token) {
           headers["Authorization"] = `Token ${token}`;

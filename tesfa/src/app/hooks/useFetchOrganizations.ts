@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { fetchUsers, User } from '../utils/fetchOrganizations';
+import { fetchUsers } from '../utils/fetchOrganizations';
+import { User } from '../utils/type';
 
 
 const useFetchOrganizations = () => {

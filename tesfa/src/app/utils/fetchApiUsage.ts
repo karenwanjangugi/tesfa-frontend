@@ -1,15 +1,11 @@
-// utils/fetchQueries.ts
+// utils/fetchApiUsageStats.ts
 
-/**
- * Fetches queries from the Next.js API route.
- * Must be called from browser (uses token from caller).
- */
-export async function fetchQueries(token: string) {
+export async function fetchApiUsageStats(token: string) {
   if (!token) {
     throw new Error('Authentication token is required');
   }
 
-  const response = await fetch('/api/queries', {
+  const response = await fetch('/api/api-usage-stats', {
     headers: {
       'Authorization': `Token ${token}`,
       'Content-Type': 'application/json',
