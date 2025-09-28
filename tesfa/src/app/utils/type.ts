@@ -6,7 +6,6 @@ export interface Task {
   description?: string;
   status: TaskStatus;
   assignmentId?: number;
-  
 }
 
 export interface ApiTask {
@@ -16,14 +15,13 @@ export interface ApiTask {
   assignments: { status: string }[];
 }
 
-
-export interface TaskAssignment{
-    id: number;
-    task: number;
-    organization: number;
-    status: TaskStatus;
-    created_at: string;
-    updated_at: string;
+export interface TaskAssignment {
+  id: number;
+  task: number;
+  organization: number;
+  status: TaskStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TaskDetail {
@@ -33,12 +31,12 @@ export interface TaskDetail {
   priority: string;
   prediction: number | null;
   agent: number | null;
-  assignments: any[];
+  assignments: Record<string, unknown>[]; 
   created_at: string;
   updated_at: string;
 }
 
-export interface User{
+export interface User {
   id: number;
   email: string;
   role: "organization" | "admin";
@@ -54,14 +52,9 @@ export interface User{
 export interface Prediction {
   prediction_id: number;
   description: string;
-  disease_risks: any[];
+  disease_risks: Record<string, unknown>[]; 
   date_generated: string;
-  agent: any;
+  agent: unknown; 
   region: string | null;
   country: string | null;
 }
-
-
- 
- 
-
