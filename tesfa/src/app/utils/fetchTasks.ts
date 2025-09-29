@@ -84,3 +84,28 @@ export const fetchTasksDetailsAdmin = async (): Promise<TaskDetail[]> => {
 
   return response.json();
 };
+
+
+
+
+export const fetchTasksAssignmentsAdmin = async (): Promise<TaskAssignment[]> => {
+  const token = getToken();
+  if (!token) {
+    throw new Error("Authentication token not found in local storage.");
+  }
+
+  const response = await fetch("/api/tasks", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    cache: "no-store", // optional but good for admin dashboards
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Failed to fetch tasks" }));
+    throw new Error(errorData.message || "Failed to fetch tasks");
+  }
+
+  return response.json();
+};

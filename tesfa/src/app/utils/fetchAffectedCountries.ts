@@ -11,6 +11,7 @@ export async function fetchAffectedCountries(token: string) {
       throw new Error('Failed to fetch countries:'+ response.statusText);
     }
     const result = await response.json();
+    console.log('Fetched countries:', result);
     return result;
   }catch (error){
     throw new Error(`Error fetching countries: ${(error as Error).message}`);

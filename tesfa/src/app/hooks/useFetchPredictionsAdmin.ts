@@ -15,6 +15,7 @@ export const useFetchPredictions = () =>{
                 setPredictions(predictionsData)
             } catch (error) {
                 setError(error as Error)
+                
             }finally{
                 setLoading(false)
             }

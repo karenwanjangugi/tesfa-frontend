@@ -1,24 +1,26 @@
 "use client";
 import useFetchOrganizations from "@/app/hooks/useFetchOrganizations";
-import useFetchQueries from "@/app/hooks/useQueries";
+import { useFetchPredictions } from "@/app/hooks/useFetchPredictionsAdmin";
+import { useFetchTasks } from "@/app/hooks/useFetchTasksAdmin";
 import { useState } from "react";
-import { useAffectedRegions } from "@/app/hooks/useAffectedRegions";
+import { useFetchQueries } from "@/app/hooks/useQueries";
+import { useAffectedCountries } from "@/app/hooks/useAffectedRegions";
 import Sidebar from "../sharedcomponent/Sidebar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid, Legend, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import CalendarPicker from "../sharedcomponent/Calender";
 import { FaSpinner } from "react-icons/fa";
 
-export default function DashboardPage() {
-  const { organizations: orgs, loading: orgsLoading } = useFetchOrganizations();
-  const { queries: queries, loading: queriesLoading } = useFetchQueries();
-  const { data: countries, loading: countriesLoading } = useAffectedRegions();
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
-  // Helper: check if date string is in range
+export default function DashboardPage() {
+  const { predictions, loading: predictionsLoading } = useFetchPredictions();
+const { tasks, loading: tasksLoading } = useFetchTasks();
+const { queries: allQueries, loading: queriesLoading } = useFetchQueries();
+  const { organizations: orgs, loading: orgsLoading } = useFetchOrganizations();
+  const { data: countries, loading: countriesLoading } = useAffectedCountries();
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const isDateInRange = (dateStr: string, start: Date | null, end: Date | null): boolean => {
     if (!start || !end) return true;
     const date = new Date(dateStr);
-    // Reset time for date-only comparison
     const startOnly = new Date(start);
     startOnly.setHours(0, 0, 0, 0);
     const endOnly = new Date(end);
@@ -28,7 +30,10 @@ export default function DashboardPage() {
 
   const [startDate, endDate] = dateRange;
 
-  // Filtered data
+  const filteredQueries = allQueries?.filter(q =>
+    isDateInRange(q.created_at, startDate, endDate)
+  ) || [];
+
   const filteredOrgs = orgs?.filter(org => 
     isDateInRange(org.created_at, startDate, endDate)
   ) || [];
@@ -37,18 +42,14 @@ export default function DashboardPage() {
     (user: any) => user.role === 'organization' && user.is_active === true
   );
 
-  const filteredQueries = queries?.filter(q => 
-    isDateInRange(q.created_at, startDate, endDate)
-  ) || [];
 
-  // Recompute charts with filtered data
-// Helper to format month (e.g., "Jun")
+
 const getMonthLabel = (dateStr: string): string => {
   const date = new Date(dateStr);
-  return date.toLocaleString('en-US', { month: 'short', year: '2-digit' }); // e.g., "Jun '25"
+  return date.toLocaleString('en-US', { month: 'short', year: '2-digit' });
 };
 
-// Group active orgs by month-year
+
 const orgsByMonth = activeOrganizations.reduce((acc: Record<string, number>, org: any) => {
   const monthLabel = getMonthLabel(org.created_at);
   acc[monthLabel] = (acc[monthLabel] || 0) + 1;
@@ -56,7 +57,6 @@ const orgsByMonth = activeOrganizations.reduce((acc: Record<string, number>, org
 }, {});
 
 
-  // Countries chart: can't filter without date → keep as-is or disable during range
   const countriesByYear = countries?.reduce((acc: Record<string, number>, country: any) => {
     const year = new Date().getFullYear().toString();
     acc[year] = (acc[year] || 0) + 1;
@@ -67,24 +67,44 @@ const orgsByMonth = activeOrganizations.reduce((acc: Record<string, number>, org
     .map(([year, value]) => ({ year, value }))
     .sort((a, b) => a.year.localeCompare(b.year));
 
-  const pieData = [
-    { name: "Predict", value: 40, color: "#0f2e2e" },
-    { name: "List of Tasks", value: 30, color: "#d7ad05" },
-    { name: "Summary and Analysis", value: 30, color: "#1e3a8a" },
-  ];
-  // Helper: Generate all months between two dates
+ // rename to avoid conflict
+
+// ... rest of your code
+
+// Compute counts (you can also filter by date if needed later)
+const predictCount = predictions?.length || 0;
+const taskCount = tasks?.length || 0;
+const queryCount = allQueries?.length || 0;
+
+const total = predictCount + taskCount + queryCount;
+
+// Avoid division by zero
+const pieData = total === 0 
+  ? [
+      { name: "Predict", value: 0, color: "#0f2e2e" },
+      { name: "List of Tasks", value: 0, color: "#d7ad05" },
+      { name: "Query", value: 0, color: "#1e3a8a" },
+    ]
+  : [
+      { name: "Predict", value: predictCount, color: "#0f2e2e" },
+      { name: "List of Tasks", value: taskCount, color: "#d7ad05" },
+      { name: "Query", value: queryCount, color: "#1e3a8a" },
+    ];
+
+// Update loading state
+const loading = orgsLoading || predictionsLoading || tasksLoading || queriesLoading || countriesLoading;
 const generateMonthRange = (start: Date | null, end: Date | null): string[] => {
   const now = new Date();
   
-  // If no range selected, show last 6 months
+
+  
   const defaultStart = new Date();
-  defaultStart.setMonth(now.getMonth() - 5); // Last 6 months including current
+  defaultStart.setMonth(now.getMonth() - 5); 
   const defaultEnd = now;
 
   const s = start || defaultStart;
   const e = end || defaultEnd;
 
-  // Normalize to first day of month
   const startDate = new Date(s.getFullYear(), s.getMonth(), 1);
   const endDate = new Date(e.getFullYear(), e.getMonth(), 1);
 
@@ -99,22 +119,17 @@ const generateMonthRange = (start: Date | null, end: Date | null): string[] => {
   return months;
 };
 
-// Generate full month list based on selected range
 const allMonths = generateMonthRange(startDate, endDate);
-
-// Build chart data with zeros for missing months
 const chartData = allMonths.map(month => {
   const value = orgsByMonth[month] || 0;
   return { month, value };
 });
 
-  // Loading states
-  const loading = orgsLoading || queriesLoading || countriesLoading;
 
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 bg-white px-5 py-1">
+      <div className="flex-1 bg-white px-5 py-2">
         <div className="mb-4">
           <CalendarPicker onDateChange={setDateRange} />
         </div>
@@ -126,8 +141,8 @@ const chartData = allMonths.map(month => {
   { label: "Active Organizations", value: orgsLoading ? <FaSpinner className="animate-spin text-gray-500" /> : activeOrganizations.length },
   { label: "Total Queries", value: queriesLoading ? <FaSpinner className="animate-spin text-gray-500" /> : filteredQueries.length },
           ].map((stat, i) => (
-            <div key={i} className="text-center p-4 border-r border-teal-800 last:border-r-0">
-              <p className="text-sm">{stat.label}</p>
+            <div key={i} className="text-center p-6 border-r border-teal-800 last:border-r-0">
+              <p className="text-xl">{stat.label}</p>
     <div className="flex justify-center items-center h-8 text-2xl">
       {stat.value}
     </div>
@@ -136,11 +151,10 @@ const chartData = allMonths.map(month => {
         </div>
         
 
-        {/* Charts using filtered data */}
         <div className="grid grid-cols-2 gap-6 mt-6">
           <div className="bg-blue-50 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
             <h2 className="text-lg font-semibold mb-4">Active Organizations</h2>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
     <XAxis dataKey="month" interval={0} />
     <YAxis />
@@ -150,9 +164,9 @@ const chartData = allMonths.map(month => {
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-blue-50 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
+          <div className="bg-blue-100 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
             <h2 className="text-lg font-semibold mb-4">AI Functionality</h2>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={80}>
                   {pieData.map((entry, index) => (
@@ -166,22 +180,21 @@ const chartData = allMonths.map(month => {
         </div>
 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-  {/* Line Chart */}
-  <div className="bg-blue-50 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
+
+  <div className="bg-blue-100 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
     <h2 className="text-lg font-semibold mb-4">Number of High-Risk Countries</h2>
-    <ResponsiveContainer width="100%" height={250}>
+    <ResponsiveContainer width="100%" height={300}>
       <LineChart data={countriesChartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="year" />
         <YAxis />
         <Tooltip />
-        <Line type="monotone" dataKey="value" stroke="#0f2e2e" strokeWidth={2} />
+        <Line type="monotone" dataKey="value" stroke="#0f2e2e"  strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
   </div>
 
-  {/* High-Risk Countries List */}
-  <div className="bg-gray-50 rounded-lg p-4 shadow hover:bg-gray-100 transition-shadow">
+  <div className="bg-gray-50 rounded-lg p-2 shadow hover:bg-gray-100 transition-shadow">
   <h2 className="text-lg font-semibold mb-4">High-Risk Countries</h2>
   {countriesLoading ? (
     <p className="text-gray-500">{loading ? (
@@ -192,11 +205,11 @@ const chartData = allMonths.map(month => {
   <p className="text-2xl font-bold"></p>
 )}</p>
   ) : countries && countries.length > 0 ? (
-    <div className="max-h-60 overflow-y-auto pr-2 space-y-2">
+    <div className="max-h-70 overflow-y-auto pr-2 space-y-2">
       {countries.map((country: any) => (
         <div
           key={country.country_id}
-          className="px-3 py-2 bg-white rounded border border-gray-200 text-gray-700"
+          className="px-3 py-2 bg-[#0f2e2e] rounded border border-gray-200 text-white"
         >
           {country.countries_name}
         </div>

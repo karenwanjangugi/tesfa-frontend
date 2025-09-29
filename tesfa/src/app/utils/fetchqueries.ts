@@ -1,26 +1,25 @@
-// utils/fetchQueries.ts
+import { getToken } from "./getToken";
 
-/**
- * Fetches queries from the Next.js API route.
- * Must be called from browser (uses token from caller).
- */
-export async function fetchQueries(token: string) {
-  if (!token) {
-    throw new Error('Authentication token is required');
-  }
+export interface Query {
+  id: number;
+  question: string;
+  created_at: string;
+  // add other fields
+}
 
-  const response = await fetch('/api/queries', {
-    headers: {
-      'Authorization': `Token ${token}`,
-      'Content-Type': 'application/json',
-    },
+export async function fetchQueries(): Promise<Query[]> {
+  const token = getToken();
+  if (!token) throw new Error('No token found.');
+
+  const res = await fetch('/api/queries', {
+    headers: { Authorization: `Token ${token}` },
+    cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to fetch queries');
   }
 
-  const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return res.json();
 }

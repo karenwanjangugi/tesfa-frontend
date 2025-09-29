@@ -1,7 +1,6 @@
 "use client";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Sidebar from "../sharedcomponent/Sidebar";
-import ApiUsagePage from "../../../../apiUsage/page";
 import ApiUsageChart from "./ApiUsageChart";
 
 export default function PerformancePage() {
@@ -37,40 +36,40 @@ export default function PerformancePage() {
           <h1 className="text-xl font-semibold flex items-center gap-2">
             Tesfa Agent
           </h1>
-          <span className="text-gray-500">date</span>
+         
         </div>
 
-        <div className="space-y-4 mb-1">
+        <div className="space-y-8 mb-7">
           <div className="flex items-center gap-2">
             <p className="w-24 font-medium">Accuracy</p>
             <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full w-[70%] bg-gradient-to-r from-blue-700 to-teal-900"></div>
+              <div className="h-full w-[70%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
             </div>
             <p className="w-12 font-semibold">70%</p>
           </div>
           <div className="flex items-center gap-4">
             <p className="w-24 font-medium">Efficiency</p>
             <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full w-[60%] bg-gradient-to-r from-blue-700 to-teal-900"></div>
+              <div className="h-full w-[60%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
             </div>
             <p className="w-12 font-semibold">60%</p>
           </div>
         </div>
 
-        {/* Number of Queries */}
-        <div className="bg-white rounded-lg shadow p-4">
+    
+        <div className="bg-cyan-100 rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold"></h2>
-            <button className="px-4 py-1 border border-gray-400 rounded-full text-sm">
+            <button className="px-5 py-2 border cursor-pointer border-gray-400 rounded-full text-sm">
               Number of Queries
             </button>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={queryData}>
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Area type="monotone" dataKey="value" stroke="#08515C" fill="#08515C" />
+              <Area type="monotone" dataKey="value" stroke="#08515C" fill="#0ffff" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

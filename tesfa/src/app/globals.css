@@ -64,3 +64,11 @@ body {
     transform: scale(1);
   }
 }
+
+
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus-visible {
+  outline: none !important;
+}

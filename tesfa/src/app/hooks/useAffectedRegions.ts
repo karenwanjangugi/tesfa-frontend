@@ -2,25 +2,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchAffectedRegions } from "../utils/fetchAffectedCountries";
+import { fetchAffectedCountries } from "../utils/fetchAffectedCountries";
 
-export type Region = {
-  region_id: string;
-  region_name: string;
+export type Country = {
+  country_id: string;
+  country_name: string;
   is_affected: boolean;
   geometry: any;
 };
 
-export function useAffectedRegions() {
-  const [data, setData] = useState<Region[]>([]);
+export function useAffectedCountries() {
+  const [data, setData] = useState<Country[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
  useEffect(() => {
   const fetchData = async () => {
     try {
-      const regions = await fetchAffectedRegions(); 
-      setData(regions);
+      const countries = await fetchAffectedCountries(localStorage.getItem('Token') || ''); 
+      setData(countries);
     } catch (err) {
       setError((err as Error).message);
     } finally {

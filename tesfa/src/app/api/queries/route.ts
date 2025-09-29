@@ -1,39 +1,40 @@
-// app/api/queries/route.ts
-import { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
+  const baseUrl = process.env.BASE_URL;
+  const authHeader = request.headers.get('authorization');
+  
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'Missing authorization token' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
-    const authHeader = request.headers.get('authorization');
-
-    if (!authHeader) {
-      return NextResponse.json(
-        { error: 'Missing Authorization header' },
-        { status: 401 }
-      );
-    }
-
-    const res = await fetch(`${process.env.BASE_URL}/queries`, {
+    const response = await fetch(`${baseUrl}/queries`, {
       headers: {
-        'Authorization': authHeader,
+        Authorization: authHeader,
         'Content-Type': 'application/json',
       },
-      cache: 'no-store',
     });
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Django error:', errorText);
-      throw new Error(`Django returned ${res.status}: ${res.statusText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Queries API error:', errorText);
+      return new Response(JSON.stringify({ error: 'Failed to fetch queries' }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    const data = await res.json();
-    return NextResponse.json(data);
-  } catch (error: any) {
-    console.error('Fetch queries route error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch queries' },
-      { status: 500 }
-    );
+    const result = await response.json();
+    return new Response(JSON.stringify(result), { status: 200 });
+  } catch (error) {
+    console.error('Fetch queries error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
