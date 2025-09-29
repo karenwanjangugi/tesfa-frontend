@@ -102,11 +102,11 @@ export default function TasksDetails() {
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 lg:p-10">
+    <div className="p-4 sm:p-6 md:p-8 lg:px-10 lg:py-25">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">Tasks</h1>
-        <div className="relative w-full sm:w-auto mt-0 sm:mt-0">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
+        <div className="relative w-full rounded-4xl bg-amber-300 sm:w-auto mt-0 sm:mt-0">
+          <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
           <input
             type="text"
             placeholder="Search"
@@ -114,7 +114,7 @@ export default function TasksDetails() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="w-full sm:w-auto pl-10 pr-4 py-2 bg-white border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
+            className="w-100 bg-amber-300  pl-10 pr-4 py-2 border border-gray-300 text-black rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
           />
         </div>
 
@@ -144,7 +144,7 @@ export default function TasksDetails() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.06 }}
-            className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 flex items-center gap-3 sm:gap-4 ${
+            className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg  border border-yellow-600 flex items-center gap-3 sm:gap-4 ${
               isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
             }`}
             onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}

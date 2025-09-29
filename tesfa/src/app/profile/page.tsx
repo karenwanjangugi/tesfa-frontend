@@ -46,7 +46,7 @@ export default function ProfilePage() {
   return (
     <Layout>
       <main className="flex w-full flex-col items-center bg-[#FCF6F7] overflow-x-hidden min-h-[100dvh]">
-        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 mx-auto mt-8 mb-6">
+        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 lg:py-25 mx-auto mb-6">
           <h1 className="text-3xl sm:text-4xl font-medium text-[#00353D] mb-2">
             Profile
           </h1>
