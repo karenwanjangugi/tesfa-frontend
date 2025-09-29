@@ -1,4 +1,3 @@
-// app/api/api-usage-stats/route.ts
 import { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -16,13 +15,11 @@ export async function GET(request: NextRequest) {
       },
       cache: 'no-store',
     });
-
-    // 🔍 LOG FULL RESPONSE FOR DEBUGGING
     console.log('Django status:', res.status);
     console.log('Django URL:', res.url);
     if (!res.ok) {
       const errorText = await res.text();
-      console.error('Django error response body:', errorText); // 👈 THIS IS KEY
+      console.error('Django error response body:', errorText); 
       throw new Error(`Django returned ${res.status}: ${res.statusText}`);
     }
 

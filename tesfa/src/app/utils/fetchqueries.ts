@@ -4,7 +4,6 @@ export interface Query {
   id: number;
   question: string;
   created_at: string;
-  // add other fields
 }
 
 export async function fetchQueries(): Promise<Query[]> {

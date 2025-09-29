@@ -1,10 +1,9 @@
-// hooks/useFetchApiUsageStats.ts
+"use client";
 import { useState, useEffect } from 'react';
 import { fetchApiUsageStats } from '../utils/fetchApiUsage';
 
-// Type matches your Django response: [{ week: "Sep 1–7", users: 120, queries: 500, ... }]
 export type ApiUsageStat = {
-  week: string; // or 'month' if you keep monthly — but you want weekly
+  week: string;
   [key: string]: number | string;
 };
 
@@ -14,7 +13,7 @@ const useFetchApiUsageStats = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Skip on server (localStorage not available during SSR)
+
     if (typeof window === 'undefined') {
       setLoading(false);
       return;

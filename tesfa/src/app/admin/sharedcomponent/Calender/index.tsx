@@ -20,7 +20,7 @@ export default function CalendarPicker({
         selected={startDate}
         onChange={(dates: DateRange) => {
           setDateRange(dates);
-          onDateChange(dates); // Pass [start, end] to parent
+          onDateChange(dates); 
         }}
         startDate={startDate}
         endDate={endDate}

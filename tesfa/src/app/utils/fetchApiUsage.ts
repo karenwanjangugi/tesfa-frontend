@@ -1,5 +1,3 @@
-// utils/fetchApiUsageStats.ts
-
 export async function fetchApiUsageStats(token: string) {
   if (!token) {
     throw new Error('Authentication token is required');

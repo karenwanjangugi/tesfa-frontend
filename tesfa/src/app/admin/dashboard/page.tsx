@@ -67,18 +67,12 @@ const orgsByMonth = activeOrganizations.reduce((acc: Record<string, number>, org
     .map(([year, value]) => ({ year, value }))
     .sort((a, b) => a.year.localeCompare(b.year));
 
- // rename to avoid conflict
-
-// ... rest of your code
-
-// Compute counts (you can also filter by date if needed later)
 const predictCount = predictions?.length || 0;
 const taskCount = tasks?.length || 0;
 const queryCount = allQueries?.length || 0;
 
 const total = predictCount + taskCount + queryCount;
 
-// Avoid division by zero
 const pieData = total === 0 
   ? [
       { name: "Predict", value: 0, color: "#0f2e2e" },
@@ -91,7 +85,7 @@ const pieData = total === 0
       { name: "Query", value: queryCount, color: "#1e3a8a" },
     ];
 
-// Update loading state
+
 const loading = orgsLoading || predictionsLoading || tasksLoading || queriesLoading || countriesLoading;
 const generateMonthRange = (start: Date | null, end: Date | null): string[] => {
   const now = new Date();

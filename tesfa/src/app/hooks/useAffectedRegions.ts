@@ -1,4 +1,3 @@
-// app/hooks/useAffectedRegions.ts
 "use client";
 
 import { useEffect, useState } from "react";
