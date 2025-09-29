@@ -29,7 +29,7 @@ const useFetchApiUsageStats = () => {
       }
 
       try {
-        const result = await fetchApiUsageStats(token);
+        const result = await fetchApiUsageStats();
         setData(result);
       } catch (err) {
         setError((err as Error).message);

@@ -18,7 +18,7 @@ export function useAffectedCountries() {
  useEffect(() => {
   const fetchData = async () => {
     try {
-      const countries = await fetchAffectedCountries(localStorage.getItem('Token') || ''); 
+      const countries = await fetchAffectedCountries(); 
       setData(countries);
     } catch (err) {
       setError((err as Error).message);

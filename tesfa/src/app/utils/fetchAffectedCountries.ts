@@ -1,20 +1,23 @@
-export async function fetchAffectedCountries(token: string) {
-  try{
-    const response = await fetch('/api/countries',{
-      headers:{
-        Authorization: `Token ${token}`,
-        'Content-type':'application/json',
-      },
-    });
 
-    if (!response.ok){
-      throw new Error('Failed to fetch countries:'+ response.statusText);
-    }
-    const result = await response.json();
-    console.log('Fetched countries:', result);
-    return result;
-  }catch (error){
-    throw new Error(`Error fetching countries: ${(error as Error).message}`);
+import { getToken } from "./getToken"; 
+
+export async function fetchAffectedCountries() {
+  const token = getToken(); 
+
+  if (!token) {
+    throw new Error('User is not authenticated');
   }
-  
+
+  const response = await fetch('/api/countries', {
+    headers: {
+      Authorization: `Token ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch countries: ' + response.statusText);
+  }
+
+  return response.json();
 }

@@ -30,10 +30,11 @@ if (!response.ok){
     return new Response(JSON.stringify(result),{
       status:200,
     })
-  }catch(error){
-    return new Response((error as Error).message),{
-      status:500
-    }
-  }
+  }catch (error) {
+  return new Response(JSON.stringify({ error: (error as Error).message }), {
+    status: 500,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
   
 }

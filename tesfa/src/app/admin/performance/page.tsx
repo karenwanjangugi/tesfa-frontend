@@ -33,7 +33,7 @@ export default function PerformancePage() {
       <Sidebar />
       <div className="flex-1 bg-white p-6">
         <div className="flex justify-between items-center mb-5">
-          <h1 className="text-xl font-semibold flex items-center gap-2">
+          <h1 className="text-2xl font-semibold flex items-center text-teal-900 gap-2">
             Tesfa Agent
           </h1>
          
@@ -41,18 +41,18 @@ export default function PerformancePage() {
 
         <div className="space-y-8 mb-7">
           <div className="flex items-center gap-2">
-            <p className="w-24 font-medium">Accuracy</p>
+            <p className="w-24 font-medium text-yellow-600">Accuracy</p>
             <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
               <div className="h-full w-[70%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
             </div>
-            <p className="w-12 font-semibold">70%</p>
+            <p className="w-12 font-semibold text-yellow-600">70%</p>
           </div>
           <div className="flex items-center gap-4">
-            <p className="w-24 font-medium">Efficiency</p>
+            <p className="w-24 font-medium text-yellow-600">Efficiency</p>
             <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
               <div className="h-full w-[60%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
             </div>
-            <p className="w-12 font-semibold">60%</p>
+            <p className="w-12 font-semibold text-yellow-600">60%</p>
           </div>
         </div>
 
