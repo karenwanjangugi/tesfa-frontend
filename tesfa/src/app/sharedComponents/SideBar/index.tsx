@@ -35,12 +35,35 @@ const SidebarItem = ({ icon, label, isOpen, active, onClick }: SidebarItemProps)
 };
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); 
+  const [isMobileOpen, setIsMobileOpen] = useState(false); 
   const router = useRouter();
   const pathname = usePathname();
 
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) { 
+        setIsOpen(false); 
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) {
+        setIsOpen(false); 
+      } else {
+        setIsOpen(false); 
+      }
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleNavigation = (path: string) => {
-    router.push(path); 
+    router.push(path);
+    if (window.innerWidth < 1024) { 
+      setIsMobileOpen(false);
+    }
   };
 
   const handleLogout = () => {
@@ -49,77 +72,103 @@ const Sidebar = () => {
   };
 
   return (
-    <div
-      className={`h-screen rounded-4xl bg-[#00363E] text-white flex flex-col justify-between transition-all duration-300
-      ${isOpen ? "w-60 py-6 px-4" : "w-16 px-2 py-6"}`}
-    >
+    <>
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <button
+          className="p-2 rounded-md bg-[#00363E] text-white hover:bg-teal-800 transition"
+          onClick={() => setIsMobileOpen(true)}
+        >
+          <RiSidebarFoldLine size={30} />
+        </button>
+      </div>
+
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileOpen(false)}
+        ></div>
+      )}
+
+      <div
+        className={`fixed inset-y-0 left-0 z-50 h-screen rounded-4xl bg-[#00363E] text-white flex flex-col justify-between transition-all duration-300
+        ${isMobileOpen ? "w-60 py-6 px-4" : "w-0 p-0 overflow-hidden"} 
+        lg:static lg:flex
+        ${isOpen ? "lg:w-60 lg:py-6 lg:px-4" : "lg:w-16 lg:px-2 lg:py-6"}`}
+      >
     
-      <div>
-        <div className="flex justify-between mb-20">
-          <button
-            className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <RiSidebarFoldLine size={30} />
-          </button>
-          <div
-            className={`transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
-          >
-            <div
-              className={`${isOpen ? "" : "hidden"}`}
+        <div>
+          <div className="flex justify-between mb-20">
+            <button
+              className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition lg:hidden"
+              onClick={() => setIsMobileOpen(false)}
             >
-            <img src={"/Images/TesfaLogo.png"} alt="Tesfa Logo"></img>
+              <RiSidebarFoldLine size={30} />
+            </button>
+            <button
+              className="hidden lg:flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <RiSidebarFoldLine size={30} />
+            </button>
+            <div
+              className={`transition-opacity duration-300 ${isOpen || isMobileOpen ? "opacity-100" : "opacity-0"}`}
+            >
+              <div
+                className={`${isOpen || isMobileOpen ? "" : "hidden"}`}
+              >
+              <img src={"/Images/TesfaLogo.png"} alt="Tesfa Logo"></img>
+              </div>
             </div>
           </div>
+        
+          <nav className="flex flex-col gap-10">
+            <SidebarItem
+              icon={<HiSquares2X2 size={30} />}
+              label="Dashboard"
+              isOpen={isOpen || isMobileOpen}
+              active={pathname === "/dashboard" || pathname === "/"}
+              path="/dashboard"
+              onClick={() => handleNavigation("/dashboard")}
+            />
+            <SidebarItem
+              icon={<LuClipboardList size={30} />}
+              label="Tasks"
+              isOpen={isOpen || isMobileOpen}
+              active={pathname === "/tasks"}
+              path="/tasks"
+              onClick={() => handleNavigation("/tasks")}
+            />
+            <SidebarItem
+              icon={<LuClock3 size={30} />}
+              label="Task Tracking"
+              isOpen={isOpen || isMobileOpen}
+              active={pathname === "/kanban"}
+              path="/kanban"
+              onClick={() => handleNavigation("/kanban")}
+            />
+    
+            <SidebarItem
+              icon={<LuUser size={30} />}
+              label="Profile"
+              isOpen={isOpen || isMobileOpen}
+              active={pathname === "/profile"}
+              path="/profile"
+              onClick={() => handleNavigation("/profile")}
+            />
+          </nav>
         </div>
-      
-        <nav className="flex flex-col gap-10">
+     
+        <div className="mb-4">
           <SidebarItem
-            icon={<HiSquares2X2 size={30} />}
-            label="Dashboard"
-            isOpen={isOpen}
-            active={pathname === "/dashboard" || pathname === "/"}
-            path="/dashboard"
-            onClick={() => handleNavigation("/dashboard")}
-          />
-          <SidebarItem
-            icon={<LuClipboardList size={30} />}
-            label="Tasks"
-            isOpen={isOpen}
+            icon={<LuLogOut size={30} />}
+            label="Logout"
+            isOpen={isOpen || isMobileOpen}
             active={pathname === ""}
-            path="/tasks"
-            onClick={() => handleNavigation("/tasks")}
+            onClick={handleLogout}
           />
-          <SidebarItem
-            icon={<LuClock3 size={30} />}
-            label="Task Tracking"
-            isOpen={isOpen}
-            active={pathname === ""}
-            path="/kanban"
-            onClick={() => handleNavigation("/kanban")}
-          />
-  
-          <SidebarItem
-            icon={<LuUser size={30} />}
-            label="Profile"
-            isOpen={isOpen}
-            active={pathname === ""}
-            path="/profile"
-            onClick={() => handleNavigation("/profile")}
-          />
-        </nav>
+        </div>
       </div>
-   
-      <div className="mb-4">
-        <SidebarItem
-          icon={<LuLogOut size={30} />}
-          label="Logout"
-          isOpen={isOpen}
-          active={pathname === ""}
-          onClick={handleLogout}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 

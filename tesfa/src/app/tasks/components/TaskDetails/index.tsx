@@ -158,7 +158,7 @@ export default function TasksDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
-              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${
+              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border sm:text-[0.5em] border-gray-200 ${
                 isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
               }`}
               onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
