@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -14,12 +13,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
   }
 
-  const token = authHeader.split(' ')[1]; 
+  const token = authHeader.split(' ')[1];
 
   try {
     const response = await fetch(`${baseUrl}predictions/`, {
       headers: {
-        Authorization: `Token ${token}`, 
+        Authorization: `Token ${token}`,
       },
     });
 
@@ -34,8 +33,9 @@ export async function GET(request: NextRequest) {
 
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });
-  } catch (error) {
-    console.error('Server Error:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Server Error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

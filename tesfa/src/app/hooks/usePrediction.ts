@@ -1,16 +1,23 @@
+
 import { useState, useEffect } from 'react';
 import { fetchPredictions } from '../utils/fetchPredictions';
 
+export interface DiseaseRisk {
+  disease_name?: string;
+  risk_level?: string;
+  risk_percent?: number;
+}
+
 export interface Prediction {
-  lng: null;
-  lat: null;
   prediction_id: number;
+  description: string;
+  disease_risks: Array<DiseaseRisk | string>;
+  date_generated: string;
   agent: any;
   region: string | null;
   country: string | null;
-  description: string;
-  disease_risks: string[];
-  date_generated: string;
+  lng: null | number;
+  lat: null | number;
 }
 
 export const usePredictions = () => {

@@ -1,7 +1,5 @@
 export async function fetchPredictions() {
-  if (typeof window === 'undefined') {
-    throw new Error('fetchPredictions can only be called in the browser');
-  }
+  
   const token = localStorage.getItem('Token'); 
   if (!token) {
     throw new Error('No token found. Please set token in localStorage first.');

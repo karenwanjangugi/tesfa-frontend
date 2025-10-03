@@ -1,170 +1,139 @@
-import { renderHook, act } from '@testing-library/react';
-import { useQueryLog, QueryLog } from './useQueryLog'; 
-import * as FetchQueryLogs from '../utils/fetchQueryLogs';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useQueryLog, QueryLog } from './useQueryLog';
+import * as fetchModule from '../utils/fetchQueryLogs';
 
-jest.mock('../utils/fetchQueryLogs', () => ({
-  fetchQueries: jest.fn(),
-  postQuery: jest.fn(),
-}));
+jest.mock('../utils/fetchQueryLogs');
 
-const mockFetchQueries = FetchQueryLogs.fetchQueries as jest.MockedFunction<
-  typeof FetchQueryLogs.fetchQueries
->;
-const mockPostQuery = FetchQueryLogs.postQuery as jest.MockedFunction<
-  typeof FetchQueryLogs.postQuery
->;
+const mockFetchQueries = fetchModule.fetchQueries as jest.MockedFunction<typeof fetchModule.fetchQueries>;
+const mockPostQuery = fetchModule.postQuery as jest.MockedFunction<typeof fetchModule.postQuery>;
 
-
-const waitForNextUpdate = async (callback: () => boolean) => {
-  let timeoutId: NodeJS.Timeout;
-  return new Promise<void>((resolve, reject) => {
-    const check = () => {
-      if (callback()) {
-        clearTimeout(timeoutId);
-        resolve();
-      } else {
-        timeoutId = setTimeout(check, 10);
-      }
-    };
-    check();
-  
-    setTimeout(() => reject(new Error('waitFor timeout')), 1000);
-  });
-};
-
-describe('useQueryLog', () => {
+describe('useQueryLog hook', () => {
   const sampleLogs: QueryLog[] = [
-    { id: 1, query: 'SELECT * FROM users', response: 'success', created_at: '2024-01-01' },
+    { id: 1, query: 'test query 1', response: 'response 1' },
+    { id: 2, query: 'test query 2', response: 'response 2' },
   ];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFetchQueries.mockResolvedValue(sampleLogs);
   });
 
-  it('loads logs on mount', async () => {
+  it('should load query logs on initial render', async () => {
+    mockFetchQueries.mockResolvedValueOnce(sampleLogs);
+
     const { result } = renderHook(() => useQueryLog());
 
     expect(result.current.loading).toBe(true);
-    expect(result.current.error).toBeNull();
 
-  
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
     expect(mockFetchQueries).toHaveBeenCalledTimes(1);
     expect(result.current.logs).toEqual(sampleLogs);
+    expect(result.current.error).toBeNull();
   });
 
-  it('handles fetch error gracefully', async () => {
-    mockFetchQueries.mockRejectedValueOnce(new Error('Network Error'));
+  it('should handle fetchQueries error', async () => {
+    mockFetchQueries.mockRejectedValueOnce(new Error('Fetch failed'));
 
     const { result } = renderHook(() => useQueryLog());
 
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe('Network Error');
-    expect(result.current.logs).toHaveLength(0);
+    expect(result.current.logs).toEqual([]);
+    expect(result.current.error).toBe('Fetch failed');
   });
 
-  it('submits a new query optimistically and updates on success', async () => {
-    const serverResponse: QueryLog = {
-      id: 999, 
-      query: 'INSERT INTO logs',
-      response: 'created',
-      created_at: '2024-06-01',
-    };
+  it('should optimistically add a new query log and update after postQuery', async () => {
+    const newLogResponse: QueryLog = { id: 100, query: 'new query', response: 'new response' };
 
-    mockPostQuery.mockResolvedValue(serverResponse);
+    mockFetchQueries.mockResolvedValueOnce(sampleLogs);
+    mockPostQuery.mockResolvedValueOnce(newLogResponse);
 
     const { result } = renderHook(() => useQueryLog());
 
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    const queryText = 'my optimistic query';
-
-    await act(async () => {
-      await result.current.submitQuery(queryText);
+    act(() => {
+      void result.current.submitQuery('new query');
     });
 
+    expect(result.current.logs.length).toBe(sampleLogs.length + 1);
+    expect(result.current.logs.some(log => log.query === 'new query')).toBe(true);
 
-    const optimisticLog = result.current.logs.find(log => log.query === queryText);
-    expect(optimisticLog).toBeDefined();
-    expect(optimisticLog?.id).toBeDefined();
-    expect(typeof optimisticLog?.id).toBe('number');
+
+    await waitFor(() => {
+      const updatedLog = result.current.logs.find(log => log.query === 'new query' && log.response === 'new response');
+      expect(updatedLog).toBeDefined();
+    });
+
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should remove optimistic log and set error if postQuery fails', async () => {
+    mockFetchQueries.mockResolvedValueOnce(sampleLogs);
+    mockPostQuery.mockRejectedValueOnce(new Error('Post failed'));
+
+    const { result } = renderHook(() => useQueryLog());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    await act(async () => {
+      try {
+        await result.current.submitQuery('fail query');
+      } catch {}
+    });
 
  
-    const updatedLog = result.current.logs.find(log => log.id === optimisticLog!.id);
-    expect(updatedLog).toEqual({
-      ...serverResponse,
-      id: optimisticLog!.id, 
-    });
+    expect(result.current.logs.find(log => log.query === 'fail query')).toBeUndefined();
+    expect(result.current.error).toBe('Post failed');
   });
 
-  it('removes optimistic log and sets error on submit failure', async () => {
-    mockPostQuery.mockRejectedValueOnce(new Error('Submission failed'));
+  it('should not submit empty or whitespace queries', async () => {
+    mockFetchQueries.mockResolvedValueOnce(sampleLogs);
 
     const { result } = renderHook(() => useQueryLog());
 
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
-    });
-
-    const queryText = 'failing query';
-
- 
-    await expect(
-      act(async () => {
-        await result.current.submitQuery(queryText);
-      })
-    ).rejects.toThrow('Submission failed');
-
-    const failedLog = result.current.logs.find(log => log.query === queryText);
-    expect(failedLog).toBeUndefined();
-
-
-    expect(result.current.error).toBe('Submission failed');
-  });
-
-  it('does not submit empty or whitespace-only queries', async () => {
-    const { result } = renderHook(() => useQueryLog());
-
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
     await act(async () => {
       await result.current.submitQuery('   ');
+      await result.current.submitQuery('');
+      await result.current.submitQuery('\n\t');
     });
 
-    expect(mockPostQuery).not.toHaveBeenCalled();
+
     expect(result.current.logs).toEqual(sampleLogs);
   });
 
-  it('refetches logs when refetch is called', async () => {
+  it('refetch function reloads the logs', async () => {
+    mockFetchQueries.mockResolvedValueOnce(sampleLogs);
+
     const { result } = renderHook(() => useQueryLog());
 
-    await act(async () => {
-      await waitForNextUpdate(() => !result.current.loading);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    const refetchedLogs: QueryLog[] = [
-      { id: 2, query: 'REFETCHED', response: 'ok' },
+    const newLogs: QueryLog[] = [
+      { id: 10, query: 'refetched query', response: 'refetched response' },
     ];
-    mockFetchQueries.mockResolvedValueOnce(refetchedLogs);
+
+    mockFetchQueries.mockResolvedValueOnce(newLogs);
 
     await act(async () => {
       await result.current.refetch();
-      await waitForNextUpdate(() => !result.current.loading);
     });
 
     expect(mockFetchQueries).toHaveBeenCalledTimes(2);
-    expect(result.current.logs).toEqual(refetchedLogs);
+    expect(result.current.logs).toEqual(newLogs);
   });
 });

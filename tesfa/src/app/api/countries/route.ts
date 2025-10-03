@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -13,7 +12,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
   }
 
-  const token = authHeader.split(' ')[1]; 
+  const token = authHeader.split(' ')[1];
 
   const url = `${baseUrl}countries/`;
 
@@ -24,30 +23,23 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'application/json',
       },
     });
-
     console.log(`Fetched ${url} Status: ${response.status}`);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('External API Error:', errorText);
+      console.error('API Error:', errorText);
       return NextResponse.json(
-        { error: `External API: ${response.status} ${errorText}` },
+        { error: `API: ${response.status} ${errorText}` },
         { status: response.status }
       );
-    }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      console.error('Expected JSON but got:', text);
-      return NextResponse.json({ error: 'Invalid response format' }, { status: 500 });
     }
 
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });
 
-  } catch (error) {
-    console.error('Unhandled Error:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('Unhandled Error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

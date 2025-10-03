@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(targetUrl, {
-      method: 'GET', 
+      method: 'GET',
       headers: {
         Authorization: `Token ${token}`,
         'Content-Type': 'application/json',
@@ -29,18 +28,12 @@ export async function GET(request: NextRequest) {
       const errorText = await response.text();
       return NextResponse.json({ error: errorText }, { status: response.status });
     }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      return NextResponse.json({ error: 'Invalid response format' }, { status: 500 });
-    }
-
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });
 
-  } catch (error) {
-    console.error('GET /api/queryLog error:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('GET /api/queryLog error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -70,33 +63,18 @@ export async function POST(request: NextRequest) {
     const response = await fetch(targetUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Token ${token}`, 
+        Authorization: `Token ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    });
-
-    console.log('Backend status:', response.status);
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.log('Backend error:', errorText);
-      return NextResponse.json(
-        { error: errorText },
-        { status: response.status }
-      );
-    }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      const text = await response.text();
-      return NextResponse.json({ error: 'Invalid response format' }, { status: 500 });
-    }
+    })
 
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });
 
-  } catch (error) {
-    console.error('POST /api/queryLog error:', error);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('POST /api/queryLog error:', err);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

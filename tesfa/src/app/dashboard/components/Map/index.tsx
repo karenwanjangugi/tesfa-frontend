@@ -1,10 +1,13 @@
 'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import L, { Layer, Path } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import type { FeatureCollection, Geometry } from 'geojson';
+
 import { useCountries } from '../../../hooks/useCountries';
 import { useRegions } from '../../../hooks/useRegions';
-import { usePredictions } from '../../../hooks/usePrediction';
+import { usePredictions, DiseaseRisk, Prediction } from '../../../hooks/usePrediction';
 
 const applyStyle = (layer: Layer, opacity: number) => {
   if ((layer as Path).setStyle) {
@@ -23,16 +26,18 @@ const MapClient = () => {
 
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [worldLand, setWorldLand] = useState<any>(null); 
+  const [worldLand, setWorldLand] = useState<any>(null);
 
   const { countries, loading: loadingC } = useCountries();
   const { regions, loading: loadingR } = useRegions();
   const { predictions } = usePredictions();
 
-
   useEffect(() => {
-    fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson  ')
-      .then((res) => res.json())
+    fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch world land GeoJSON');
+        return res.json();
+      })
       .then((data) => setWorldLand(data))
       .catch((err) => console.error('Failed to load world land GeoJSON:', err));
   }, []);
@@ -40,15 +45,11 @@ const MapClient = () => {
   const createGeoJsonLayers = useCallback(() => {
     if (!leafletMapRef.current) return;
 
-    if (geoJsonLayersRef.current.worldLand) {
-      leafletMapRef.current.removeLayer(geoJsonLayersRef.current.worldLand);
-    }
-    if (geoJsonLayersRef.current.countries) {
-      leafletMapRef.current.removeLayer(geoJsonLayersRef.current.countries);
-    }
-    if (geoJsonLayersRef.current.regions) {
-      leafletMapRef.current.removeLayer(geoJsonLayersRef.current.regions);
-    }
+    Object.values(geoJsonLayersRef.current).forEach((layer) => {
+      if (layer && leafletMapRef.current?.hasLayer(layer)) {
+        leafletMapRef.current.removeLayer(layer);
+      }
+    });
 
     if (worldLand) {
       const worldLandLayer = L.geoJSON(worldLand, {
@@ -62,7 +63,8 @@ const MapClient = () => {
           if (layer instanceof L.Path) {
             const element = layer.getElement();
             if (element) {
-              (element as SVGPathElement).style.filter = 'hue-rotate(180deg) brightness(0) saturate(0)';
+              (element as SVGPathElement).style.filter =
+                'hue-rotate(180deg) brightness(0) saturate(0)';
             }
           }
         },
@@ -72,47 +74,61 @@ const MapClient = () => {
     }
 
     if (countries.length > 0) {
-      const countryLayer = L.geoJSON(
-        countries.map((c) => ({
-          type: 'Feature',
-          properties: { ...c, color: c.is_affected ? '#e53e3e' : '#0f4c75' },
-          geometry: c.geometry,
-        })),
-        {
+      const validCountries = countries.filter(
+        (c) => c.geometry && typeof c.geometry === 'object' && c.geometry.type
+      );
+
+      if (validCountries.length > 0) {
+        const countryFeatures: FeatureCollection<Geometry, any> = {
+          type: 'FeatureCollection',
+          features: validCountries.map((c) => ({
+            type: 'Feature',
+            properties: { ...c, color: c.is_affected ? '#e53e3e' : '#0f4c75' },
+            geometry: c.geometry,
+          })),
+        };
+
+        const countryLayer = L.geoJSON(countryFeatures, {
           style: (feature) => ({
             fillColor: feature?.properties?.color || '#0f4c75',
             weight: 0.5,
             opacity: 1,
-            color: '#ffffff', 
+            color: '#ffffff',
             fillOpacity: 1,
           }),
           onEachFeature: (feature, layer) => {
             if (!feature) return;
-
             layer.on('mouseover', () => {
               setHoveredFeature(feature);
               applyStyle(layer, 1);
             });
-
             layer.on('mouseout', () => {
               setHoveredFeature(null);
               applyStyle(layer, 0.8);
             });
           },
-        }
-      ).addTo(leafletMapRef.current);
+        }).addTo(leafletMapRef.current);
 
-      geoJsonLayersRef.current.countries = countryLayer;
+        geoJsonLayersRef.current.countries = countryLayer;
+      }
     }
 
     if (regions.length > 0) {
-      const regionLayer = L.geoJSON(
-        regions.map((r) => ({
-          type: 'Feature',
-          properties: { ...r, color: r.is_affected ? '#e53e3e' : '#00353D' },
-          geometry: r.geometry,
-        })),
-        {
+      const validRegions = regions.filter(
+        (r) => r.geometry && typeof r.geometry === 'object' && r.geometry.type
+      );
+
+      if (validRegions.length > 0) {
+        const regionFeatures: FeatureCollection<Geometry, any> = {
+          type: 'FeatureCollection',
+          features: validRegions.map((r) => ({
+            type: 'Feature',
+            properties: { ...r, color: r.is_affected ? '#e53e3e' : '#00353D' },
+            geometry: r.geometry,
+          })),
+        };
+
+        const regionLayer = L.geoJSON(regionFeatures, {
           style: (feature) => ({
             fillColor: feature?.properties?.color || '#00353D',
             weight: 0.3,
@@ -122,29 +138,33 @@ const MapClient = () => {
           }),
           onEachFeature: (feature, layer) => {
             if (!feature) return;
-
             layer.on('mouseover', () => {
               setHoveredFeature(feature);
               applyStyle(layer, 0.9);
             });
-
             layer.on('mouseout', () => {
               setHoveredFeature(null);
               applyStyle(layer, 0.6);
             });
           },
+        });
+
+        geoJsonLayersRef.current.regions = regionLayer;
+
+        const currentZoom = leafletMapRef.current.getZoom();
+        if (currentZoom >= 6 && !leafletMapRef.current.hasLayer(regionLayer)) {
+          leafletMapRef.current.addLayer(regionLayer);
         }
-      );
-      geoJsonLayersRef.current.regions = regionLayer;
+      }
     }
-  }, [countries, regions, worldLand]); 
+  }, [countries, regions, worldLand]);
 
   useEffect(() => {
     if (!mapRef.current || leafletMapRef.current) return;
 
     const map = L.map(mapRef.current, {
-      center: [7, 36],
-      zoom: 2,
+      center: [10, 36],
+      zoom: 1,
       minZoom: 5,
       maxZoom: 12,
       zoomControl: false,
@@ -191,11 +211,11 @@ const MapClient = () => {
     }
   }, [createGeoJsonLayers, loadingC, loadingR]);
 
-  const getRiskInfo = () => {
+  const getPredictionInfo = (): Prediction | null => {
     if (!hoveredFeature) return null;
     const id = hoveredFeature.properties?.country_id || hoveredFeature.properties?.region_id;
     const pred = predictions.find((p) => p.country === id || p.region === id);
-    return pred ? pred.disease_risks : ['No health risks in this area.'];
+    return pred || null;
   };
 
   return (
@@ -220,11 +240,75 @@ const MapClient = () => {
             {hoveredFeature.properties?.countries_name || hoveredFeature.properties?.region_name}
           </h3>
           <div className="mt-2 space-y-1">
-            {getRiskInfo()?.map((risk, i) => (
-              <p key={i} className="text-xs">
-                {risk}
-              </p>
-            ))}
+            {(() => {
+              const predictionInfo = getPredictionInfo();
+              const risks = predictionInfo?.disease_risks;
+
+              if (predictionInfo?.description) {
+                return (
+                  <>
+                    <p className="text-xs">{predictionInfo.description}</p>
+                    {!risks || risks.length === 0 ? (
+                      <p className="text-xs">No health risks in this area.</p>
+                    ) : (
+                      <table className="mt-2 text-xs border-collapse border border-gray-400 w-full">
+                        <thead>
+                          <tr className="bg-gray-200">
+                            <th className="border border-gray-400 px-1">Disease</th>
+                            <th className="border border-gray-400 px-1">Risk Level</th>
+                            <th className="border border-gray-400 px-1">Risk %</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(risks as Array<DiseaseRisk | string>).map((item, i) => {
+                            if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+                              return (
+                                <tr key={i} className="even:bg-gray-100">
+                                  <td className="border border-gray-400 px-1">
+                                    {item.disease_name ?? 'Unknown'}
+                                  </td>
+                                  <td className="border border-gray-400 px-1">
+                                    {item.risk_level ?? 'Unknown'}
+                                  </td>
+                                  <td className="border border-gray-400 px-1 text-right">
+                                    {typeof item.risk_percent === 'number'
+                                      ? `${item.risk_percent}%`
+                                      : 'N/A'}
+                                  </td>
+                                </tr>
+                              );
+                            }
+                            return (
+                              <tr key={i} className="even:bg-gray-100">
+                                <td className="border border-gray-400 px-1" colSpan={3}>
+                                  {String(item)}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </>
+                );
+              }
+
+              if (!risks || risks.length === 0) {
+                return <p className="text-xs">No health risks in this area.</p>;
+              }
+
+              return (risks as Array<DiseaseRisk | string>).map((item, i) => {
+                if (typeof item === 'object' && item !== null) {
+                  return (
+                    <p key={i} className="text-xs">
+                      <strong>{item.disease_name ?? ''}:</strong>{' '}
+                      {item.risk_level ?? 'Unknown level'}
+                    </p>
+                  );
+                }
+                return <p key={i} className="text-xs">{String(item)}</p>;
+              });
+            })()}
           </div>
         </div>
       )}

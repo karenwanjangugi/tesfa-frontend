@@ -1,8 +1,4 @@
 export async function fetchRegions() {
-  if (typeof window === 'undefined') {
-    throw new Error('This function can only be called in the browser');
-  }
-
   const token = localStorage.getItem('Token');
 
   if (!token) {

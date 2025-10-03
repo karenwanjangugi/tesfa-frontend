@@ -1,5 +1,5 @@
 export async function fetchCountries() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('Token') : null;
+  const token = localStorage.getItem('Token');
 
   if (!token) {
     throw new Error('No token found in localStorage. Please log in.');

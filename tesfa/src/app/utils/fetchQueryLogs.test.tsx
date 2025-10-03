@@ -1,58 +1,148 @@
 import { fetchQueries, postQuery } from './fetchQueryLogs';
 
-global.fetch = jest.fn();
+describe('fetchQueries', () => {
+  const localStorageMock = (() => {
+    let store: Record<string, string> = {};
+    return {
+      getItem: jest.fn((key: string) => store[key] || null),
+      setItem: jest.fn((key: string, value: string) => {
+        store[key] = value;
+      }),
+      clear: jest.fn(() => {
+        store = {};
+      }),
+      removeItem: jest.fn((key: string) => {
+        delete store[key];
+      }),
+    };
+  })();
 
-describe('fetchQueryLogs Utils', () => {
-  const mockData = [{ id: 1, query: 'Hello', response: 'Hi there!' }];
+  beforeAll(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
+    });
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorageMock.clear();
   });
 
-  it('fetchQueries should return data on success', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+  it('throws error if no token in localStorage', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'user_id' ? '123' : null));
+
+    await expect(fetchQueries()).rejects.toThrow('No token found in localStorage. Please set it.');
+  });
+
+  it('throws error if no user_id in localStorage', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : null));
+
+    await expect(fetchQueries()).rejects.toThrow('No user ID found in localStorage. Please set it.');
+  });
+
+  it('throws error if fetch response is not ok', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      statusText: 'Internal Server Error',
+    } as unknown as Response);
+
+    await expect(fetchQueries()).rejects.toThrow('Something went wrong: Internal Server Error');
+  });
+
+  it('returns JSON response and updates localStorage if userId changes', async () => {
+    const responseData = { userId: 'user_2', data: ['query1', 'query2'] };
+
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+
+    global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockData),
-    });
+      json: jest.fn().mockResolvedValue(responseData),
+    } as unknown as Response);
 
     const result = await fetchQueries();
-    expect(result).toEqual(mockData);
-    expect(global.fetch).toHaveBeenCalledWith('/api/chat');
-  });
 
-  it('fetchQueries should throw on HTTP error', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      statusText: 'Not Found',
+    expect(result).toEqual(responseData);
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('user_id', 'user_2');
+  });
+});
+
+describe('postQuery', () => {
+  const localStorageMock = (() => {
+    let store: Record<string, string> = {};
+    return {
+      getItem: jest.fn((key: string) => store[key] || null),
+      setItem: jest.fn((key: string, value: string) => {
+        store[key] = value;
+      }),
+      clear: jest.fn(() => {
+        store = {};
+      }),
+      removeItem: jest.fn((key: string) => {
+        delete store[key];
+      }),
+    };
+  })();
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: localStorageMock,
     });
-
-    await expect(fetchQueries()).rejects.toThrow('Something went wrong: Not Found');
   });
 
-  it('postQuery should send correct payload and return response', async () => {
-    const postData = { query: 'What is AI?' };
-    const mockResponse = { id: 2, query: 'What is AI?', response: 'AI is...' };
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorageMock.clear();
+  });
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+
+  it('throws error if no token in localStorage', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'user_id' ? '123' : null));
+
+    await expect(postQuery({ query: 'test' })).rejects.toThrow('No token found in localStorage. Please set it.');
+  });
+
+  it('throws error if no user_id in localStorage', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : null));
+
+    await expect(postQuery({ query: 'test' })).rejects.toThrow('No user ID found in localStorage. Please set it.');
+  });
+
+  it('throws error if response not ok', async () => {
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      text: jest.fn().mockResolvedValue('Bad Request'),
+    } as unknown as Response);
+
+    await expect(postQuery({ query: 'test' })).rejects.toThrow('Something went wrong: Bad Request');
+  });
+
+  it('returns json data and updates localStorage userId if changed', async () => {
+    const responseData = { userId: 'user_2', message: 'Success' };
+
+    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+
+    global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockResponse),
-    });
+      json: jest.fn().mockResolvedValue(responseData),
+    } as unknown as Response);
 
-    const result = await postQuery(postData);
-    expect(result).toEqual(mockResponse);
-    expect(global.fetch).toHaveBeenCalledWith('/api/chat', {
+    const data = { query: 'test' };
+    const result = await postQuery(data);
+
+    expect(global.fetch).toHaveBeenCalledWith('/api/queryLog', expect.objectContaining({
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(postData),
-    });
-  });
+      headers: expect.objectContaining({
+        Authorization: 'Token token_value',
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify({ ...data, user_id: 'user_1' }),
+    }));
 
-  it('postQuery should throw on HTTP error', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      statusText: 'Bad Request',
-    });
-
-    await expect(postQuery({ query: '' })).rejects.toThrow('Something went wrong: Bad Request');
+    expect(result).toEqual(responseData);
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('user_id', 'user_2');
   });
 });

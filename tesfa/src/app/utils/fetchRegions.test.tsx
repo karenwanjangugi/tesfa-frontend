@@ -29,16 +29,7 @@ afterEach(() => {
 });
 
 describe('fetchRegions', () => {
-  it('throws if called outside browser', async () => {
-    const originalWindow = global.window;
-    // @ts-ignore
-    delete global.window;
 
-    await expect(fetchRegions()).rejects.toThrow('No token found. Please set token in localStorage');
-
-    // @ts-ignore
-    global.window = originalWindow;
-  });
 
   it('throws if no token in localStorage', async () => {
     mockLocalStorage.getItem.mockReturnValueOnce(null);

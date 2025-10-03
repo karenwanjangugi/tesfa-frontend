@@ -1,7 +1,4 @@
 export async function fetchQueries() {
-  if (typeof window === 'undefined') {
-    throw new Error('fetchQueries can only run in the browser');
-  }
 
   const token = localStorage.getItem('Token');
   const userId = localStorage.getItem('user_id');  
