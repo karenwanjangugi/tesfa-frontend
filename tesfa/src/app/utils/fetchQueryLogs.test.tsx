@@ -1,5 +1,3 @@
-
-
 import { fetchQueries, postQuery } from './fetchQueryLogs';
 
 const createLocalStorageMock = () => {
@@ -40,7 +38,7 @@ describe('fetchQueries', () => {
     );
 
     await expect(fetchQueries()).rejects.toThrow(
-      'No token found in localStorage. Please set it.'
+      'Error fetching queries: No token found. Please set it.'
     );
   });
 
@@ -50,7 +48,7 @@ describe('fetchQueries', () => {
     );
 
     await expect(fetchQueries()).rejects.toThrow(
-      'No user ID found in localStorage. Please set it.'
+      'Error fetching queries: No user ID found. Please set it.'
     );
   });
 
@@ -65,7 +63,7 @@ describe('fetchQueries', () => {
     } as unknown as Response);
 
     await expect(fetchQueries()).rejects.toThrow(
-      'Something went wrong: Internal Server Error'
+      'Error fetching queries: Something went wrong: Internal Server Error'
     );
   });
 
@@ -110,7 +108,7 @@ describe('postQuery', () => {
     );
 
     await expect(postQuery({ query: 'test' })).rejects.toThrow(
-      'No token found in localStorage. Please set it.'
+      'Error posting query: No token found in localStorage. Please set it.'
     );
   });
 
@@ -120,7 +118,7 @@ describe('postQuery', () => {
     );
 
     await expect(postQuery({ query: 'test' })).rejects.toThrow(
-      'No user ID found in localStorage. Please set it.'
+      'Error posting query: No user ID found in localStorage. Please set it.'
     );
   });
 
@@ -135,7 +133,7 @@ describe('postQuery', () => {
     } as unknown as Response);
 
     await expect(postQuery({ query: 'test' })).rejects.toThrow(
-      'Something went wrong: Bad Request'
+      'Error posting query: Something went wrong: Bad Request'
     );
   });
 
