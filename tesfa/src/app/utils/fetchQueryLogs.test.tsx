@@ -29,19 +29,31 @@ describe('fetchQueries', () => {
   });
 
   it('throws error if no token in localStorage', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'user_id' ? '123' : null));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'user_id') return '123';
+      if (key === 'Token') return null; 
+      return null;
+    });
 
     await expect(fetchQueries()).rejects.toThrow('No token found in localStorage. Please set it.');
   });
 
   it('throws error if no user_id in localStorage', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : null));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return null; 
+      return null;
+    });
 
     await expect(fetchQueries()).rejects.toThrow('No user ID found in localStorage. Please set it.');
   });
 
   it('throws error if fetch response is not ok', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return 'user_1';
+      return null;
+    });
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
@@ -54,7 +66,11 @@ describe('fetchQueries', () => {
   it('returns JSON response and updates localStorage if userId changes', async () => {
     const responseData = { userId: 'user_2', data: ['query1', 'query2'] };
 
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return 'user_1';
+      return null;
+    });
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
@@ -67,6 +83,7 @@ describe('fetchQueries', () => {
     expect(localStorageMock.setItem).toHaveBeenCalledWith('user_id', 'user_2');
   });
 });
+
 
 describe('postQuery', () => {
   const localStorageMock = (() => {
@@ -96,21 +113,32 @@ describe('postQuery', () => {
     localStorageMock.clear();
   });
 
-
   it('throws error if no token in localStorage', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'user_id' ? '123' : null));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'user_id') return '123';
+      if (key === 'Token') return null; 
+      return null;
+    });
 
     await expect(postQuery({ query: 'test' })).rejects.toThrow('No token found in localStorage. Please set it.');
   });
 
   it('throws error if no user_id in localStorage', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : null));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return null; 
+      return null;
+    });
 
     await expect(postQuery({ query: 'test' })).rejects.toThrow('No user ID found in localStorage. Please set it.');
   });
 
   it('throws error if response not ok', async () => {
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return 'user_1';
+      return null;
+    });
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
@@ -123,7 +151,11 @@ describe('postQuery', () => {
   it('returns json data and updates localStorage userId if changed', async () => {
     const responseData = { userId: 'user_2', message: 'Success' };
 
-    localStorageMock.getItem.mockImplementation((key) => (key === 'Token' ? 'token_value' : 'user_1'));
+    localStorageMock.getItem.mockImplementation((key) => {
+      if (key === 'Token') return 'token_value';
+      if (key === 'user_id') return 'user_1';
+      return null;
+    });
 
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
