@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import Layout from '../sharedcomponents/Layout';
+import Layout from '../sharedComponents/Layout';
 import ChatWidget from './components/ChatBot';
 
 const MapClient = dynamic(() => import('./components/Map'), {
