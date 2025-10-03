@@ -8,6 +8,7 @@ import type { FeatureCollection, Geometry } from 'geojson';
 import { useCountries } from '../../../hooks/useCountries';
 import { useRegions } from '../../../hooks/useRegions';
 import { usePredictions, DiseaseRisk, Prediction } from '../../../hooks/usePrediction';
+import useWorldLand from '../../../hooks/useWorldLand';
 
 const applyStyle = (layer: Layer, opacity: number) => {
   if ((layer as Path).setStyle) {
@@ -26,21 +27,12 @@ const MapClient = () => {
 
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [worldLand, setWorldLand] = useState<any>(null);
 
   const { countries, loading: loadingC } = useCountries();
   const { regions, loading: loadingR } = useRegions();
   const { predictions } = usePredictions();
 
-  useEffect(() => {
-    fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch world land GeoJSON');
-        return res.json();
-      })
-      .then((data) => setWorldLand(data))
-      .catch((err) => console.error('Failed to load world land GeoJSON:', err));
-  }, []);
+  const { worldLand, loading: loadingW, error: errorW } = useWorldLand();
 
   const createGeoJsonLayers = useCallback(() => {
     if (!leafletMapRef.current) return;
@@ -75,16 +67,16 @@ const MapClient = () => {
 
     if (countries.length > 0) {
       const validCountries = countries.filter(
-        (c) => c.geometry && typeof c.geometry === 'object' && c.geometry.type
+        (country) => country.geometry && typeof country.geometry === 'object' && country.geometry.type
       );
 
       if (validCountries.length > 0) {
         const countryFeatures: FeatureCollection<Geometry, any> = {
           type: 'FeatureCollection',
-          features: validCountries.map((c) => ({
+          features: validCountries.map((country) => ({
             type: 'Feature',
-            properties: { ...c, color: c.is_affected ? '#e53e3e' : '#0f4c75' },
-            geometry: c.geometry,
+            properties: { ...country, color: country.is_affected ? '#e53e3e' : '#0f4c75' },
+            geometry: country.geometry,
           })),
         };
 
@@ -115,16 +107,16 @@ const MapClient = () => {
 
     if (regions.length > 0) {
       const validRegions = regions.filter(
-        (r) => r.geometry && typeof r.geometry === 'object' && r.geometry.type
+        (region) => region.geometry && typeof region.geometry === 'object' && region.geometry.type
       );
 
       if (validRegions.length > 0) {
         const regionFeatures: FeatureCollection<Geometry, any> = {
           type: 'FeatureCollection',
-          features: validRegions.map((r) => ({
+          features: validRegions.map((region) => ({
             type: 'Feature',
-            properties: { ...r, color: r.is_affected ? '#e53e3e' : '#00353D' },
-            geometry: r.geometry,
+            properties: { ...region, color: region.is_affected ? '#e53e3e' : '#00353D' },
+            geometry: region.geometry,
           })),
         };
 
@@ -206,15 +198,15 @@ const MapClient = () => {
   }, []);
 
   useEffect(() => {
-    if (leafletMapRef.current && !loadingC && !loadingR) {
+    if (leafletMapRef.current && !loadingC && !loadingR && !loadingW && !errorW) {
       createGeoJsonLayers();
     }
-  }, [createGeoJsonLayers, loadingC, loadingR]);
+  }, [createGeoJsonLayers, loadingC, loadingR, loadingW, errorW]);
 
   const getPredictionInfo = (): Prediction | null => {
     if (!hoveredFeature) return null;
     const id = hoveredFeature.properties?.country_id || hoveredFeature.properties?.region_id;
-    const pred = predictions.find((p) => p.country === id || p.region === id);
+    const pred = predictions.find((prediction) => prediction.country === id || prediction.region === id);
     return pred || null;
   };
 
@@ -226,7 +218,7 @@ const MapClient = () => {
         onMouseMove={(e) => {
           setMousePosition({ x: e.clientX, y: e.clientY });
         }}
-      />
+      />                                        
       {hoveredFeature && (
         <div
           className="absolute bg-yellow-500 text-gray-900 p-4 rounded-lg shadow-lg max-w-xs z-[1000] pointer-events-none"
@@ -301,8 +293,7 @@ const MapClient = () => {
                 if (typeof item === 'object' && item !== null) {
                   return (
                     <p key={i} className="text-xs">
-                      <strong>{item.disease_name ?? ''}:</strong>{' '}
-                      {item.risk_level ?? 'Unknown level'}
+                      <strong>{item.disease_name ?? ''}:</strong> {item.risk_level ?? 'Unknown level'}
                     </p>
                   );
                 }

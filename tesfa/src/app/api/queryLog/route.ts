@@ -1,18 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-
+import { NextRequest } from 'next/server';
 export async function GET(request: NextRequest) {
   const baseUrl = process.env.BASE_URL;
 
   if (!baseUrl) {
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return new Response(
+      JSON.stringify({ error: 'Server misconfigured' }),
+      { status: 500 }
+    );
   }
 
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Token ')) {
-    return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
+    return new Response(
+      JSON.stringify({ error: 'Missing or invalid token' }),
+      { status: 401 }
+    );
   }
   const token = authHeader.split(' ')[1];
-
   const targetUrl = baseUrl.endsWith('/') ? `${baseUrl}queries/` : `${baseUrl}/queries/`;
 
   try {
@@ -26,16 +30,17 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json({ error: errorText }, { status: response.status });
+      return new Response(
+        JSON.stringify({ error: errorText }),
+        { status: response.status }
+      );
     }
     const result = await response.json();
-    return NextResponse.json(result, { status: 200 });
+    return new Response(JSON.stringify(result), { status: 200 });
 
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error('GET /api/queryLog error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
       { status: 500 }
     );
   }
@@ -45,20 +50,24 @@ export async function POST(request: NextRequest) {
   const baseUrl = process.env.BASE_URL;
 
   if (!baseUrl) {
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return new Response(
+      JSON.stringify({ error: 'Server misconfigured' }),
+      { status: 500 }
+    );
   }
 
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Token ')) {
-    return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
+    return new Response(
+      JSON.stringify({ error: 'Missing or invalid token' }),
+      { status: 401 }
+    );
   }
   const token = authHeader.split(' ')[1];
-
   const targetUrl = baseUrl.endsWith('/') ? `${baseUrl}queries/` : `${baseUrl}/queries/`;
 
   try {
     const body = await request.json();
-    console.log('Sending to backend:', JSON.stringify(body));
 
     const response = await fetch(targetUrl, {
       method: 'POST',
@@ -67,16 +76,14 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    })
+    });
 
     const result = await response.json();
-    return NextResponse.json(result, { status: 200 });
+    return new Response(JSON.stringify(result), { status: 200 });
 
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error('POST /api/queryLog error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
       { status: 500 }
     );
   }

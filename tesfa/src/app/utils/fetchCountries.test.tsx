@@ -1,61 +1,54 @@
-
-import { fetchCountries } from './fetchCountries'; 
-
+import { fetchCountries } from './fetchCountries';
 global.fetch = jest.fn();
-
-const mockLocalStorage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-  key: jest.fn(),
-  length: 0,
-};
-
-Object.defineProperty(global, 'localStorage', {
-  value: mockLocalStorage,
-  writable: true,
-});
-
 describe('fetchCountries', () => {
-  const mockToken = 'abc123';
+  const mockToken = 'mock-token';
   const mockCountries = [{ id: 1, name: 'USA' }, { id: 2, name: 'Canada' }];
-
   beforeEach(() => {
-    jest.clearAllMocks();
+    (global.fetch as jest.Mock).mockClear();
+    localStorage.clear();
   });
-
-  it('throws error if no token is found', async () => {
-    (global.localStorage.getItem as jest.Mock).mockReturnValue(null);
-
+  it('throws error if no token in localStorage', async () => {
     await expect(fetchCountries()).rejects.toThrow('No token found in localStorage. Please log in.');
   });
-
-  it('fetches countries successfully with valid token', async () => {
-    (global.localStorage.getItem as jest.Mock).mockReturnValue(mockToken);
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockCountries),
-    });
-
-    const result = await fetchCountries();
-
-    expect(global.localStorage.getItem).toHaveBeenCalledWith('Token');
-    expect(global.fetch).toHaveBeenCalledWith('/api/countries', {
-      headers: {
-        Authorization: `Token ${mockToken}`,
-      },
-    });
-    expect(result).toEqual(mockCountries);
-  });
-
-  it('throws error if response is not ok', async () => {
-    (global.localStorage.getItem as jest.Mock).mockReturnValue(mockToken);
-    (global.fetch as jest.Mock).mockResolvedValue({
+  it('throws error if fetch response is not ok', async () => {
+    localStorage.setItem('Token', mockToken);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
-      statusText: 'Internal Server Error',
+      statusText: 'Not Found',
     });
-
-    await expect(fetchCountries()).rejects.toThrow('Something went wrong: Internal Server Error');
+    await expect(fetchCountries()).rejects.toThrow('Something went wrong, Not Found');
+  });
+  it('throws error if response JSON is empty array', async () => {
+    localStorage.setItem('Token', mockToken);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [],
+    });
+    await expect(fetchCountries()).rejects.toThrow('No countries found.');
+  });
+  it('throws error if response JSON is null', async () => {
+    localStorage.setItem('Token', mockToken);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => null,
+    });
+    await expect(fetchCountries()).rejects.toThrow('No countries found.');
+  });
+  it('returns countries when fetch is successful', async () => {
+    localStorage.setItem('Token', mockToken);
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockCountries,
+    });
+    const result = await fetchCountries();
+    expect(result).toEqual(mockCountries);
+    expect(global.fetch).toHaveBeenCalledWith('/api/countries', {
+      headers: { Authorization: `Token ${mockToken}` },
+    });
+  });
+  it('wraps unexpected errors in custom message', async () => {
+    localStorage.setItem('Token', mockToken);
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network failure'));
+    await expect(fetchCountries()).rejects.toThrow('Error fetching countries: Network failure');
   });
 });

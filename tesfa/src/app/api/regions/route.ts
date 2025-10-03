@@ -1,17 +1,21 @@
 
-import { NextRequest, NextResponse } from 'next/server';
-
+import { NextRequest } from 'next/server';
 export async function GET(request: NextRequest) {
   const baseUrl = process.env.BASE_URL;
 
   if (!baseUrl) {
-    console.error('Missing BASE_URL');
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return new Response(
+      JSON.stringify({ error: 'Server misconfigured' }),
+      { status: 500 }
+    );
   }
 
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Token ')) {
-    return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
+    return new Response(
+      JSON.stringify({ error: 'Missing or invalid token' }),
+      { status: 401 }
+    );
   }
 
   const token = authHeader.split(' ')[1];
@@ -29,11 +33,11 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await response.json();
-    return NextResponse.json(result, { status: 200 });
+    return new Response(JSON.stringify(result), { status: 200 });
+
   } catch (error) {
-    console.error('Error in /api/regions:', error);
-    return NextResponse.json(
-      { error: (error as Error).message },
+    return new Response(
+      JSON.stringify({ error: (error as Error).message }),
       { status: 500 }
     );
   }

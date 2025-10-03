@@ -1,4 +1,3 @@
-import DashboardPage from "@/app/dashboard/page"
 import Sidebar from "../SideBar"
 export default function Layout({
   children,

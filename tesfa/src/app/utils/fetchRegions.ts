@@ -1,14 +1,15 @@
+const baseurl = '/api/regions';
+
 export async function fetchRegions() {
-  const token = localStorage.getItem('Token');
-
-  if (!token) {
-    throw new Error('No token found. Please set token in localStorage.');
-  }
-
   try {
-    const response = await fetch('/api/regions', {
+    const token = localStorage.getItem('Token');
+    if (!token) {
+      throw new Error('No token found. Please set token in localStorage.');
+    }
+
+    const response = await fetch(baseurl, {
       headers: {
-        Authorization: `Token ${token}`, 
+        Authorization: `Token ${token}`,
       },
     });
 
@@ -17,6 +18,11 @@ export async function fetchRegions() {
     }
 
     const result = await response.json();
+
+    if (!result || (Array.isArray(result) && result.length === 0)) {
+      throw new Error('No regions found.');
+    }
+
     return result;
   } catch (error) {
     throw new Error(`Error fetching regions: ${(error as Error).message}`);
