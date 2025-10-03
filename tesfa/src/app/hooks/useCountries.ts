@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchCountries } from '../utils/fetchCountries';
-
-export interface Country {
-  country_id: string;
-  countries_name: string;
-  geometry: any;
-  is_affected: boolean;
-}
+import { Country } from '../utils/type';
 
 export const useCountries = () => {
   const [countries, setCountries] = useState<Country[]>([]);
@@ -18,8 +12,8 @@ export const useCountries = () => {
       try {
         const data = await fetchCountries();
         setCountries(data);
-      } catch (err) {
-        setError((err as Error).message);
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

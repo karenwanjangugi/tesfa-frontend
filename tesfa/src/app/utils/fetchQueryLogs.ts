@@ -6,10 +6,10 @@ export async function fetchQueries() {
     const userId = localStorage.getItem('user_id');
 
     if (!token) {
-      throw new Error('No token found in localStorage. Please set it.');
+      throw new Error('No token found. Please set it.');
     }
     if (!userId) {
-      throw new Error('No user ID found in localStorage. Please set it.');
+      throw new Error('No user ID found. Please set it.');
     }
 
     const response = await fetch(baseurl, {

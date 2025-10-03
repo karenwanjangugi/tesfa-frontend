@@ -4,7 +4,7 @@ export async function GET(request: NextRequest) {
 
   if (!baseUrl) {
     return new Response(
-      JSON.stringify({ error: 'Server misconfigured' }),
+      JSON.stringify({ error: 'URL not found' }),
       { status: 500 }
     );
   }

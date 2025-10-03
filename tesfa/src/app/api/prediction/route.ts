@@ -4,40 +4,44 @@ export async function GET(request: NextRequest) {
   const baseUrl = process.env.BASE_URL;
 
   if (!baseUrl) {
-    console.error('Missing BASE_URL');
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'URL not found' },
+      { status: 500 }
+    );
   }
 
   const authHeader = request.headers.get('authorization');
   if (!authHeader || !authHeader.startsWith('Token ')) {
-    return NextResponse.json({ error: 'Missing or invalid token' }, { status: 401 });
+    return NextResponse.json(
+      { error: 'Missing or invalid token' },
+      { status: 401 }
+    );
   }
 
   const token = authHeader.split(' ')[1];
+  const url = `${baseUrl}predictions/`;
 
   try {
-    const response = await fetch(`${baseUrl}predictions/`, {
+    const response = await fetch(url, {
       headers: {
         Authorization: `Token ${token}`,
+        'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('External API Error:', errorText);
       return NextResponse.json(
-        { error: `External API: ${response.status} ${errorText}` },
+        { error: `API: ${response.status} ${errorText}` },
         { status: response.status }
       );
     }
 
     const result = await response.json();
     return NextResponse.json(result, { status: 200 });
-  } catch (error: unknown) {
-    const err = error as Error;
-    console.error('Server Error:', err);
+  } catch (error) {
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: (error as Error).message || 'Internal server error' },
       { status: 500 }
     );
   }

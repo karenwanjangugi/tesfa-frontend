@@ -1,14 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { fetchQueries, postQuery } from '../utils/fetchQueryLogs';
-
-export interface QueryLog {
-  id: number;
-  query: string;
-  response?: string;
-  user_id?: number;
-  created_at?: string;
-}
+import { QueryLog } from '../utils/type';
 
 export const useQueryLog = () => {
   const [logs, setLogs] = useState<QueryLog[]>([]);

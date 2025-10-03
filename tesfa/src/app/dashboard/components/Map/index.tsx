@@ -7,7 +7,8 @@ import type { FeatureCollection, Geometry } from 'geojson';
 
 import { useCountries } from '../../../hooks/useCountries';
 import { useRegions } from '../../../hooks/useRegions';
-import { usePredictions, DiseaseRisk, Prediction } from '../../../hooks/usePrediction';
+import { usePredictions} from '../../../hooks/usePrediction';
+import {DiseaseRisk, Prediction} from '../../../utils/type';
 import useWorldLand from '../../../hooks/useWorldLand';
 
 const applyStyle = (layer: Layer, opacity: number) => {

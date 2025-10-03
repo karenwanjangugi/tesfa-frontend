@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchRegions } from '../utils/fetchRegions';
-
-export interface Region {
-  region_id: string;
-  region_name: string;
-  country: string;
-  geometry: any;
-  is_affected: boolean;
-}
+import { Region } from '../utils/type';
 
 export const useRegions = () => {
   const [regions, setRegions] = useState<Region[]>([]);

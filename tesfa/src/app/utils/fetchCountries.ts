@@ -4,7 +4,7 @@ export async function fetchCountries() {
   try {
     const token = localStorage.getItem('Token');
     if (!token) {
-      throw new Error('No token found in localStorage. Please log in.');
+      throw new Error('No token found. Please log in.');
     }
 
     const response = await fetch(baseurl, {

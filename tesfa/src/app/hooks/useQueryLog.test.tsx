@@ -1,5 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useQueryLog, QueryLog } from './useQueryLog';
+import { useQueryLog} from './useQueryLog';
+import {QueryLog} from '../utils/type'
 import * as fetchModule from '../utils/fetchQueryLogs';
 
 jest.mock('../utils/fetchQueryLogs');
