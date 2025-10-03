@@ -150,7 +150,7 @@ export default function TasksDetails() {
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-8"></div>
 
-      <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 mb-6 overflow-y-auto pr-2">
+      <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 sm:text-[0.5em] mb-6 overflow-y-auto pr-2">
       {filteredTasks.length > 0 ? (
           filteredTasks.map((task, index) => (
             <motion.div
@@ -158,7 +158,7 @@ export default function TasksDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
-              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border sm:text-[0.5em] border-gray-200 ${
+              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${
                 isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
               }`}
               onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
@@ -186,7 +186,7 @@ export default function TasksDetails() {
                   }`}
                 ></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-800 text-xl truncate">
+                  <p className="text-gray-800 text-xl sm:text-lg truncate">
                     {task.title}
                   </p>
                 </div>
