@@ -34,7 +34,7 @@ export default function ApiUsageChart() {
 
   return (
     <div className="flex h-screen">
-      <div className="flex-1 bg-cyan-100 py-10 px-1">
+      <div className="flex-1 py-10 px-1">
         <div className="flex justify-between items-center mb-5">
           <h1 className="text-xl font-semibold">API Usage Overview</h1>
           <span className="text-gray-500">Last 9 months</span>

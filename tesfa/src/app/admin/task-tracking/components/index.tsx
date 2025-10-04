@@ -110,7 +110,7 @@ export default function TasksAdmin() {
 
   return (
     <div>
-      <div className="flex justify-around items-center h-[25vh] mb-20">
+      <div className="flex justify-around  items-center h-[25vh] mb-20">
         {liveDashboardStats.map((stat, index) => (
           <div
             key={index}

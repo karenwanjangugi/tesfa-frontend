@@ -22,15 +22,22 @@ export const fetchTaskAssignments = async (): Promise<TaskAssignment[]> => {
   return response.json();
 };
 
-export const fetchTasksAssignmentsAdmin = async (): Promise<TaskAssignment[]> => {
-  const token = getToken();
-  const headers = buildHeaders(token);
-  const response = await fetch('/api/task-assignments/', { headers });
-  if (!response.ok) {
-    throw new Error('Failed to fetch tasks from API');
+const baseUrl = '/api/task-assignments';
+
+export async function fetchTasksAssignmentsAdmin(): Promise<TaskAssignment[]> {
+  try {
+    const token = getToken();
+    const headers = buildHeaders(token);
+    const response = await fetch(baseUrl, { headers });
+    if (!response.ok) {
+      throw new Error('Failed to fetch tasks from API: ' + response.statusText);
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    throw new Error(`Error fetching tasks: ${(error as Error).message}`);
   }
-  return response.json();
-};
+}
 
 export const updateTaskAssignmentStatus = async (
   id: number,

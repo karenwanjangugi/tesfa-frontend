@@ -162,7 +162,7 @@ export default function EditProfilePage() {
             <button
               type="button"
               onClick={() => document.getElementById("logoInput")?.click()}
-              className="absolute bottom-13 right-184 bg-white border-2 border-[#C3A041] text-[#C3A041] w-9 h-9 rounded-full flex items-center justify-center shadow hover:bg-[#f3fbfd] transition"
+              className="absolute bottom-13 right-198 bg-white border-2 border-[#C3A041] text-[#C3A041] w-9 h-9 rounded-full flex items-center justify-center shadow hover:bg-[#f3fbfd] transition"
               aria-label="Upload logo"
             >
               <CameraIcon className="w-5 h-5 cursor-pointer" />

@@ -2,31 +2,44 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Sidebar from "../sharedcomponent/Sidebar";
 import ApiUsageChart from "./ApiUsageChart";
+import { useQueryLog } from "@/app/hooks/useQueryLog";
+
+type ChartData = {
+  month: string;
+  value: number;
+};
+
+function aggregateQueriesByMonth(logs: { query: string; created_at?: string }[]): ChartData[] {
+  const monthCounts: Record<string, number> = {};
+  const monthOrder = [
+    "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  logs.forEach((log) => {
+    let dateStr = log.created_at;
+    let month: string;
+    if (dateStr) {
+      const date = new Date(dateStr);
+      month = monthOrder[date.getMonth()];
+    } else {
+      month = "Unknown";
+    }
+    monthCounts[month] = (monthCounts[month] || 0) + 1;
+  });
+
+  return monthOrder
+    .filter((m) => monthCounts[m])
+    .map((m) => ({
+      month: m,
+      value: monthCounts[m],
+    }));
+}
 
 export default function PerformancePage() {
-  const queryData = [
-    { month: "Feb", value: 500 },
-    { month: "Mar", value: 200 },
-    { month: "Apr", value: 400 },
-    { month: "May", value: 300 },
-    { month: "June", value: 450 },
-    { month: "July", value: 280 },
-    { month: "Aug", value: 470 },
-    { month: "Sep", value: 320 },
-    { month: "Oct", value: 350 },
-  ];
+  const { logs, loading, error } = useQueryLog();
 
-  const apiUsageData = [
-    { month: "Feb", calls: 1200 },
-    { month: "Mar", calls: 950 },
-    { month: "Apr", calls: 1400 },
-    { month: "May", calls: 1100 },
-    { month: "June", calls: 1600 },
-    { month: "July", calls: 1050 },
-    { month: "Aug", calls: 1750 },
-    { month: "Sep", calls: 1300 },
-    { month: "Oct", calls: 1420 },
-  ];
+
+  const queryData = aggregateQueriesByMonth(logs as any[]);
 
   return (
     <div className="flex h-screen">
@@ -36,7 +49,6 @@ export default function PerformancePage() {
           <h1 className="text-2xl font-semibold flex items-center text-teal-900 gap-2">
             Tesfa Agent
           </h1>
-         
         </div>
 
         <div className="space-y-8 mb-7">
@@ -56,26 +68,30 @@ export default function PerformancePage() {
           </div>
         </div>
 
-    
-        <div className="bg-cyan-100 rounded-lg shadow p-6">
+        <div className="bg-blue-100 rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold"></h2>
             <button className="px-5 py-2 border cursor-pointer border-gray-400 rounded-full text-sm">
               Number of Queries
             </button>
           </div>
-          <ResponsiveContainer width="100%" height={250}>
-            <AreaChart data={queryData}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="value" stroke="#08515C" fill="#0ffff" />
-            </AreaChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="text-center py-10">Loading chart...</div>
+          ) : error ? (
+            <div className="text-red-600 text-center py-10">{error}</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={queryData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Area type="monotone" dataKey="value" stroke="#08515C" fill="#0ffff" />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
-<ApiUsageChart/>
+        <ApiUsageChart />
       </div>
     </div>
   );
 }
-

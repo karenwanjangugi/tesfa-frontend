@@ -68,7 +68,7 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authToken"); 
-    router.push("/login"); 
+    router.push("/onboarding/login"); 
   };
 
   return (
