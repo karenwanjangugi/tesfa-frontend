@@ -24,7 +24,7 @@ jest.mock('recharts', () => {
 
 
 jest.mock('../sharedcomponent/Sidebar', () => () => <div data-testid="sidebar" />);
-jest.mock('./ApiUsageChart', () => () => <div data-testid="api-usage-chart" />);
+jest.mock('./components/ApiUsageChart', () => () => <div data-testid="api-usage-chart" />);
 
 describe('PerformancePage', () => {
   const mockLogs = [
