@@ -55,7 +55,7 @@ const Sidebar = () => {
     >
     
       <div>
-        <div className="flex justify-between mb-20">
+        <div className="flex  justify-between mb-20">
           <button
             className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition"
             onClick={() => setIsOpen(!isOpen)}
@@ -68,7 +68,7 @@ const Sidebar = () => {
             <div
               className={`${isOpen ? "" : "hidden"}`}
             >
-            <img src={"/Images/TesfaLogo.png"} alt="Tesfa Logo"></img>
+            <img src={"/Images/tesfalogo.png"} alt="Tesfa Logo"></img>
             </div>
           </div>
         </div>

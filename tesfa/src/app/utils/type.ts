@@ -1,4 +1,5 @@
 export type TaskStatus = "pending" | "in_progress" | "cancelled" | "completed";
+import type { Geometry, Feature, FeatureCollection } from 'geojson';
 
 export interface Task {
   id: string;
@@ -48,13 +49,47 @@ export interface User {
   created_at: string;
   updated_at: string;
 }
+export interface Country {
+  country_id: string;
+  countries_name: string;
+  geometry: Geometry;
+  is_affected: boolean;
+}
+
+export interface Region {
+  region_id: string;
+  region_name: string;
+  country: string;
+  geometry: Geometry;
+  is_affected: boolean;
+}
+export interface QueryLog {
+  id: number;
+  query: string;
+  response?: string;
+  user_id?: number;
+  created_at?: string;
+}
+
+export interface DiseaseRisk {
+  disease_name?: string;
+  risk_level?: string;
+  risk_percent?: number;
+}
 
 export interface Prediction {
   prediction_id: number;
   description: string;
-  disease_risks: Record<string, unknown>[]; 
+  disease_risks: Array<DiseaseRisk | string>;
   date_generated: string;
-  agent: unknown; 
   region: string | null;
   country: string | null;
+  lng: null | number;
+  lat: null | number;
 }
+
+export type MapFeatureProperties = Country | Region;
+
+export type MapFeature = Feature<Geometry, MapFeatureProperties>;
+
+export type MapFeatureCollection = FeatureCollection<Geometry, MapFeatureProperties>;

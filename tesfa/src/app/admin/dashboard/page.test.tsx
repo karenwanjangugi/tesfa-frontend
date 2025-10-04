@@ -1,147 +1,150 @@
-import { render, screen, waitFor } from '@testing-library/react';
+// src/app/admin/dashboard/page.test.tsx
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import React from 'react';
 import DashboardPage from './page';
 
-import CalendarPicker from '../sharedcomponent/Calender';
+// Create mock functions for each hook
+const mockUseFetchOrganizations = jest.fn();
+const mockUseFetchPredictions = jest.fn();
+const mockUseFetchTasks = jest.fn();
+const mockUseFetchQueries = jest.fn();
+const mockUseAffectedCountries = jest.fn();
 
-// ✅ Mock all data hooks
+// Mock all custom hooks
 jest.mock('@/app/hooks/useFetchOrganizations', () => ({
   __esModule: true,
-  default: () => ({
-    organizations: [
-      { id: 1, created_at: '2024-01-15T10:00:00Z', role: 'organization', is_active: true },
-      { id: 2, created_at: '2024-02-20T10:00:00Z', role: 'organization', is_active: true },
-    ],
-    loading: false,
-  }),
+  default: () => mockUseFetchOrganizations(),
 }));
 
 jest.mock('@/app/hooks/useFetchPredictionsAdmin', () => ({
   __esModule: true,
-  useFetchPredictions: () => ({
-    predictions: [{ id: 1 }, { id: 2 }],
-    loading: false,
-  }),
+  useFetchPredictions: () => mockUseFetchPredictions(),
 }));
 
 jest.mock('@/app/hooks/useFetchTasksAdmin', () => ({
   __esModule: true,
-  useFetchTasks: () => ({
-    tasks: [{ id: 1 }],
-    loading: false,
-  }),
+  useFetchTasks: () => mockUseFetchTasks(),
 }));
 
 jest.mock('@/app/hooks/useQueries', () => ({
   __esModule: true,
-  useFetchQueries: () => ({
-    queries: [
-      { id: 1, created_at: '2024-03-10T10:00:00Z' },
-      { id: 2, created_at: '2024-04-05T10:00:00Z' },
-      { id: 3, created_at: '2024-05-01T10:00:00Z' },
-    ],
-    loading: false,
-  }),
+  useFetchQueries: () => mockUseFetchQueries(),
 }));
 
 jest.mock('@/app/hooks/useAffectedRegions', () => ({
   __esModule: true,
-  useAffectedCountries: () => ({
-    data: [
-      { country_id: 1, countries_name: 'Ethiopia' },
-      { country_id: 2, countries_name: 'Sudan' },
-    ],
-    loading: false,
-  }),
+  useAffectedCountries: () => mockUseAffectedCountries(),
 }));
 
-// ✅ Mock shared components using ABSOLUTE paths (via @/)
-jest.mock('@/app/sharedcomponent/Sidebar', () => ({
-  __esModule: true,
-  default: () => <div data-testid="sidebar">Sidebar</div>,
-}));
-
-// ⚠️ CRITICAL: Use "Calendar", NOT "Calender"
-jest.mock('@/app/sharedcomponent/Calendar', () => ({
-  __esModule: true,
-  default: ({ onDateChange }: { onDateChange: (range: [Date | null, Date | null]) => void }) => (
-    <button onClick={() => onDateChange([null, null])} data-testid="calendar-picker">
-      Calendar Picker
-    </button>
-  ),
-}));
-
-// ✅ Mock Recharts (they don't render in JSDOM)
+// Mock Recharts components
 jest.mock('recharts', () => {
-  const MockChart = ({ children }: { children?: React.ReactNode }) => (
-    <div data-testid="chart">{children}</div>
-  );
+  const createMock = (name: string) => () => <div data-testid={`mock-${name}`} />;
   return {
-    BarChart: MockChart,
-    Bar: () => null,
-    XAxis: () => null,
-    YAxis: () => null,
-    Tooltip: () => null,
-    LineChart: MockChart,
-    Line: () => null,
-    CartesianGrid: () => null,
-    Legend: () => null,
-    PieChart: MockChart,
-    Pie: () => null,
-    Cell: () => null,
-    ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
-      <div style={{ width: '100%', height: 300 }}>{children}</div>
-    ),
+    BarChart: createMock('bar-chart'),
+    Bar: () => <div />,
+    XAxis: () => <div />,
+    YAxis: () => <div />,
+    Tooltip: () => <div />,
+    LineChart: createMock('line-chart'),
+    Line: () => <div />,
+    CartesianGrid: () => <div />,
+    Legend: () => <div />,
+    PieChart: createMock('pie-chart'),
+    Pie: () => <div />,
+    Cell: () => <div />,
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   };
 });
 
-// ✅ Mock spinner
+// Mock shared components
+jest.mock('../sharedcomponent/Calender', () => {
+  return ({ onDateChange }: { onDateChange: (range: [Date | null, Date | null]) => void }) => {
+    React.useEffect(() => {
+      onDateChange([new Date('2024-01-01'), new Date('2024-01-31')]);
+    }, [onDateChange]);
+    return <div data-testid="calendar-picker" />;
+  };
+});
+
+jest.mock('../sharedcomponent/Sidebar', () => () => <div data-testid="sidebar" />);
+
 jest.mock('react-icons/fa', () => ({
-  FaSpinner: () => <span data-testid="spinner">Loading...</span>,
+  FaSpinner: () => <span data-testid="spinner" />,
 }));
 
 describe('DashboardPage', () => {
-  it('renders dashboard with data and charts', async () => {
-    render(<DashboardPage />);
-
-    // Wait for initial render
-    await waitFor(() => {
-      expect(screen.getByText('High Risk Areas')).toBeInTheDocument();
+  beforeEach(() => {
+    // ✅ CORRECT: return { data, loading }
+    mockUseFetchOrganizations.mockReturnValue({
+      organizations: [
+        { id: 1, role: 'organization', is_active: true, created_at: '2024-01-15T00:00:00Z' },
+        { id: 2, role: 'organization', is_active: false, created_at: '2024-02-20T00:00:00Z' },
+      ],
+      loading: false,
     });
 
-    // ✅ Stats
-    expect(screen.getByText('High Risk Areas')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument(); // countries
+    mockUseFetchPredictions.mockReturnValue({
+      predictions: [{ id: 1 }, { id: 2 }],
+      loading: false,
+    });
 
-    expect(screen.getByText('Total Organizations')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument(); // filteredOrgs (all within date range)
+    mockUseFetchTasks.mockReturnValue({
+      tasks: [{ id: 1 }],
+      loading: false,
+    });
 
-    expect(screen.getByText('Active Organizations')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument(); // both active
+    mockUseFetchQueries.mockReturnValue({
+      queries: [
+        { id: 1, created_at: '2024-01-10T00:00:00Z' },
+        { id: 2, created_at: '2024-03-05T00:00:00Z' },
+      ],
+      loading: false,
+    });
 
-    expect(screen.getByText('Total Queries')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
-
-    // ✅ Charts rendered
-    expect(screen.getAllByTestId('chart')).toHaveLength(3);
-
-    // ✅ Country list
-    expect(screen.getByText('Ethiopia')).toBeInTheDocument();
-    expect(screen.getByText('Sudan')).toBeInTheDocument();
-
-    // ✅ Shared components
-    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
-    expect(screen.getByTestId('calendar-picker')).toBeInTheDocument();
+    // ✅ CORRECT: return { data, loading }
+    mockUseAffectedCountries.mockReturnValue({
+      data: [
+        { country_id: 1, countries_name: 'Country A' },
+        { country_id: 2, countries_name: 'Country B' },
+      ],
+      loading: false,
+    });
   });
 
-  it('shows loading spinner when data is loading', () => {
-    // Override one hook to return loading: true
-    jest.mocked(require('@/app/hooks/useFetchOrganizations').default).mockReturnValueOnce({
-      organizations: null,
+  it('renders dashboard with data and charts', () => {
+    render(<DashboardPage />);
+
+    expect(screen.getByTestId('sidebar')).toBeInTheDocument();
+    expect(screen.getByTestId('calendar-picker')).toBeInTheDocument();
+
+    const statValues = screen.getAllByText(/\d+/);
+    expect(statValues).toHaveLength(4);
+    expect(statValues[0]).toHaveTextContent('2'); // High Risk Countries
+    expect(statValues[1]).toHaveTextContent('1'); // Total Organizations (Jan only)
+    expect(statValues[2]).toHaveTextContent('1'); // Active Organizations
+    expect(statValues[3]).toHaveTextContent('1'); // Total Queries (Jan only)
+
+    expect(screen.getByTestId('mock-bar-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-pie-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-line-chart')).toBeInTheDocument();
+
+    expect(screen.getByText('Country A')).toBeInTheDocument();
+    expect(screen.getByText('Country B')).toBeInTheDocument();
+  });
+
+  it('shows spinners when affected countries are loading', () => {
+    // ✅ CORRECT: return { data: null, loading: true }
+    mockUseAffectedCountries.mockReturnValue({
+      data: null,
       loading: true,
     });
 
     render(<DashboardPage />);
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+
+    const spinners = screen.getAllByTestId('spinner');
+    expect(spinners).toHaveLength(2);
+
+    expect(screen.getByText('High Risk Areas')).toBeInTheDocument();
   });
 });

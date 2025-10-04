@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
+   const baseUrl = process.env.BASE_URL;
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/api-usage-stats/`, {
+    const res = await fetch(`${baseUrl}/api-usage-stats/`, {
       headers: {
         'Content-Type': 'application/json',
       },

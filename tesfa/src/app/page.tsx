@@ -1,9 +1,11 @@
 import React from 'react'
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+import Image from "next/image";
+import DashboardPage from "./dashboard/page";
 
-export default page
+
+export default function Home() {
+  return (
+      <DashboardPage/>
+  );
+}
