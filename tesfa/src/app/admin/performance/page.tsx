@@ -1,7 +1,7 @@
 "use client";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Sidebar from "../sharedcomponent/Sidebar";
-import ApiUsageChart from "./ApiUsageChart";
+import ApiUsageChart from "./components/ApiUsageChart";
 import { useQueryLog } from "@/app/hooks/useQueryLog";
 
 type ChartData = {
