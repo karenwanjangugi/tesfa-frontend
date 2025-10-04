@@ -76,14 +76,13 @@ describe("DashboardPage", () => {
     expect(screen.getByTestId("calendar-picker")).toBeInTheDocument();
   });
 
-  it("shows spinner when organizations are loading", () => {
+it("shows spinner when organizations are loading", () => {
+  const useFetchOrganizationsSpy = jest.spyOn(useFetchOrganizationsHook, "default") as jest.Mock;
+  useFetchOrganizationsSpy.mockReturnValue({ organizations: [], loading: true });
 
-    const useFetchOrganizationsSpy = jest.spyOn(useFetchOrganizationsHook, "default");
-    useFetchOrganizationsSpy.mockReturnValue({ organizations: [], loading: true });
-
-    render(<DashboardPage />);
-    expect(screen.getAllByTestId("spinner").length).toBeGreaterThan(0);
-  });
+  render(<DashboardPage />);
+  expect(screen.getAllByTestId("spinner").length).toBeGreaterThan(0);
+});
 
   it("renders charts", () => {
     render(<DashboardPage />);
