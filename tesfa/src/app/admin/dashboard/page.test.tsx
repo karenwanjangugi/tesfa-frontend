@@ -1,17 +1,15 @@
-// src/app/admin/dashboard/page.test.tsx
+
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 import DashboardPage from './page';
 
-// Create mock functions for each hook
 const mockUseFetchOrganizations = jest.fn();
 const mockUseFetchPredictions = jest.fn();
 const mockUseFetchTasks = jest.fn();
 const mockUseFetchQueries = jest.fn();
 const mockUseAffectedCountries = jest.fn();
 
-// Mock all custom hooks
 jest.mock('@/app/hooks/useFetchOrganizations', () => ({
   __esModule: true,
   default: () => mockUseFetchOrganizations(),
@@ -37,7 +35,7 @@ jest.mock('@/app/hooks/useAffectedRegions', () => ({
   useAffectedCountries: () => mockUseAffectedCountries(),
 }));
 
-// Mock Recharts components
+
 jest.mock('recharts', () => {
   const createMock = (name: string) => () => <div data-testid={`mock-${name}`} />;
   return {
@@ -57,7 +55,7 @@ jest.mock('recharts', () => {
   };
 });
 
-// Mock shared components
+
 jest.mock('../sharedcomponent/Calender', () => {
   return ({ onDateChange }: { onDateChange: (range: [Date | null, Date | null]) => void }) => {
     React.useEffect(() => {
@@ -75,7 +73,7 @@ jest.mock('react-icons/fa', () => ({
 
 describe('DashboardPage', () => {
   beforeEach(() => {
-    // ✅ CORRECT: return { data, loading }
+
     mockUseFetchOrganizations.mockReturnValue({
       organizations: [
         { id: 1, role: 'organization', is_active: true, created_at: '2024-01-15T00:00:00Z' },
@@ -102,7 +100,7 @@ describe('DashboardPage', () => {
       loading: false,
     });
 
-    // ✅ CORRECT: return { data, loading }
+ 
     mockUseAffectedCountries.mockReturnValue({
       data: [
         { country_id: 1, countries_name: 'Country A' },
@@ -120,10 +118,10 @@ describe('DashboardPage', () => {
 
     const statValues = screen.getAllByText(/\d+/);
     expect(statValues).toHaveLength(4);
-    expect(statValues[0]).toHaveTextContent('2'); // High Risk Countries
-    expect(statValues[1]).toHaveTextContent('1'); // Total Organizations (Jan only)
-    expect(statValues[2]).toHaveTextContent('1'); // Active Organizations
-    expect(statValues[3]).toHaveTextContent('1'); // Total Queries (Jan only)
+    expect(statValues[0]).toHaveTextContent('2'); 
+    expect(statValues[1]).toHaveTextContent('1'); 
+    expect(statValues[2]).toHaveTextContent('1'); 
+    expect(statValues[3]).toHaveTextContent('1'); 
 
     expect(screen.getByTestId('mock-bar-chart')).toBeInTheDocument();
     expect(screen.getByTestId('mock-pie-chart')).toBeInTheDocument();
@@ -134,7 +132,7 @@ describe('DashboardPage', () => {
   });
 
   it('shows spinners when affected countries are loading', () => {
-    // ✅ CORRECT: return { data: null, loading: true }
+ 
     mockUseAffectedCountries.mockReturnValue({
       data: null,
       loading: true,
