@@ -75,6 +75,7 @@ const Sidebar = () => {
     <>
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
+          data-testid="mobile-open-button"
           className="p-2 rounded-md bg-[#00363E] text-white hover:bg-teal-800 transition"
           onClick={() => setIsMobileOpen(true)}
         >
@@ -99,12 +100,14 @@ const Sidebar = () => {
         <div>
           <div className="flex justify-between mb-20">
             <button
+              data-testid="mobile-close-button"
               className="flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition lg:hidden"
               onClick={() => setIsMobileOpen(false)}
             >
               <RiSidebarFoldLine size={30} />
             </button>
             <button
+              data-testid="desktop-toggle-button"
               className="hidden lg:flex items-center justify-center w-10 h-10 rounded-md hover:bg-teal-800 transition"
               onClick={() => setIsOpen(!isOpen)}
             >

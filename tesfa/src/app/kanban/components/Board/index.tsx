@@ -147,7 +147,7 @@ export default function KanbanBoard() {
               <div className={`${column.color} px-4 py-3 rounded-tl-[20px] rounded-tr-[20px]`}>
                 <h3 className="font-large text-center text-black">{column.title}</h3>
               </div>
-              <DropZone id={column.id} className="p-4 min-h-[40vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
+              <DropZone id={column.id} className="p-4 min-h-[40vh] h-[80vh] overflow-y-scroll no-scrollbar bg-gray-100 relative">
                 <div className="space-y-3">
                   {getTasksByStatus(column.id as Task['status']).map((task, index) => (
                     <TaskCard key={task.id} task={task} index={index} onDelete={handleDeleteTask} />
