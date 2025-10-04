@@ -31,8 +31,8 @@ const useFetchApiUsageStats = () => {
       try {
         const result = await fetchApiUsageStats();
         setData(result);
-      } catch (err) {
-        setError((err as Error).message);
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

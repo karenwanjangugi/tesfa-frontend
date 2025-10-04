@@ -12,8 +12,8 @@ export const useFetchQueries = () => {
         setLoading(true);
         const data = await fetchQueries();
         setQueries(data);
-      } catch (err) {
-        setError(err as Error);
+      } catch (error) {
+        setError(error as Error);
       } finally {
         setLoading(false);
       }

@@ -20,8 +20,8 @@ export function useAffectedCountries() {
     try {
       const countries = await fetchAffectedCountries(); 
       setData(countries);
-    } catch (err) {
-      setError((err as Error).message);
+    } catch (error) {
+      setError((error as Error).message);
     } finally {
       setLoading(false);
     }
