@@ -1,9 +1,8 @@
 export type TaskStatus = "pending" | "in_progress" | "cancelled" | "completed";
-<<<<<<< HEAD
 import type { Geometry, Feature, FeatureCollection } from 'geojson';
-=======
+
 export type Priority = "high" | "medium" | "low";
->>>>>>> 44764dbcf379c75f4c4e16688cf801dfa134b2ff
+
 
 export interface Task {
   id: string;
