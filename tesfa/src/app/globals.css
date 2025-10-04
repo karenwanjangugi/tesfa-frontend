@@ -1,10 +1,4 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -14,7 +8,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: #0a0a0a; */
+  
+    --background: #f5f0f0;
     --foreground: #ededed;
   }
 }
@@ -25,6 +20,7 @@ body {
 
   font-family: var(--font-josefin-sans),sans-serif;
    overflow-y: hidden;
+ 
 }
 .bg-active-gradient {
   background: linear-gradient(to right, #e6c362, #d3ac45);

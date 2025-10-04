@@ -18,16 +18,10 @@ jest.mock('../../../utils/fetchTaskAssignment', () => ({
 
 jest.mock('../../../hooks/useFetchTaskAssignment');
 
-jest.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  DragOverlay: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  useSensor: () => ({}),
-  useSensors: () => [],
-  PointerSensor: {},
-  closestCenter: () => ({}),
-}));
+
 
 jest.mock('../Taskcard', () => ({
+  __esModule: true,
   TaskCard: ({ task, onDelete }: { task: { id: string; title: string }, onDelete: (id: string) => void }) => (
     <div data-testid={`task-${task.id}`} className="select-none group w-full">
       <button
@@ -51,6 +45,7 @@ jest.mock('../Taskcard', () => ({
 }));
 
 jest.mock('../Dropzone', () => ({
+  __esModule: true,
   DropZone: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
