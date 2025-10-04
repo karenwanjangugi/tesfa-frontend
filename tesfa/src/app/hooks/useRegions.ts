@@ -12,8 +12,8 @@ export const useRegions = () => {
       try {
         const data = await fetchRegions();
         setRegions(data);
-      } catch (err) {
-        setError((err as Error).message);
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

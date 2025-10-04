@@ -1,14 +1,15 @@
+
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import L, { Layer, Path } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { FeatureCollection, Geometry } from 'geojson';
+import type { Geometry } from 'geojson';
 
+import { DiseaseRisk, Prediction, MapFeature, MapFeatureCollection, Country, Region } from '../../../utils/type';
 import { useCountries } from '../../../hooks/useCountries';
 import { useRegions } from '../../../hooks/useRegions';
-import { usePredictions} from '../../../hooks/usePrediction';
-import {DiseaseRisk, Prediction} from '../../../utils/type';
+import { usePredictions } from '../../../hooks/usePrediction';
 import useWorldLand from '../../../hooks/useWorldLand';
 
 const applyStyle = (layer: Layer, opacity: number) => {
@@ -16,6 +17,14 @@ const applyStyle = (layer: Layer, opacity: number) => {
     (layer as Path).setStyle({ fillOpacity: opacity });
   }
 };
+
+function isCountry(properties: Country | Region): properties is Country {
+  return (properties as Country).country_id !== undefined;
+}
+
+function isRegion(properties: Country | Region): properties is Region {
+  return (properties as Region).region_id !== undefined;
+}
 
 const MapClient = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -26,7 +35,7 @@ const MapClient = () => {
     regions?: L.GeoJSON;
   }>({});
 
-  const [hoveredFeature, setHoveredFeature] = useState<any>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<MapFeature | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const { countries, loading: loadingC } = useCountries();
@@ -72,7 +81,7 @@ const MapClient = () => {
       );
 
       if (validCountries.length > 0) {
-        const countryFeatures: FeatureCollection<Geometry, any> = {
+        const countryFeatures: MapFeatureCollection = {
           type: 'FeatureCollection',
           features: validCountries.map((country) => ({
             type: 'Feature',
@@ -112,7 +121,7 @@ const MapClient = () => {
       );
 
       if (validRegions.length > 0) {
-        const regionFeatures: FeatureCollection<Geometry, any> = {
+        const regionFeatures: MapFeatureCollection = {
           type: 'FeatureCollection',
           features: validRegions.map((region) => ({
             type: 'Feature',
@@ -206,9 +215,17 @@ const MapClient = () => {
 
   const getPredictionInfo = (): Prediction | null => {
     if (!hoveredFeature) return null;
-    const id = hoveredFeature.properties?.country_id || hoveredFeature.properties?.region_id;
-    const pred = predictions.find((prediction) => prediction.country === id || prediction.region === id);
-    return pred || null;
+    const props = hoveredFeature.properties;
+
+    if (isCountry(props)) {
+      const pred = predictions.find((prediction) => prediction.country === props.country_id);
+      return pred || null;
+    }
+    if (isRegion(props)) {
+      const pred = predictions.find((prediction) => prediction.region === props.region_id);
+      return pred || null;
+    }
+    return null;
   };
 
   return (
@@ -219,7 +236,7 @@ const MapClient = () => {
         onMouseMove={(e) => {
           setMousePosition({ x: e.clientX, y: e.clientY });
         }}
-      />                                        
+      />
       {hoveredFeature && (
         <div
           className="absolute bg-yellow-500 text-gray-900 p-4 rounded-lg shadow-lg max-w-xs z-[1000] pointer-events-none"
@@ -230,7 +247,11 @@ const MapClient = () => {
           }}
         >
           <h3 className="font-bold">
-            {hoveredFeature.properties?.countries_name || hoveredFeature.properties?.region_name}
+            {isCountry(hoveredFeature.properties)
+              ? hoveredFeature.properties.countries_name
+              : isRegion(hoveredFeature.properties)
+              ? hoveredFeature.properties.region_name
+              : ''}
           </h3>
           <div className="mt-2 space-y-1">
             {(() => {

@@ -13,8 +13,8 @@ export const usePredictions = () => {
       try {
         const data = await fetchPredictions();
         setPredictions(data);
-      } catch (err) {
-        setError((err as Error).message);
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

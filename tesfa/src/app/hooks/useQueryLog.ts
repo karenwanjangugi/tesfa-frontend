@@ -38,10 +38,10 @@ export const useQueryLog = () => {
         )
       );
       return newLog;
-    } catch (err) {
-      setError((err as Error).message);
+    } catch (error) {
+      setError((error as Error).message);
       setLogs(prev => prev.filter(log => log.id !== optimisticLog.id));
-      throw err;
+      throw error;
     }
   };
 
