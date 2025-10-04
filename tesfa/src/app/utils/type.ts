@@ -8,7 +8,6 @@ export interface Task {
   status: TaskStatus;
   assignmentId?: number;
   priority: Priority;
-  
 }
 
 export interface ApiTask {
@@ -18,8 +17,6 @@ export interface ApiTask {
   assignments: { status: string }[];
   priority: Priority;
 }
-
-
 
 export interface TaskAssignment{
     id: number;
@@ -37,12 +34,12 @@ export interface TaskDetail {
   priority: string;
   prediction: number | null;
   agent: number | null;
-  assignments: any[];
+  assignments: Record<string, unknown>[]; 
   created_at: string;
   updated_at: string;
 }
 
-export interface User{
+export interface User {
   id: number;
   email: string;
   role: "organization" | "admin";
@@ -58,14 +55,9 @@ export interface User{
 export interface Prediction {
   prediction_id: number;
   description: string;
-  disease_risks: any[];
+  disease_risks: Record<string, unknown>[]; 
   date_generated: string;
-  agent: any;
+  agent: unknown; 
   region: string | null;
   country: string | null;
 }
-
-
- 
- 
-

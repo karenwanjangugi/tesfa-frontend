@@ -92,8 +92,8 @@ export default function TasksDetails() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-red-600">
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+        <p className="text-red-600 text-center">
           Something went Wrong, Please reload your page
         </p>
       </div>
@@ -102,7 +102,7 @@ export default function TasksDetails() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
         <p className="text-gray-600">Loading tasks...</p>
       </div>
     );
@@ -111,6 +111,7 @@ export default function TasksDetails() {
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:p-10">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
         <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">
           Tasks
         </h1>
@@ -133,6 +134,7 @@ export default function TasksDetails() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {isVisible && (
             <p className="text-gray-600 text-sm sm:text-xs md:text-sm text-center sm:text-left">
+
               Click &quot;Select Tasks&quot; to start choosing tasks from the
               list. ➤
             </p>
@@ -149,6 +151,7 @@ export default function TasksDetails() {
         </div>
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-8"></div>
+
 
       <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 sm:text-[0.5em] mb-6 overflow-y-auto pr-2">
       {filteredTasks.length > 0 ? (
@@ -249,6 +252,7 @@ export default function TasksDetails() {
             <p className="text-gray-500 text-lg">No tasks available.</p>
           </div>
         )}
+
       </div>
 
       <AnimatePresence>

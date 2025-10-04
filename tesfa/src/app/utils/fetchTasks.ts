@@ -53,7 +53,6 @@ export const fetchTasksForAssignments = (
   const taskPromises = assignments.map((assignment) =>
     fetch(`/api/tasks/${assignment.task}/`, { headers }).then((response) => {
       if (!response.ok) {
-        console.error(`Failed to fetch task ${assignment.task}`, response);
         throw new Error(`Failed to fetch task ${assignment.task}`);
       }
       return response.json();
