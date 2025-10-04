@@ -211,7 +211,7 @@ export default function DashboardPage() {
               Active Organizations
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
+              <BarChart data={chartData} data-testid="bar-chart">
                 <XAxis dataKey="month" interval={0} />
                 <YAxis />
                 <Tooltip />
@@ -223,7 +223,7 @@ export default function DashboardPage() {
           <div className="bg-blue-100 rounded-lg p-4 shadow hover:bg-blue-100 transition-shadow">
             <h2 className="text-lg font-semibold mb-4">AI Functionality</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
+              <PieChart data-testid="pie-chart">
                 <Pie
                   data={pieChartData}
                   dataKey="value"
@@ -246,7 +246,7 @@ export default function DashboardPage() {
               Number of High-Risk Countries
             </h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={countriesChartData}>
+              <LineChart data={countriesChartData} data-testid="line-chart">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
                 <YAxis />

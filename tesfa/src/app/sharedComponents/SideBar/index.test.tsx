@@ -60,12 +60,12 @@ describe("Sidebar Component", () => {
     fireEvent.click(screen.getByText("Profile"));
     expect(mockPush).toHaveBeenCalledWith("/profile");
   });
-  it("logs out and redirects to /login", () => {
+  it("logs out and redirects to /onboarding/login", () => {
     const removeItemSpy = jest.spyOn(localStorage, "removeItem");
     render(<Sidebar />);
     fireEvent.click(screen.getByTestId("desktop-toggle-button")); 
     fireEvent.click(screen.getByText("Logout"));
     expect(removeItemSpy).toHaveBeenCalledWith("authToken");
-    expect(mockPush).toHaveBeenCalledWith("/login");
+    expect(mockPush).toHaveBeenCalledWith("/onboarding/login");
   });
 });
