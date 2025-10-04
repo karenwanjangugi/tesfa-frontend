@@ -17,6 +17,7 @@ export default function TasksDetails() {
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [isVisible, setIsVisible] = useState(true);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -83,6 +84,12 @@ export default function TasksDetails() {
     setIsAddMode(false);
   };
 
+  const priorityColors: { [key: string]: string } = {
+    high: "bg-red-600",
+    medium: "bg-orange-300",
+    low: "bg-green-500",
+  };
+
   if (error) {
     return (
       <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
@@ -104,9 +111,15 @@ export default function TasksDetails() {
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:px-10 lg:py-25">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">Tasks</h1>
-        <div className="relative w-full rounded-4xl bg-amber-300 sm:w-auto mt-0 sm:mt-0">
-          <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-black" size={20} />
+
+        <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">
+          Tasks
+        </h1>
+        <div className="relative w-full sm:w-auto mt-0 sm:mt-0">
+          <Search
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
+            size={20}
+          />
           <input
             type="text"
             placeholder="Search"
@@ -121,7 +134,9 @@ export default function TasksDetails() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {isVisible && (
             <p className="text-gray-600 text-sm sm:text-xs md:text-sm text-center sm:text-left">
-              Click &quot;Select Tasks&quot; to start choosing tasks from the list. ➤
+
+              Click &quot;Select Tasks&quot; to start choosing tasks from the
+              list. ➤
             </p>
           )}
           {!isAddMode && (
@@ -137,39 +152,107 @@ export default function TasksDetails() {
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-8"></div>
 
-      <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 mb-6 overflow-y-auto pr-2">
-        {filteredTasks.map((task, index) => (
-          <motion.div
-            key={task.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.06 }}
-            className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg  border border-yellow-600 flex items-center gap-3 sm:gap-4 ${
-              isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
-            }`}
-            onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
-          >
-            <AnimatePresence>
-              {isAddMode && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Checkbox
-                    checked={selectedTasks.has(task.id)}
-                    onCheckedChange={() => handleTaskToggle(task.id)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
 
-            <div className="flex-1 min-w-0">
-              <p className="text-gray-800 truncate">{task.title}</p>
-            </div>
-          </motion.div>
-        ))}
+      <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 sm:text-[0.5em] mb-6 overflow-y-auto pr-2">
+      {filteredTasks.length > 0 ? (
+          filteredTasks.map((task, index) => (
+            <motion.div
+              key={task.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.06 }}
+              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${
+                isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
+              }`}
+              onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
+            >
+              <div className="flex items-center gap-3 sm:gap-4">
+                <AnimatePresence>
+                  {isAddMode && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Checkbox
+                        checked={selectedTasks.has(task.id)}
+                        onCheckedChange={() => handleTaskToggle(task.id)}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    priorityColors[task.priority] || "bg-gray-300"
+                  }`}
+                ></div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-800 text-xl sm:text-lg truncate">
+                    {task.title}
+                  </p>
+                </div>
+
+                {!isAddMode && (
+                  <motion.div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedTaskId(
+                        expandedTaskId === task.id ? null : task.id
+                      );
+                    }}
+                    className="cursor-pointer p-2"
+                    animate={{ rotate: expandedTaskId === task.id ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-blue-950"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </motion.div>
+                )}
+              </div>
+
+              <AnimatePresence>
+                {expandedTaskId === task.id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="mt-2 pl-11"
+                  >
+                    <p className="text-gray-600 text-lg">
+                      {task.description}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          ))
+        ) : searchQuery ? (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-500 text-lg">
+              No tasks found for &quot;{searchQuery}&quot;
+            </p>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <p className="text-gray-500 text-lg">No tasks available.</p>
+          </div>
+        )}
+
       </div>
 
       <AnimatePresence>

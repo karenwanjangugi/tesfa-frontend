@@ -1,5 +1,9 @@
 export type TaskStatus = "pending" | "in_progress" | "cancelled" | "completed";
+<<<<<<< HEAD
 import type { Geometry, Feature, FeatureCollection } from 'geojson';
+=======
+export type Priority = "high" | "medium" | "low";
+>>>>>>> 44764dbcf379c75f4c4e16688cf801dfa134b2ff
 
 export interface Task {
   id: string;
@@ -7,6 +11,7 @@ export interface Task {
   description?: string;
   status: TaskStatus;
   assignmentId?: number;
+  priority: Priority;
 }
 
 export interface ApiTask {
@@ -14,15 +19,16 @@ export interface ApiTask {
   title: string;
   description: string;
   assignments: { status: string }[];
+  priority: Priority;
 }
 
-export interface TaskAssignment {
-  id: number;
-  task: number;
-  organization: number;
-  status: TaskStatus;
-  created_at: string;
-  updated_at: string;
+export interface TaskAssignment{
+    id: number;
+    task: number;
+    organization: number;
+    status: TaskStatus;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface TaskDetail {

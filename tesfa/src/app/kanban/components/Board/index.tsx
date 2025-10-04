@@ -143,15 +143,20 @@ export default function KanbanBoard() {
             Task Tracking
           </h1>
         </div>
-        <div className="h-1.5 bg-[#266A74] opacity-50 mb-6 sm:mb-8"></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+
+        <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10 h-[75vh]">
+
           {columns.map((column) => (
             <motion.div
               key={column.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-[#E7EDEE] rounded-lg shadow-sm overflow-hidden flex flex-col"
+              className="bg-[#E7EDEE] rounded-lg shadow-sm lg:overflow-hidden sm:overflow-scroll sm:h-[100vh]"
+
+
+
             >
               <div
                 className={`${column.color} px-3 sm:px-4 py-2 sm:py-3 rounded-tl-[20px] rounded-tr-[20px]`}
@@ -160,6 +165,7 @@ export default function KanbanBoard() {
                   {column.title}
                 </h3>
               </div>
+
               <DropZone
                 id={column.id}
                 className={`p-3 sm:p-4 bg-gray-100 relative overflow-y-auto no-scrollbar min-h-[30vh] sm:min-h-[40vh] md:min-h-[50vh] lg:min-h-[60vh] xl:min-h-[70vh]`}

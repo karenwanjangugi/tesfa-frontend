@@ -44,26 +44,26 @@ describe("Sidebar Component", () => {
   });
   it("toggles open when sidebar button is clicked", () => {
     render(<Sidebar />);
-    const toggleBtn = screen.getByRole("button");
+    const toggleBtn = screen.getByTestId("desktop-toggle-button");
     fireEvent.click(toggleBtn);
     expect(screen.getByText("Dashboard")).toBeVisible();
   });
   it("navigates to Dashboard when clicked", () => {
     render(<Sidebar />);
-    fireEvent.click(screen.getByRole("button")); 
+    fireEvent.click(screen.getByTestId("desktop-toggle-button")); 
     fireEvent.click(screen.getByText("Dashboard"));
     expect(mockPush).toHaveBeenCalledWith("/dashboard"); 
   });
   it("navigates to Profile when clicked", () => {
     render(<Sidebar />);
-    fireEvent.click(screen.getByRole("button")); 
+    fireEvent.click(screen.getByTestId("desktop-toggle-button")); 
     fireEvent.click(screen.getByText("Profile"));
     expect(mockPush).toHaveBeenCalledWith("/profile");
   });
   it("logs out and redirects to /login", () => {
     const removeItemSpy = jest.spyOn(localStorage, "removeItem");
     render(<Sidebar />);
-    fireEvent.click(screen.getByRole("button")); 
+    fireEvent.click(screen.getByTestId("desktop-toggle-button")); 
     fireEvent.click(screen.getByText("Logout"));
     expect(removeItemSpy).toHaveBeenCalledWith("authToken");
     expect(mockPush).toHaveBeenCalledWith("/login");
