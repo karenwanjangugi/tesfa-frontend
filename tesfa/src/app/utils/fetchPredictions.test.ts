@@ -1,65 +1,34 @@
 
+import { fetchPredictions } from './fetchPredictions'; 
 
-import { fetchPredictions } from './fetchPredictions';
-
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => {
-      store[key] = value.toString();
-    },
-    clear: () => {
-      store = {};
-    },
-  };
-})();
+global.fetch = jest.fn();
+const mockLocalStorage = {
+  getItem: jest.fn(),
+};
 
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
-
-(global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
-  ok: true,
-  statusText: 'OK',
-  json: () => Promise.resolve({}),
+  value: mockLocalStorage,
 });
 
 describe('fetchPredictions', () => {
-  const mockToken = 'mock-token-123';
+  const mockToken = 'test-token-123';
+  const mockResponseData = { predictions: [1, 2, 3] };
 
   beforeEach(() => {
-    localStorageMock.clear();
-    (global.fetch as jest.Mock).mockClear();
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
-  });
-
-
-  it('throws if no token in localStorage', async () => {
-    await expect(fetchPredictions()).rejects.toThrow('No token found. Please set token in localStorage first.');
-  });
-
-  it('fetches predictions successfully', async () => {
-    localStorage.setItem('Token', mockToken);
-
-    const mockResponseData = { predictions: ['apple', 'banana'] };
-
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    mockLocalStorage.getItem.mockReturnValue(mockToken);
+    (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockResponseData),
       statusText: 'OK',
+      json: async () => mockResponseData,
     });
+  });
 
+  it('fetches predictions successfully with valid token', async () => {
     const result = await fetchPredictions();
 
-    expect(fetch).toHaveBeenCalledWith('/api/prediction', {
+    expect(mockLocalStorage.getItem).toHaveBeenCalledWith('token');
+    expect(global.fetch).toHaveBeenCalledWith('/api/prediction', {
       headers: {
         Authorization: `Token ${mockToken}`,
       },
@@ -67,22 +36,32 @@ describe('fetchPredictions', () => {
     expect(result).toEqual(mockResponseData);
   });
 
-  it('throws user-friendly error on fetch failure', async () => {
-    localStorage.setItem('Token', mockToken);
+  it('throws an error if no token is found in localStorage', async () => {
+    mockLocalStorage.getItem.mockReturnValue(null);
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      statusText: 'Not Found',
-    });
-
-    await expect(fetchPredictions()).rejects.toThrow('Error fetching predictions: Something went wrong: Not Found');
+    await expect(fetchPredictions()).rejects.toThrow(
+      'No token found. Please set token in localStorage first.'
+    );
   });
 
-  it('throws user-friendly error on network/other error', async () => {
-    localStorage.setItem('Token', mockToken);
+  it('throws an error when fetch response is not ok', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      statusText: 'Forbidden',
+      json: async () => ({}),
+    });
 
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+    await expect(fetchPredictions()).rejects.toThrow(
+      'Something went wrong: Forbidden'
+    );
+  });
 
-    await expect(fetchPredictions()).rejects.toThrow('Error fetching predictions: Network error');
+  it('wraps network errors with descriptive message', async () => {
+    const networkError = new Error('Failed to fetch');
+    (global.fetch as jest.Mock).mockRejectedValue(networkError);
+
+    await expect(fetchPredictions()).rejects.toThrow(
+      `Error fetching predictions: ${networkError.message}`
+    );
   });
 });

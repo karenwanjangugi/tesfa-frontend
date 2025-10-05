@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   const token = authHeader.split(' ')[1];
-  const url = `${baseUrl}predictions/`;
+  const url = `${baseUrl}/predictions/`;
 
   try {
     const response = await fetch(url, {

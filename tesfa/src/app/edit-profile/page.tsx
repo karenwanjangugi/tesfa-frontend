@@ -101,7 +101,7 @@ export default function EditProfilePage() {
 
   if (loading && !submitting)
     return (
-      <div className="lex justify-center items-center text-center min-h-screen">
+      <div className="flex justify-center items-center text-center min-h-screen p-4">
         <p>Loading...</p>
       </div>
     );
@@ -115,12 +115,12 @@ export default function EditProfilePage() {
 
   return (
     <Layout>
-      <main className="w-full flex flex-col items-center min-h-screen bg-[#FCF6F7] overflow-x-hidden">
-        <div className="w-full px-12 m-10">
-          <h1 className="text-5xl font-medium text-[#00353D] mb-2">Edit Profile</h1>
+      <main className="flex w-full flex-col items-center bg-[#FCF6F7] overflow-x-hidden ">
+        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 lg:py-25 mx-auto mb-6">
+          <h1 className="text-3xl sm:text-4xl font-medium text-[#00353D] mb-2">Edit Profile</h1>
           <div className="w-full h-[6px] bg-[#8BB2B5] rounded" />
         </div>
-        <div className="flex flex-col items-center mt-16 w-full">
+        <div className="flex flex-col items-center w-full">
           <div
             className="relative mb-3 flex flex-col items-center w-full"
             style={{ minHeight: 230 }}
@@ -162,7 +162,7 @@ export default function EditProfilePage() {
             <button
               type="button"
               onClick={() => document.getElementById("logoInput")?.click()}
-              className="absolute bottom-13 right-184 bg-white border-2 border-[#C3A041] text-[#C3A041] w-9 h-9 rounded-full flex items-center justify-center shadow hover:bg-[#f3fbfd] transition"
+              className="absolute bottom-13 right-198 bg-white border-2 border-[#C3A041] text-[#C3A041] w-9 h-9 rounded-full flex items-center justify-center shadow hover:bg-[#f3fbfd] transition"
               aria-label="Upload logo"
             >
               <CameraIcon className="w-5 h-5 cursor-pointer" />

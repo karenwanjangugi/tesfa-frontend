@@ -2,7 +2,7 @@ const baseurl = '/api/queryLog';
 
 export async function fetchQueries() {
   try {
-    const token = localStorage.getItem('Token');
+    const token = localStorage.getItem('token');
     const userId = localStorage.getItem('user_id');
 
     if (!token) {
@@ -41,7 +41,7 @@ export async function postQuery(data: Record<string, any>) {
   }
 
   try {
-    const token = localStorage.getItem('Token');
+    const token = localStorage.getItem('token');
     const userId = localStorage.getItem('user_id');
 
     if (!token) {

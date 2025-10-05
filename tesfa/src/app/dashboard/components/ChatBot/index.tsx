@@ -115,7 +115,7 @@ export default function ChatWidget() {
           animate={{ opacity: 1, y: 0 }}
           className="w-[420px] h-[540px] bg-cyan-900 shadow-lg rounded-2xl flex flex-col relative"
         >
-          <div className="p-4 border-b flex justify-between items-center">
+          <div className="p-4 border-b border-white flex justify-between items-center">
             <span className="font-semibold text-lg text-white">Chat</span>
             <button
               onClick={() => {
@@ -138,7 +138,7 @@ export default function ChatWidget() {
                 <div
                   className={`px-4 py-2 rounded-xl max-w-[75%] break-words whitespace-pre-line ${
                     msg.sender === "user"
-                      ? "bg-[#0391A6] text-black"
+                      ? "bg-[#0391A6] text-white"
                       : "bg-amber-700 text-white"
                   }`}
                 >
@@ -148,13 +148,13 @@ export default function ChatWidget() {
             ))}
           </div>
 
-          <div className="p-3 border-t">
+          <div className="p-3 border-t border-white">
             <div className="relative">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                className="w-full border rounded-full px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                className="w-full border rounded-full px-4 py-3 pr-12 outline-none focus:ring-2 focus:ring-blue-500 text-white text-base"
                 placeholder="Type a message..."
                 disabled={sending}
                 aria-label="Chat input"

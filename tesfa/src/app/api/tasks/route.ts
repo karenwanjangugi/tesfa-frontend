@@ -16,6 +16,14 @@ export async function GET(request: NextRequest) {
           "Content-Type": "application/json",
       },
     });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Backend tasks API error:", errorText);
+      return new Response(JSON.stringify({ error: "Failed to fetch tasks from backend" }), {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const result = await response.json();
 

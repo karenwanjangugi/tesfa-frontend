@@ -5,7 +5,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
 import { useDashboardData } from "../../../hooks/useTaskPageData";
-import Image from "next/image";  
+import Image from "next/image";
 
 export default function TasksAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -110,7 +110,7 @@ export default function TasksAdmin() {
 
   return (
     <div>
-      <div className="flex justify-around items-center h-[25vh] mb-20">
+      <div className="flex justify-around  items-center h-[25vh] mb-20">
         {liveDashboardStats.map((stat, index) => (
           <div
             key={index}
@@ -120,8 +120,8 @@ export default function TasksAdmin() {
               src="/Images/ellipse.png"
               alt="Ellipse"
               className="w-[20vh] h-[20vh] object-contain"
-              width={320}  
-              height={320} 
+              width={320}
+              height={320}
             />
             <span className="absolute top-1/2 text-[3em] -translate-y-3/4 text-xl font-bold text-gray-800">
               {stat.value}
@@ -148,30 +148,32 @@ export default function TasksAdmin() {
           aria-label="Search"
         />
       </div>
-      <div className="flex  gap-82 items-center mb-2 px-[10vh]">
-        <h3 className="font-semibold text-black text-[1.5em] ">Tasks</h3>
-        <h3 className="font-semibold text-black text-[1.5em] ">Organization</h3>
-        <h3 className="font-semibold text-black text-[1.5em] ">Status</h3>
-        <h3 className="font-semibold text-black text-[1.5em] ">Date</h3>
-      </div>
 
+
+      <div className="grid grid-cols-[3.9fr_1.5fr_1fr_1fr] gap-4 mb-2 px-10">
+        <h3 className="font-semibold text-black text-[1.2em]">Tasks</h3>
+        <h3 className="font-semibold text-black text-[1.2em] pl-6">Organization</h3>
+        <h3 className="font-semibold text-black text-[1.2em]">Status</h3>
+        <h3 className="font-semibold text-black text-[1.2em]">Date</h3>
+      </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
+
       {filteredAssignments.length > 0 ? (
-        <div className="space-y-3 mb-6 overflow-y-scroll h-[40vh]">
+        <div className="space-y-3 mb-6 overflow-y-scroll h-[40vh] px-10">
           {currentItems.map((assignment, index) => (
             <motion.div
               key={assignment.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
-              className="bg-white rounded-[50px] p-3 mr-10 drop-shadow-lg border border-gray-200 flex items-center gap-4"
+              className="bg-white rounded-[50px] p-3 drop-shadow-lg border border-gray-200"
             >
-              <div className="flex justify-between px-[10vh] items-center w-full">
+              <div className="grid grid-cols-[4fr_1.5fr_1fr_1fr] gap-4 items-center">
                 <p className="text-gray-600">
                   {taskTitleMap.get(assignment.task) ||
                     `Task ID: ${assignment.task}`}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-gray-600 pl-6">
                   {organizationNameMap.get(assignment.organization) ||
                     `Org ID: ${assignment.organization}`}
                 </p>
@@ -195,7 +197,7 @@ export default function TasksAdmin() {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled: opacity-50"
+            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled:opacity-50"
           >
             Previous
           </button>
@@ -207,7 +209,7 @@ export default function TasksAdmin() {
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled: opacity-50"
+            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled:opacity-50"
           >
             Next
           </button>

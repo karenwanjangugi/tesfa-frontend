@@ -2,7 +2,7 @@ const baseurl = '/api/countries';
 
 export async function fetchCountries() {
   try {
-    const token = localStorage.getItem('Token');
+    const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No token found. Please log in.');
     }

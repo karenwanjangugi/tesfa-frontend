@@ -1,10 +1,9 @@
-
-import Image from "next/image";
-import DashboardPage from "./dashboard/page";
+import React from 'react'
+import SplashScreen from './onboarding/splash/page';
 
 
 export default function Home() {
   return (
-      <DashboardPage/>
+      <SplashScreen/>
   );
 }

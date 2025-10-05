@@ -27,9 +27,9 @@ export default function ForgotPasswordPage() {
        
         <button
           onClick={() => router.back()}
-          className="absolute left-4 top-10 text-bg-active-gradient cursor-pointer hover:text-[#]"
+          className="absolute left-4 top-10 text-bg-active-gradient  cursor-pointer hover:text-[#]"
         >
-          <FaArrowLeft />
+          <FaArrowLeft className="text-white" />
         </button>
     
         <h2 className="text-[#d4af37] text-2xl font-semibold mb-6">
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
         </form>
       
         {message && <p className="text-green-400 mt-4">{message}</p>}
-        {error && <p className="text-red-400 mt-4">{error}</p>}
+        {error && <p className="text-red-400 mt-4">failed to request password reset</p>}
       </div>
     </div>
   );

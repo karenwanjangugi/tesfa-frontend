@@ -1,6 +1,6 @@
 export async function fetchPredictions() {
   
-  const token = localStorage.getItem('Token'); 
+  const token = localStorage.getItem('token'); 
   if (!token) {
     throw new Error('No token found. Please set token in localStorage first.');
   }

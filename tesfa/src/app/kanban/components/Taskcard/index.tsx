@@ -57,7 +57,7 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
       transition={{ delay: index * 0.1 }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 1.05, rotate: 2 }}
-      className="select-none group w-full"
+      className="select-none group"
     >
         <button 
         onClick={() => {
@@ -70,9 +70,9 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
       <div className={`${getCardColor(task.status)} border-none rounded-2xl h-[20vh] sm:h-[18vh] md:h-[20vh] text-white p-3 sm:p-4 mb-3 shadow-lg hover:shadow-xl transition-shadow w-full`}>
        <div {...listeners} {...attributes} className="w-full">
         <div className="space-y-1 sm:space-y-2">
-          <h4 className="font-medium text-sm sm:text-base truncate">{task.title}</h4>
+          <h4 className="font-medium text-lg sm:text-base">{task.title}</h4>
           {task.description && (
-            <p className="text-xs sm:text-sm text-gray-200 opacity-90 line-clamp-2">{task.description}</p>
+            <p className="text-xs sm:text-sm text-gray-200 opacity-90 ">{task.description}</p>
           )}
         </div>
         </div>

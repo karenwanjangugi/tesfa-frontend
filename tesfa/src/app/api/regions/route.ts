@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   }
 
   const token = authHeader.split(' ')[1];
-  const url = `${baseUrl}regions/`;
+  const url = `${baseUrl}/regions/`;
 
   try {
     const response = await fetch(url, {

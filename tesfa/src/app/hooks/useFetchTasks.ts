@@ -20,8 +20,8 @@ export const useFetchTasks = () => {
  
          const unassignedTasks = allformattedTasks.filter(task => !assignedTaskIds.has(task.id));
          setTasks(unassignedTasks);
-       } catch (err) {
-         setError(err as Error);
+       } catch (error) {
+         setError(error as Error);
        } finally {
          setLoading(false);
        }
