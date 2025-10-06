@@ -1,70 +1,79 @@
 "use client";
+import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import Sidebar from "../sharedcomponent/Sidebar";
 import ApiUsageChart from "./components/ApiUsageChart";
 import { useQueryLog } from "@/app/hooks/useQueryLog";
+import CalendarPicker from "../sharedcomponent/Calender";
 
-type ChartData = {
-  month: string;
-  value: number;
-};
+type LogType = { query: string; created_at?: string };
+type DateRange = [Date | null, Date | null];
 
-function aggregateQueriesByMonth(logs: { query: string; created_at?: string }[]): ChartData[] {
-  const monthCounts: Record<string, number> = {};
-  const monthOrder = [
-    "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
 
+function aggregateQueriesByMonth(logs: LogType[]): { month: string; value: number }[] {
+  const counts: Record<string, number> = {};
   logs.forEach((log) => {
-    let dateStr = log.created_at;
-    let month: string;
-    if (dateStr) {
-      const date = new Date(dateStr);
-      month = monthOrder[date.getMonth()];
-    } else {
-      month = "Unknown";
+    if (log.created_at) {
+      const d = new Date(log.created_at);
+      const month = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}`;
+      counts[month] = (counts[month] || 0) + 1;
     }
-    monthCounts[month] = (monthCounts[month] || 0) + 1;
   });
+  
+  return Object.entries(counts)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, value]) => ({ month, value }));
+}
 
-  return monthOrder
-    .filter((m) => monthCounts[m])
-    .map((m) => ({
-      month: m,
-      value: monthCounts[m],
-    }));
+function filterLogsByDateRange(
+  logs: LogType[],
+  dateRange: DateRange
+) {
+  const [start, end] = dateRange;
+  if (!start || !end) return logs;
+  return logs.filter((log) => {
+    if (!log.created_at) return false;
+    const logDate = new Date(log.created_at);
+    return logDate >= start && logDate <= end;
+  });
 }
 
 export default function PerformancePage() {
-  const { logs, loading, error } = useQueryLog();
+  const { logs = [], loading, error } = useQueryLog();
+  const [dateRange, setDateRange] = useState<DateRange>([null, null]);
 
 
-  const queryData = aggregateQueriesByMonth(logs as any[]);
+  const filteredLogs: LogType[] = filterLogsByDateRange((logs as any[]) || [], dateRange)
+    .filter((log): log is LogType => typeof log.query === "string");
+
+  const queryData = aggregateQueriesByMonth(filteredLogs);
 
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 bg-white p-6">
-        <div className="flex justify-between items-center mb-5">
+      <div className="flex-1  p-6">
+                  <CalendarPicker onDateChange={setDateRange} />
+        <div className="flex  justify-between items-center mb-5 relative">
           <h1 className="text-2xl font-semibold flex items-center text-teal-900 gap-2">
             Tesfa Agent
           </h1>
+          
         </div>
 
         <div className="space-y-8 mb-7">
           <div className="flex items-center gap-2">
-            <p className="w-24 font-medium text-yellow-600">Accuracy</p>
-            <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full w-[70%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
+            <p className="w-24 font-medium text-[#b6890d]">Accuracy</p>
+            <div className="flex-1 h-7  bg-gray-300 rounded-full overflow-hidden">
+              <div className="h-full w-[70%] bg-gradient-to-r bg-[#082D32]"></div>
             </div>
-            <p className="w-12 font-semibold text-yellow-600">70%</p>
+            <p className="w-12 font-semibold text-[#b6890d]">70%</p>
           </div>
           <div className="flex items-center gap-4">
-            <p className="w-24 font-medium text-yellow-600">Efficiency</p>
-            <div className="flex-1 h-5 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-full w-[60%] bg-gradient-to-r from-blue-800 to-teal-900"></div>
+            <p className="w-24 font-medium text-[#b6890d]">Efficiency</p>
+            <div className="flex-1 h-7  bg-gray-300 rounded-full overflow-hidden">
+              <div className="h-full w-[70%] bg-gradient-to-r bg-[#082D32]"></div>
             </div>
-            <p className="w-12 font-semibold text-yellow-600">60%</p>
+            <p className="w-12 font-semibold text-[#b6890d]">60%</p>
           </div>
         </div>
 
@@ -80,14 +89,19 @@ export default function PerformancePage() {
           ) : error ? (
             <div className="text-red-600 text-center py-10">{error}</div>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={queryData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Area type="monotone" dataKey="value" stroke="#08515C" fill="#0ffff" />
-              </AreaChart>
-            </ResponsiveContainer>
+  <ResponsiveContainer width="100%" height={250}>
+  <AreaChart data={queryData}>
+    <XAxis dataKey="month" />
+    <YAxis />
+    <Tooltip />
+    <Area 
+      type="monotone" 
+      dataKey="value" 
+      stroke="#134e4a"   
+      fill="#134e4a"    
+    />
+  </AreaChart>
+</ResponsiveContainer>
           )}
         </div>
         <ApiUsageChart />

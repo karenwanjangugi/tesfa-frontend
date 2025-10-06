@@ -16,6 +16,9 @@ body {
    overflow-y: hidden;
  
 }
+input:focus {
+  outline: none;
+}
 .bg-active-gradient {
   background: linear-gradient(to right, #e6c362, #d3ac45);
 }

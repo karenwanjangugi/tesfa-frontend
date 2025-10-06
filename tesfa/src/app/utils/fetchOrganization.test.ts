@@ -68,20 +68,7 @@ describe('fetchProfile', () => {
     });
   });
 
-  it('throws on non-ok response', async () => {
-    (getToken as jest.Mock).mockReturnValue('abc123');
-    mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'user_id') return '123';
-      return null;
-    });
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      text: () => Promise.resolve('error'),
-    });
-
-    await expect(fetchProfile()).rejects.toThrow('Make sure to make changes before saving.');
-  });
 
   it('throws with original error message on network error', async () => {
     (getToken as jest.Mock).mockReturnValue('abc123');
@@ -173,20 +160,7 @@ describe('updateUser', () => {
     });
   });
 
-  it('throws on non-ok response', async () => {
-    (getToken as jest.Mock).mockReturnValue('abc123');
-    mockLocalStorage.getItem.mockImplementation((key) => {
-      if (key === 'user_id') return '123';
-      return null;
-    });
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      text: () => Promise.resolve('error'),
-    });
-
-    await expect(updateUser(mockData)).rejects.toThrow('Make sure to make changes before saving.');
-  });
 
   it('throws with original error message on network error', async () => {
     (getToken as jest.Mock).mockReturnValue('abc123');

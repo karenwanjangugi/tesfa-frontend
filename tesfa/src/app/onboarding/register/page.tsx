@@ -128,7 +128,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(prev => ({ ...prev, password: !prev.password }))}
-                className="absolute right-3 top-12 text-[#00353D] text-xl"
+                className="absolute cursor-pointer right-3 top-12 text-[#00353D] text-xl"
                 tabIndex={-1}
                 aria-label={showPassword.password ? "Hide password" : "Show password"}
               >
@@ -152,7 +152,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(prev => ({ ...prev, confirmPassword: !prev.confirmPassword }))}
-                className="absolute right-3 top-12 text-[#00353D] text-xl"
+                className="absolute right-3 cursor-pointer top-12 text-[#00353D] text-xl"
                 tabIndex={-1}
                 aria-label={showPassword.confirmPassword ? "Hide confirm password" : "Show confirm password"}
               >

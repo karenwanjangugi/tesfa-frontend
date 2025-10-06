@@ -23,8 +23,7 @@ export async function fetchProfile() {
     if (!response.ok) {
       const text = await response.text();
 
-      throw new Error("Make sure to make changes before saving."
-      );
+      throw new Error(text);
     }
 
     return await response.json();
@@ -69,7 +68,7 @@ export async function updateUser(data: any) {
     if (!response.ok) {
       const text = await response.text();
 
-      throw new Error("Make sure to make changes before saving.");
+      throw new Error(text);
     }
     return await response.json();
   } catch (error) {

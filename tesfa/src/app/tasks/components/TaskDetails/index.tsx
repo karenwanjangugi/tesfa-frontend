@@ -127,7 +127,7 @@ export default function TasksDetails() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="w-100 bg-amber-300  pl-10 pr-4 py-2 border border-gray-300 text-black rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
+            className="w-100   pl-10 pr-4 py-2 border border-gray-300 text-black rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
           />
         </div>
 
