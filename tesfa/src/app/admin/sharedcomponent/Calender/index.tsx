@@ -29,7 +29,7 @@ export default function CalendarPicker({
         popperPlacement="bottom-end" 
         customInput={
           <button className="p-2 rounded-b-full hover:bg-yellow-500 cursor-pointer">
-            <FaRegCalendarAlt className="text-2xl text-gray-700" />
+            <FaRegCalendarAlt className="text-2xl cursor-pointer text-gray-700" />
           </button>
         }
         placeholderText="Select date range"

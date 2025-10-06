@@ -3,17 +3,21 @@ import { useState, useEffect } from 'react';
 import { fetchApiUsageStats } from '../utils/fetchApiUsage';
 
 export type ApiUsageStat = {
-  week: string;
+  month: string; 
   [key: string]: number | string;
 };
 
-const useFetchApiUsageStats = () => {
+
+const useFetchApiUsageStats = (): {
+  data: ApiUsageStat[];
+  loading: boolean;
+  error: string;
+} => {
   const [data, setData] = useState<ApiUsageStat[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-
     if (typeof window === 'undefined') {
       setLoading(false);
       return;
@@ -31,6 +35,7 @@ const useFetchApiUsageStats = () => {
       try {
         const result = await fetchApiUsageStats();
         setData(result);
+        setError(""); 
       } catch (error) {
         setError((error as Error).message);
       } finally {

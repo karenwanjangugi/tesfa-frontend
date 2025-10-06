@@ -16,20 +16,26 @@ const ORGANIZATIONS_PER_PAGE = 12;
 
 export default function OrganizationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [currentPage, setCurrentPage] = useState(1);
   const { organizations, loading, error } = useFetchOrganizations();
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, statusFilter]);
 
   const filteredOrganizations = useMemo(() => {
-    return organizations.filter(
-      (organization) =>
+    return organizations.filter((organization) => {
+      const matchesSearch =
         organization.org_name &&
-        organization.org_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [organizations, searchTerm]);
+        organization.org_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && organization.is_active === true) ||
+        (statusFilter === "inactive" && organization.is_active === false);
+      return matchesSearch && matchesStatus;
+    });
+  }, [organizations, searchTerm, statusFilter]);
 
   const totalPages = Math.ceil(filteredOrganizations.length / ORGANIZATIONS_PER_PAGE);
   const startIndex = (currentPage - 1) * ORGANIZATIONS_PER_PAGE;
@@ -54,7 +60,7 @@ export default function OrganizationsPage() {
       <div className="min-h-screen  bg-[#FCF6F7] ml-14">
         <div className="px-4">
           <main className="pt-6">
-            <div className="flex items-center justify-center max-w-4xl mx-auto mb-12">
+            <div className="flex flex-col md:flex-row items-center justify-center max-w-4xl mx-auto mb-12 gap-4">
               <div className="w-full max-w-2xl">
                 <div className="relative">
                   <input
@@ -71,6 +77,18 @@ export default function OrganizationsPage() {
                     </svg>
                   </span>
                 </div>
+              </div>
+           
+              <div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "inactive")}
+                  className="h-10 px-8 cursor-pointer rounded-full border border-[#8BB2B5] bg-white text-[#00353D] outline-none focus:ring-2 focus:ring-[#8BB2B5] font-medium"
+                >
+                  <option value="all">All</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
               </div>
             </div>
 
@@ -122,6 +140,16 @@ export default function OrganizationsPage() {
                         </div>
                         <div className="text-[#00353D] text-[15px] line-clamp-1 px-1">
                           {organization.email}
+                        </div>
+                      
+                        <div
+                          className="text-xs mt-1 px-2 py-1 rounded-full"
+                          style={{
+                            backgroundColor: organization.is_active ? "#D1FAE5" : "#FEE2E2",
+                            color: organization.is_active ? "#065F46" : "#991B1B",
+                          }}
+                        >
+                          {organization.is_active ? "Active" : "Inactive"}
                         </div>
                       </div>
                     </div>

@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
 
           <button
             onClick={() => router.push("/onboarding/register")}
-            className="w-full bg-[#00353D] text-white text-base md:text-2xl font-extrabold px-8 py-3 rounded-md hover:bg-teal-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-1"
+            className="w-full bg-[#00353D] text-white text-base md:text-2xl cursor-pointer font-extrabold px-8 py-3 rounded-md hover:bg-teal-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-1"
           >
             Get Started
           </button>
