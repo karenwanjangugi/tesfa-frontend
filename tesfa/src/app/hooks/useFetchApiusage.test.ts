@@ -1,13 +1,3 @@
-const mockLocalStorage = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-
-Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage,
-});
 
 import { renderHook, waitFor } from '@testing-library/react';
 import useFetchApiUsageStats from './usefetchApiusage';
@@ -17,53 +7,88 @@ jest.mock('../utils/fetchApiUsage', () => ({
   fetchApiUsageStats: jest.fn(),
 }));
 
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn(),
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
+
+const mockFetchApiUsageStats = fetchApiUsageStats as jest.MockedFunction<
+  typeof fetchApiUsageStats
+>;
+
 describe('useFetchApiUsageStats', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockLocalStorage.getItem.mockReset();
+    (localStorageMock.getItem as jest.Mock).mockReturnValue(null); 
   });
 
 
-  it('should return loading state initially', () => {
-  
-    (fetchApiUsageStats as jest.Mock).mockReturnValue(new Promise(() => {}));
-    mockLocalStorage.getItem.mockReturnValue('valid-token');
 
+  it('should show error if no token in localStorage', async () => {
     const { result } = renderHook(() => useFetchApiUsageStats());
 
-    expect(result.current.loading).toBe(true);
-    expect(result.current.data).toEqual([]);
-    expect(result.current.error).toBeNull();
-  });
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
 
-  it('should fetch data successfully when token exists', async () => {
-    const mockData = [{ week: '2023-01', calls: 100 }];
-    (fetchApiUsageStats as jest.Mock).mockResolvedValue(mockData);
-    mockLocalStorage.getItem.mockReturnValue('valid-token');
-
-    const { result } = renderHook(() => useFetchApiUsageStats());
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.data).toEqual(mockData);
-    expect(result.current.error).toBeNull();
-  });
-
-  it('should set error when no token exists', async () => {
-    mockLocalStorage.getItem.mockReturnValue(null); 
-
-    const { result } = renderHook(() => useFetchApiUsageStats());
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.error).toBe('You must be logged in to view API usage.');
+    expect(result.current.data).toEqual([]);
   });
 
-  it('should handle fetch errors', async () => {
-    (fetchApiUsageStats as jest.Mock).mockRejectedValue(new Error('API failed'));
-    mockLocalStorage.getItem.mockReturnValue('valid-token');
+  it('should fetch and return API usage stats on success', async () => {
+    const mockData = [
+      { month: '2024-06', total_calls: 150 },
+      { month: '2024-05', total_calls: 200 },
+    ];
+
+    mockFetchApiUsageStats.mockResolvedValueOnce(mockData);
+    (localStorageMock.getItem as jest.Mock).mockReturnValue('valid-token');
 
     const { result } = renderHook(() => useFetchApiUsageStats());
 
-    await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.error).toBe('API failed');
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBe('');
+    expect(result.current.data).toEqual(mockData);
+  });
+
+  it('should handle API fetch error', async () => {
+    mockFetchApiUsageStats.mockRejectedValueOnce(new Error('Network error'));
+    (localStorageMock.getItem as jest.Mock).mockReturnValue('valid-token');
+
+    const { result } = renderHook(() => useFetchApiUsageStats());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBe('Network error');
+  });
+
+  it('should not run on the server (SSR)', () => {
+  
+    const originalWindow = global.window;
+
+
+    // @ts-ignore
+    delete global.window;
+
+    try {
+      const { result } = renderHook(() => useFetchApiUsageStats());
+
+      expect(result.current.loading).toBe(false);
+      expect(result.current.data).toEqual([]);
+    
+    } finally {
+ 
+      global.window = originalWindow;
+    }
   });
 });

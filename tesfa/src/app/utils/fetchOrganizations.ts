@@ -20,7 +20,7 @@ export async function fetchProfile() {
     });
 
     if (!response.ok) {
-      throw new Error('Make sure to make changes before saving.');
+      throw new Error('');
     }
 
     return await response.json();
@@ -57,7 +57,8 @@ export async function updateUser(data: FormData | UserUpdateData) {
     });
 
     if (!response.ok) {
-      throw new Error('Make sure to make changes before saving.');
+       const text = await response.text();
+      throw new Error(text);
     }
 
     return await response.json();

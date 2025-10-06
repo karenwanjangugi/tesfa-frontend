@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -92,7 +91,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-12 text-[#00353D] text-xl"
+                className="absolute cursor-pointer right-3 top-12 text-[#00353D] text-xl"
                 tabIndex={-1}
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >

@@ -60,8 +60,21 @@ export default function DashboardPage() {
       isDateInRange(organization.created_at, startDate, endDate)
     ) || [];
 
+  const filteredPredictions =
+    predictions?.filter(
+      (prediction: any) =>
+        prediction.created_at && isDateInRange(prediction.created_at, startDate, endDate)
+    ) || [];
+
+  const filteredTasks =
+    tasks?.filter(
+      (task: any) =>
+        task.created_at && isDateInRange(task.created_at, startDate, endDate)
+    ) || [];
+
   const activeOrganizations = filteredOrganizations.filter(
-    (organization: User) => organization.role === "organization" && organization.is_active === true
+    (organization: User) =>
+      organization.role === "organization" && organization.is_active === true
   );
 
   const getMonthLabel = (dateString: string): string => {
@@ -89,10 +102,10 @@ export default function DashboardPage() {
     .map(([year, value]) => ({ year, value }))
     .sort((a, b) => a.year.localeCompare(b.year));
 
-  const predictionCount = predictions?.length || 0;
-  const taskCount = tasks?.length || 0;
-  const queryCount = queries?.length || 0;
 
+  const predictionCount = filteredPredictions.length;
+  const taskCount = filteredTasks.length;
+  const queryCount = filteredQueries.length;
   const totalCount = predictionCount + taskCount + queryCount;
 
   const pieChartData =
@@ -100,12 +113,12 @@ export default function DashboardPage() {
       ? [
           { name: "Predict", value: 0, color: "#0f2e2e" },
           { name: "List of Tasks", value: 0, color: "#d7ad05" },
-          { name: "Query", value: 0, color: "#1e3a8a" },
+          { name: "Query", value: 0, color: "#395D7A" },
         ]
       : [
           { name: "Predict", value: predictionCount, color: "#0f2e2e" },
           { name: "List of Tasks", value: taskCount, color: "#d7ad05" },
-          { name: "Query", value: queryCount, color: "#1e3a8a" },
+          { name: "Query", value: queryCount, color: "#395D7A" },
         ];
 
   const isLoading =

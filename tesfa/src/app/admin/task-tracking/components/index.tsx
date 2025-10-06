@@ -197,7 +197,7 @@ export default function TasksAdmin() {
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled:opacity-50"
+            className="rounded-lg text-white bg-[#00353D] cursor-pointer p-2 disabled:opacity-50"
           >
             Previous
           </button>
@@ -209,7 +209,7 @@ export default function TasksAdmin() {
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="rounded-lg bg-blue-200 p-2 text-gray-700 disabled:opacity-50"
+            className="rounded-lg bg-[#00353D] cursor-pointer hover:bg-[#002A30] p-2 text-white disabled:opacity-50"
           >
             Next
           </button>
