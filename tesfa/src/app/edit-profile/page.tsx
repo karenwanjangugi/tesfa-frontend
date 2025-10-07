@@ -132,7 +132,7 @@ export default function EditProfilePage() {
                   <button
                     type="button"
                     onClick={() => document.getElementById("logoInput")?.click()}
-                    className="absolute top-40 right-5 bg-white border-2 border-[#C3A041] text-[#C3A041] w-10 h-10 rounded-full flex items-center justify-center shadow hover:bg-[#F3FBFD] transition"
+                    className="absolute top-40 cursor-pointer right-5 bg-white border-2 border-[#C3A041] text-[#C3A041] w-10 h-10 rounded-full flex items-center justify-center shadow hover:bg-[#F3FBFD] transition"
                     aria-label="Upload logo"
                   >
                     <CameraIcon className="w-5 h-5 cursor-pointer" />
@@ -198,7 +198,7 @@ export default function EditProfilePage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#C3A041] hover:text-[#00353D]"
+                        className="absolute right-4 top-1/2 cursor-pointer transform -translate-y-1/2 text-[#C3A041] hover:text-[#00353D]"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
                         {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
@@ -209,14 +209,14 @@ export default function EditProfilePage() {
                     <button
                       type="button"
                       onClick={() => router.push("/profile")}
-                      className="px-5 py-2 border-2 border-[#03363D] text-[#03363D] rounded-full text-lg font-medium shadow hover:bg-[#F3FBFD] transition"
+                      className="px-5 py-2 border-2 border-[#03363D] cursor-pointer text-[#03363D] rounded-full text-lg font-medium shadow hover:bg-[#F3FBFD] transition"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="px-7 py-2 bg-[#03363D] text-white rounded-full text-lg font-medium shadow hover:bg-[#065A60] transition"
+                      className="px-7 py-2 bg-[#03363D] text-white cursor-pointer rounded-full text-lg font-medium shadow hover:bg-[#065A60] transition"
                     >
                       {submitting ? "Saving..." : "Save"}
                     </button>
