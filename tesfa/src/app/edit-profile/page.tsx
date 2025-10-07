@@ -23,6 +23,7 @@ export default function EditProfilePage() {
   const [updateStatus, setUpdateStatus] = useState<"" | "error">("");
   const [updateMessage, setUpdateMessage] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [imageError, setImageError] = useState(""); 
 
   useEffect(() => {
     if (profile) {
@@ -38,8 +39,18 @@ export default function EditProfilePage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, files } = e.target;
     if (type === "file" && files && files[0]) {
-      setLogoImage(files[0]);
-      setFormData((prev) => ({ ...prev, logo_image: files[0] }));
+      const file = files[0];
+      // PNG only
+      if (file.type !== "image/png") {
+        setImageError("PNG format is preferable. Please upload a PNG image.");
+        setLogoImage(null);
+        setFormData((prev) => ({ ...prev, logo_image: null }));
+        return;
+      } else {
+        setImageError("");
+        setLogoImage(file);
+        setFormData((prev) => ({ ...prev, logo_image: file }));
+      }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -47,6 +58,7 @@ export default function EditProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (imageError) return; 
     setSubmitting(true);
     const email = formData.email.trim();
     const org_name = (formData.org_name || "NGO").trim();
@@ -140,10 +152,15 @@ export default function EditProfilePage() {
                   <input
                     id="logoInput"
                     type="file"
-                    accept="image/*"
+                    accept="image/png" 
                     onChange={handleChange}
                     className="hidden"
                   />
+                  {imageError && (
+                    <div className="mt-2 text-red-600 font-semibold text-center">
+                      {imageError}
+                    </div>
+                  )}
                   <div className="mt-4 font-bold text-3xl text-[#C3A041] text-center">
                     {formData.org_name}
                   </div>
@@ -215,7 +232,7 @@ export default function EditProfilePage() {
                     </button>
                     <button
                       type="submit"
-                      disabled={submitting}
+                      disabled={submitting || !!imageError}
                       className="px-7 py-2 bg-[#03363D] text-white cursor-pointer rounded-full text-lg font-medium shadow hover:bg-[#065A60] transition"
                     >
                       {submitting ? "Saving..." : "Save"}
