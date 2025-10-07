@@ -66,3 +66,61 @@ input:focus {
 .recharts-surface:focus-visible {
   outline: none !important;
 }
+
+
+
+@keyframes move-rays {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.rays {
+  animation: move-rays 2s ease-in-out infinite;
+}
+@keyframes draw-path {
+  0% { stroke-dasharray: 0, 100; }
+  100% { stroke-dasharray: 100, 0; }
+}
+.svg-logo {
+  animation: rotate-logo 5s linear infinite, neon-glow 2s infinite alternate;
+  transform-origin: center;
+}
+.svg-logo path {
+  fill: none;
+  stroke: #00363E;
+  stroke-width: 2;
+  stroke-dasharray: 0, 100;
+  animation: draw-path 3s ease-in-out forwards;
+}
+@keyframes dashed-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.dashed-spinner {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 4px dashed #FFC321;
+  border-radius: 50%;
+  animation: dashed-spin 3s linear infinite;
+  top: 45%;
+  left: 46.8%;
+  transform: translate(-50%, -50%);
+}
+.svg-logo {
+  transform-origin: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
