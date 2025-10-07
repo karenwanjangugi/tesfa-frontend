@@ -93,6 +93,14 @@ input:focus {
     transform: rotate(360deg);
   }
 }
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
 .dashed-spinner {
   position: absolute;
   width: 120px;
@@ -100,28 +108,10 @@ input:focus {
   border: 4px dashed #FFC321;
   border-radius: 50%;
   animation: dashed-spin 3s linear infinite;
-  top: 45%;
-  left: 46.8%;
-  transform: translate(-50%, -50%);
+  margin-top: 27px;
 }
 .svg-logo {
-  transform-origin: center;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-@media screen and (min-width: 1025px) and (max-width: 1400px) {
-  .dashed-spinner {
-    top: 44%;
-    left: 45.5%;
-    transform: translate(-50%, -50%);
-  }
-}
-@media screen and (width: 1024px) {
-  .dashed-spinner {
-    top: 42%;
-    left: 44%;
-    transform: translate(-50%, -50%);
-  }
+  transform-origin: center;
+  animation: rotate-logo 5s linear infinite, neon-glow 2s infinite alternate;
 }
