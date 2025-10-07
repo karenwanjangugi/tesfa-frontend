@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en"  className={`${josefinSans.variable}`}>
        <head>
-        <link rel="icon" href="/tesfalogo.png" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body >
         <main >{children}</main>

@@ -1,11 +1,10 @@
 "use client";
-import React from 'react';
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useRouter, usePathname } from "next/navigation";
 import { RiSidebarFoldLine } from "react-icons/ri";
 import { HiSquares2X2 } from "react-icons/hi2";
 import { LuClock3, LuClipboardList, LuUser, LuLogOut } from "react-icons/lu";
-
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -34,44 +33,73 @@ const SidebarItem = ({ icon, label, isOpen, active, onClick }: SidebarItemProps)
   );
 };
 
+const LogoutConfirmModal = ({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => void;
+}) => (
+  <div className="fixed inset-0 bg-black opacity-85 flex items-center justify-center z-[1000]">
+    <div className="bg-blue-50 p-10 rounded-lg shadow-lg max-w-xs w-full">
+      <h2 className="text-lg font-bold mb-2 text-[#00363E]">Confirm Logout</h2>
+      <p className="mb-4 text-gray-700">Are you sure you want to logout?</p>
+      <div className="flex justify-end gap-4">
+        <button
+          onClick={onCancel}
+          className="px-6 py-2 cursor-pointer rounded-2xl  bg-gray-200 hover:bg-gray-300 text-gray-800"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          className="px-6 py-2 cursor-pointer rounded-2xl bg-red-600 hover:bg-red-700 text-white"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false); 
-  const [isMobileOpen, setIsMobileOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) { 
-        setIsOpen(false); 
+      if (window.innerWidth < 1024) {
+        setIsOpen(false);
       }
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (window.innerWidth >= 1024) {
-        setIsOpen(false); 
+        setIsOpen(false);
       } else {
-        setIsOpen(false); 
+        setIsOpen(false);
       }
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path);
-    if (window.innerWidth < 1024) { 
+    if (window.innerWidth < 1024) {
       setIsMobileOpen(false);
     }
   };
 
-const handleLogoutClick = () => setShowLogoutConfirm(true);
+  const handleLogoutClick = () => setShowLogoutConfirm(true);
 
   const handleLogoutConfirm = () => {
-    localStorage.removeItem("authToken"); 
-    router.push("/onboarding/login"); 
+    localStorage.removeItem("authToken");
+    router.push("/onboarding/login");
     setShowLogoutConfirm(false);
   };
 
@@ -102,7 +130,6 @@ const handleLogoutClick = () => setShowLogoutConfirm(true);
         lg:static lg:flex
         ${isOpen ? "lg:w-60 lg:py-6 lg:px-4" : "lg:w-16 lg:px-2 lg:py-6"}`}
       >
-    
         <div>
           <div className="flex justify-between mb-20">
             <button
@@ -122,36 +149,11 @@ const handleLogoutClick = () => setShowLogoutConfirm(true);
             <div
               className={`transition-opacity duration-300 ${isOpen || isMobileOpen ? "opacity-100" : "opacity-0"}`}
             >
-              <div
-                className={`${isOpen || isMobileOpen ? "" : "hidden"}`}
-              >
-              <img src={"/Images/tesfaLogo.png"} alt="Tesfa Logo"></img>
+              <div className={`${isOpen || isMobileOpen ? "" : "hidden"}`}>
+                <img src={"/Images/tesfaLogo.png"} alt="Tesfa Logo"></img>
               </div>
             </div>
           </div>
-              {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black opacity-85 flex items-center justify-center z-50">
-          <div className="bg-blue-50 p-10 rounded-lg shadow-lg max-w-xs w-full">
-            <h2 className="text-lg font-bold mb-2 text-[#00363E]">Confirm Logout</h2>
-            <p className="mb-4 text-gray-700">Are you sure you want to logout?</p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleLogoutCancel}
-                className="px-6 py-2 cursor-pointer rounded-2xl  bg-gray-200 hover:bg-gray-300 text-gray-800"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleLogoutConfirm}
-                className="px-6 py-2 cursor-pointer rounded-2xl bg-red-600 hover:bg-red-700 text-white"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-        
           <nav className="flex flex-col gap-10">
             <SidebarItem
               icon={<HiSquares2X2 size={30} />}
@@ -177,7 +179,6 @@ const handleLogoutClick = () => setShowLogoutConfirm(true);
               path="/kanban"
               onClick={() => handleNavigation("/kanban")}
             />
-    
             <SidebarItem
               icon={<LuUser size={30} />}
               label="Profile"
@@ -188,17 +189,25 @@ const handleLogoutClick = () => setShowLogoutConfirm(true);
             />
           </nav>
         </div>
-     
         <div className="mb-4">
           <SidebarItem
             icon={<LuLogOut size={30} />}
             label="Logout"
             isOpen={isOpen || isMobileOpen}
             active={pathname === ""}
-              onClick={handleLogoutClick}
+            onClick={handleLogoutClick}
           />
         </div>
       </div>
+      {showLogoutConfirm &&
+        typeof window !== "undefined" &&
+        ReactDOM.createPortal(
+          <LogoutConfirmModal
+            onCancel={handleLogoutCancel}
+            onConfirm={handleLogoutConfirm}
+          />,
+          document.body
+        )}
     </>
   );
 };
