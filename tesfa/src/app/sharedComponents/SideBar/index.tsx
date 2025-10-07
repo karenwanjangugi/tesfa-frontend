@@ -119,7 +119,7 @@ const Sidebar = () => {
               <div
                 className={`${isOpen || isMobileOpen ? "" : "hidden"}`}
               >
-              <img src={"/Images/tesfalogo.png"} alt="Tesfa Logo"></img>
+              <img src={"/Images/tesfaLogo.png"} alt="Tesfa Logo"></img>
               </div>
             </div>
           </div>

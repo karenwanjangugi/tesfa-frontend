@@ -1,12 +1,10 @@
 "use client";
-
 import { useState } from "react";
 import React from "react";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
 import { useDashboardData } from "../../../hooks/useTaskPageData";
 import Image from "next/image";
-
 export default function TasksAdmin() {
   const [searchQuery, setSearchQuery] = useState("");
   const { data, loading, error } = useDashboardData();
@@ -15,71 +13,54 @@ export default function TasksAdmin() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="flex h-screen bg-gray-50 justify-center items-center">
         <p className="text-gray-600">Loading dashboard data...</p>
       </div>
     );
   }
-
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="flex h-screen bg-gray-50 justify-center items-center">
         <p className="text-red-600">
-          Error loading data: {error.message}. Please ensure your token is
-          valid.
+          Error loading data: {error.message}. Please ensure your token is valid.
         </p>
       </div>
     );
   }
-
   if (!data) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
+      <div className="flex h-screen bg-gray-50 justify-center items-center">
         <p className="text-gray-600">No data available.</p>
       </div>
     );
   }
 
-  const { taskAssignments, predictions, taskTitleMap, organizationNameMap } =
-    data;
+  const { taskAssignments, predictions, taskTitleMap, organizationNameMap } = data;
   const totalInterventions = taskAssignments.length;
   const completedTasks = taskAssignments.filter(
     (assignment) => assignment.status === "completed"
   ).length;
   const predictedCases = predictions.length;
-
   const liveDashboardStats = [
     { title: "Predicted Cases", value: predictedCases },
     { title: "Total Interventions", value: totalInterventions },
     { title: "Completed Tasks", value: completedTasks },
   ];
-
+ 
   const filteredAssignments = taskAssignments.filter((assignment) => {
     const taskTitle = taskTitleMap.get(assignment.task)?.toLowerCase() || "";
-    const orgName =
-      organizationNameMap.get(assignment.organization)?.toLowerCase() || "";
+    const orgName = organizationNameMap.get(assignment.organization)?.toLowerCase() || "";
     const status = assignment.status ? assignment.status.toLowerCase() : "";
     const query = searchQuery.toLowerCase();
-
-    return (
-      taskTitle.includes(query) ||
-      orgName.includes(query) ||
-      status.includes(query)
-    );
+    return taskTitle.includes(query) || orgName.includes(query) || status.includes(query);
   });
-
+ 
   const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredAssignments.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentItems = filteredAssignments.slice(indexOfLastItem - itemsPerPage, indexOfLastItem);
   const totalPages = Math.ceil(filteredAssignments.length / itemsPerPage);
-
+ 
   const getStatusColor = (status?: string) => {
-    if (!status) {
-      return "text-gray-600";
-    }
+    if (!status) return "text-gray-600";
     switch (status.toLowerCase()) {
       case "completed":
         return "text-green-600";
@@ -93,128 +74,130 @@ export default function TasksAdmin() {
         return "text-gray-600";
     }
   };
-
-  const statusDisplayNames: { [key: string]: string } = {
+  const statusDisplayNames: Record<string, string> = {
     completed: "Completed",
     in_progress: "In Progress",
     cancelled: "Cancelled",
     pending: "Pending",
   };
-
-  const getStatusDisplayName = (status?: string) => {
-    if (!status) {
-      return "Unknown";
-    }
-    return statusDisplayNames[status] || status;
-  };
-
+  const getStatusDisplayName = (status?: string) =>
+    statusDisplayNames[status ?? ""] || "Unknown";
   return (
-    <div>
-      <div className="flex justify-around  items-center h-[25vh] mb-20">
-        {liveDashboardStats.map((stat, index) => (
-          <div
-            key={index}
-            className="relative flex flex-col h-[22vh] w-[20vh] items-center"
-          >
-            <Image
-              src="/Images/ellipse.png"
-              alt="Ellipse"
-              className="w-[20vh] h-[20vh] object-contain"
-              width={320}
-              height={320}
-            />
-            <span className="absolute top-1/2 text-[3em] -translate-y-3/4 text-xl font-bold text-gray-800">
-              {stat.value}
-            </span>
-            <p className="mt-2 text-center text-[1.2em] font-large text-black">
-              {stat.title}
-            </p>
-          </div>
-        ))}
-      </div>
-      <div className="mb-6 relative w-full max-w-sm">
-        <FaSearch
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-          size={20}
-        />
-        <input
-          type="search"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setSearchQuery(e.target.value)
-          }
-          className="w-full pl-10 pr-4 py-2 rounded-[20px] border border-gray-300 bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-transparent"
-          aria-label="Search"
-        />
-      </div>
-
-
-      <div className="grid grid-cols-[3.9fr_1.5fr_1fr_1fr] gap-4 mb-2 px-10">
-        <h3 className="font-semibold text-black text-[1.2em]">Tasks</h3>
-        <h3 className="font-semibold text-black text-[1.2em] pl-6">Organization</h3>
-        <h3 className="font-semibold text-black text-[1.2em]">Status</h3>
-        <h3 className="font-semibold text-black text-[1.2em]">Date</h3>
-      </div>
-      <div className="h-1.5 bg-[#266A74] opacity-50 mb-10"></div>
-
-      {filteredAssignments.length > 0 ? (
-        <div className="space-y-3 mb-6 overflow-y-scroll h-[40vh] px-10">
-          {currentItems.map((assignment, index) => (
-            <motion.div
-              key={assignment.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.06 }}
-              className="bg-white rounded-[50px] p-3 drop-shadow-lg border border-gray-200"
-            >
-              <div className="grid grid-cols-[4fr_1.5fr_1fr_1fr] gap-4 items-center">
-                <p className="text-gray-600">
-                  {taskTitleMap.get(assignment.task) ||
-                    `Task ID: ${assignment.task}`}
-                </p>
-                <p className="text-gray-600 pl-6">
-                  {organizationNameMap.get(assignment.organization) ||
-                    `Org ID: ${assignment.organization}`}
-                </p>
-                <p className={getStatusColor(assignment.status)}>
-                  {getStatusDisplayName(assignment.status)}
-                </p>
-                <p className="text-gray-600">
-                  {new Date(assignment.created_at).toLocaleDateString()}
-                </p>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className=" mx-auto">
+            <div className="flex flex-wrap justify-around gap-8 mb-12">
+              {liveDashboardStats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="relative flex flex-col items-center w-[160px] sm:w-[180px]"
+                >
+                  <Image
+                    src="/Images/ellipse.png"
+                    alt="Ellipse"
+                    width={180}
+                    height={180}
+                    className="w-[160px] sm:w-[180px] h-auto object-contain"
+                  />
+                  <span className="absolute top-1/2 -translate-y-3/4 text-2xl sm:text-3xl font-bold text-gray-800">
+                    {stat.value}
+                  </span>
+                  <p className="mt-2 text-center text-base sm:text-lg font-medium text-black">
+                    {stat.title}
+                  </p>
+                </div>
+              ))}
+            </div>
+        
+            <div className="mb-6 relative w-full max-w-md mx-auto">
+              <FaSearch
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                size={18}
+              />
+              <input
+                type="search"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+       
+            <div className="hidden md:grid grid-cols-[3.9fr_1.5fr_1fr_1fr] gap-4 mb-2 px-4 sm:px-10">
+              <h3 className="font-semibold text-black text-lg">Tasks</h3>
+              <h3 className="font-semibold text-black text-lg">Organization</h3>
+              <h3 className="font-semibold text-black text-lg">Status</h3>
+              <h3 className="font-semibold text-black text-lg">Date</h3>
+            </div>
+            <div className="h-1 bg-[#266A74] opacity-50 mb-8"></div>
+       
+            {filteredAssignments.length > 0 ? (
+              <div className="space-y-3 mb-10 px-4 sm:px-10">
+                {currentItems.map((assignment, index) => (
+                  <motion.div
+                    key={assignment.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.06 }}
+                    className="bg-white rounded-3xl p-4 sm:p-5 drop-shadow-md border border-gray-200"
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-[4fr_1.5fr_1fr_1fr] gap-3 md:gap-4 items-center">
+                      <p className="text-gray-700 text-sm sm:text-base">
+                        {taskTitleMap.get(assignment.task) ||
+                          `Task ID: ${assignment.task}`}
+                      </p>
+                      <p className="text-gray-700 text-sm sm:text-base">
+                        {organizationNameMap.get(assignment.organization) ||
+                          `Org ID: ${assignment.organization}`}
+                      </p>
+                      <p className={`${getStatusColor(assignment.status)} text-sm sm:text-base`}>
+                        {getStatusDisplayName(assignment.status)}
+                      </p>
+                      <p className="text-gray-700 text-sm sm:text-base">
+                        {new Date(assignment.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
-          ))}
+            ) : (
+              <div className="flex justify-center items-center h-40">
+                <p className="text-gray-600">No results found.</p>
+              </div>
+            )}
+          
+            {filteredAssignments.length > itemsPerPage && (
+              <div className="flex justify-center items-center space-x-4 mt-4 pb-8">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-lg text-white bg-[#00353D] cursor-pointer px-4 py-2 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="text-black">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="rounded-lg cursor-pointer text-white bg-[#00353D] px-4 py-2 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-      ) : (
-        <div className="flex justify-center items-center h-[40vh]">
-          <p className="text-gray-600">No results found.</p>
-        </div>
-      )}
-      {filteredAssignments.length > itemsPerPage && (
-        <div className="flex justify-center items-center -mt-5 space-x-4">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="rounded-lg text-white bg-[#00353D] cursor-pointer p-2 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-black">
-            page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="rounded-lg bg-[#00353D] cursor-pointer hover:bg-[#002A30] p-2 text-white disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
+
+
+
+
+

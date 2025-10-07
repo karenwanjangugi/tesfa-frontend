@@ -19,6 +19,7 @@ import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
 import { Task } from '../../../utils/type';
 import { TaskStatus } from '../../../utils/type';
 import { deleteTaskAssignment } from '../../../utils/fetchTaskAssignment';
+import Loader from '@/app/sharedComponents/Loader';
 
 
 const columns = [
@@ -107,9 +108,7 @@ export default function KanbanBoard() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-gray-600">Loading board...</p>
-      </div>
+     <Loader/>
     )
   }
 

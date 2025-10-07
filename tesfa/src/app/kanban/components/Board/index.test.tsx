@@ -59,18 +59,18 @@ describe('KanbanBoard', () => {
     jest.clearAllMocks();
   });
 
-  it('renders loading state', () => {
-    (fetchTaskModule.useFetchTaskAssignments as jest.Mock).mockReturnValue({
-      assignedTasks: [],
-      setAssignedTasks: jest.fn(),
-      loading: true,
-      error: null,
-      updateTaskStatus: jest.fn(),
-    });
-
-    render(<KanbanBoard />);
-    expect(screen.getByText(/Loading board.../i)).toBeInTheDocument();
+ it('renders loading state', () => {
+  (fetchTaskModule.useFetchTaskAssignments as jest.Mock).mockReturnValue({
+    assignedTasks: [],
+    setAssignedTasks: jest.fn(),
+    loading: true,
+    error: null,
+    updateTaskStatus: jest.fn(),
   });
+
+  render(<KanbanBoard />);
+  expect(screen.getByTestId('loader')).toBeInTheDocument();
+});
 
   it('renders error state', () => {
     (fetchTaskModule.useFetchTaskAssignments as jest.Mock).mockReturnValue({
