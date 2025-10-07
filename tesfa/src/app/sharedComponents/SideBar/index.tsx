@@ -37,6 +37,7 @@ const SidebarItem = ({ icon, label, isOpen, active, onClick }: SidebarItemProps)
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false); 
   const [isMobileOpen, setIsMobileOpen] = useState(false); 
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -66,10 +67,15 @@ const Sidebar = () => {
     }
   };
 
-  const handleLogout = () => {
+const handleLogoutClick = () => setShowLogoutConfirm(true);
+
+  const handleLogoutConfirm = () => {
     localStorage.removeItem("authToken"); 
     router.push("/onboarding/login"); 
+    setShowLogoutConfirm(false);
   };
+
+  const handleLogoutCancel = () => setShowLogoutConfirm(false);
 
   return (
     <>
@@ -123,6 +129,28 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
+              {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black opacity-85 flex items-center justify-center z-50">
+          <div className="bg-blue-50 p-10 rounded-lg shadow-lg max-w-xs w-full">
+            <h2 className="text-lg font-bold mb-2 text-[#00363E]">Confirm Logout</h2>
+            <p className="mb-4 text-gray-700">Are you sure you want to logout?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleLogoutCancel}
+                className="px-6 py-2 cursor-pointer rounded-2xl  bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogoutConfirm}
+                className="px-6 py-2 cursor-pointer rounded-2xl bg-red-600 hover:bg-red-700 text-white"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
         
           <nav className="flex flex-col gap-10">
             <SidebarItem
@@ -167,7 +195,7 @@ const Sidebar = () => {
             label="Logout"
             isOpen={isOpen || isMobileOpen}
             active={pathname === ""}
-            onClick={handleLogout}
+              onClick={handleLogoutClick}
           />
         </div>
       </div>

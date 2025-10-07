@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { User as UserIcon, Mail, Calendar, Edit2 } from "lucide-react";
+import { ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from "next/image";
 import useFetchOrganization from "@/app/hooks/useFetchOrganization";
 import Layout from "../sharedComponents/Layout";
@@ -120,7 +121,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
-                    <Calendar className="w-7 h-7 text-[#C3A041]" />
+                    <ShieldCheck className="w-7 h-7 text-[#C3A041]" />
                     <div className="flex flex-col sm:flex-row sm:items-center sm:gap-11">
                       <p className="text-lg sm:text-xl text-[#00353D] font-medium">
                         Tasks Completed:

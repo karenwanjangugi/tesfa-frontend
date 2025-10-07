@@ -67,7 +67,7 @@ export function TaskCard({ task, index, onDelete }: TaskCardProps) {
           <LuTrash2 size={16}/>
         </button>
       
-      <div className={`${getCardColor(task.status)} border-none rounded-2xl h-[20vh] sm:h-[18vh] md:h-[20vh] text-white p-3 sm:p-4 mb-3 shadow-lg hover:shadow-xl transition-shadow w-full`}>
+      <div className={`${getCardColor(task.status)} border-none rounded-2xl h-auto text-white p-3 sm:p-4 mb-3 shadow-lg hover:shadow-xl transition-shadow w-full`}>
        <div {...listeners} {...attributes} className="w-full">
         <div className="space-y-1 sm:space-y-2">
           <h4 className="font-medium text-lg sm:text-base">{task.title}</h4>
