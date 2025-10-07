@@ -56,7 +56,7 @@ const MapClient = () => {
     if (worldLand) {
       const worldLandLayer = L.geoJSON(worldLand, {
         style: {
-          fillColor: '#808080',
+          fillColor: '#00353D',
           fillOpacity: 1,
           weight: 0,
           color: 'transparent',
@@ -85,7 +85,7 @@ const MapClient = () => {
           type: 'FeatureCollection',
           features: validCountries.map((country) => ({
             type: 'Feature',
-            properties: { ...country, color: country.is_affected ? '#e53e3e' : '#0f4c75' },
+            properties: { ...country, color: country.is_affected ? '#ba6d58' : '#164E63' },
             geometry: country.geometry,
           })),
         };
@@ -125,7 +125,7 @@ const MapClient = () => {
           type: 'FeatureCollection',
           features: validRegions.map((region) => ({
             type: 'Feature',
-            properties: { ...region, color: region.is_affected ? '#e53e3e' : '#00353D' },
+            properties: { ...region, color: region.is_affected ? '#0e0202' : '#164E63' },
             geometry: region.geometry,
           })),
         };
@@ -229,7 +229,7 @@ const MapClient = () => {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative  w-full h-full overflow-hidden">
       <div
         ref={mapRef}
         className="w-full h-full ml-[-20px]"
@@ -239,7 +239,7 @@ const MapClient = () => {
       />
       {hoveredFeature && (
         <div
-          className="absolute bg-yellow-500 text-gray-900 p-4 rounded-lg shadow-lg max-w-xs z-[1000] pointer-events-none"
+          className="absolute bg-[#D3AC45] text-gray-900 p-4 rounded-lg shadow-lg max-w-xs z-[1000] pointer-events-none"
           style={{
             left: mousePosition.x + 10,
             top: mousePosition.y + 10,

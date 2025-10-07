@@ -84,25 +84,27 @@ describe("TasksDetails component", () => {
       expect(pushMock).toHaveBeenCalledWith(expect.stringContaining("/kanban?newTasks="));
     });
   });
-
-  it("displays loading and error states", () => {
-    (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
-      tasks: [],
-      setTasks: jest.fn(),
-      loading: true,
-      error: null,
-    });
-    const { rerender } = render(<TasksDetails />);
-    expect(screen.getByText(/loading tasks/i)).toBeInTheDocument();
-
-    (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
-      tasks: [],
-      setTasks: jest.fn(),
-      loading: false,
-      error: new Error("fail"),
-    });
-
-    rerender(<TasksDetails />);
-    expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
+it("displays loading state", () => {
+  (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
+    tasks: [],
+    setTasks: jest.fn(),
+    loading: true,
+    error: null,
   });
+
+  render(<TasksDetails />);
+  expect(screen.getByTestId("loader")).toBeInTheDocument();
+});
+
+it("displays error state", () => {
+  (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
+    tasks: [],
+    setTasks: jest.fn(),
+    loading: false,
+    error: "Failed to load",
+  });
+
+  render(<TasksDetails />);
+  expect(screen.getByText(/Something went Wrong/i)).toBeInTheDocument();
+});
 });

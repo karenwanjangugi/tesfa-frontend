@@ -69,7 +69,7 @@ export default function ApiUsageChart() {
   if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex ">
       <div className="flex-1 py-10 px-1">
         <div className="flex justify-between items-center mb-5 relative">
           <h1 className="text-xl font-semibold">API Usage Overview</h1>

@@ -8,6 +8,7 @@ import { createTaskAssignment } from "../../../utils/fetchTaskAssignment";
 import { Button } from "../../../sharedComponents/Button";
 import { Checkbox } from "../Checkbox/index";
 import { useFetchTasks } from "../../../hooks/useFetchTasks";
+import Loader from "@/app/sharedComponents/Loader";
 
 export default function TasksDetails() {
   const router = useRouter();
@@ -102,9 +103,7 @@ export default function TasksDetails() {
 
   if (loading) {
     return (
-      <div className="p-4 sm:p-6 min-h-screen bg-gray-50 flex justify-center items-center">
-        <p className="text-gray-600">Loading tasks...</p>
-      </div>
+    <Loader/>
     );
   }
 

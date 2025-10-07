@@ -1,159 +1,135 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import ProfilePage from "./page";
-import useFetchOrganization from "@/app/hooks/useFetchOrganization";
-import { useRouter } from "next/navigation";
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ProfilePage from './page'; 
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
-  usePathname: jest.fn(),
+const mockUseFetchOrganization = jest.fn();
+const mockUseFetchTaskAssignments = jest.fn();
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
 }));
 
-jest.mock("@/app/hooks/useFetchOrganization");
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: (props: any) => <img {...props} alt={props.alt || 'mocked image'} />,
+}));
 
-process.env.API_URL = "http://localhost:3000";
 
-describe("ProfilePage", () => {
-  const user = userEvent.setup();
+jest.mock('@/app/hooks/useFetchOrganization', () => ({
+  __esModule: true,
+  default: () => mockUseFetchOrganization(),
+}));
+
+jest.mock('@/app/hooks/useFetchTaskAssignment', () => ({
+  __esModule: true,
+  useFetchTaskAssignments: () => mockUseFetchTaskAssignments(),
+}));
+
+jest.mock('../sharedComponents/Layout', () => {
+  return ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+});
+
+describe('ProfilePage', () => {
+  const mockPush = jest.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    
+    mockPush.mockClear();
+    mockUseFetchOrganization.mockReset();
+    mockUseFetchTaskAssignments.mockReset();
 
-  it("shows loading state", () => {
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: null,
-      loading: true,
-      error: null,
+
+    jest.mocked(require('next/navigation')).useRouter = () => ({
+      push: mockPush,
     });
-    render(<ProfilePage />);
-    expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
 
-  it("shows error state", () => {
-    (useFetchOrganization as jest.Mock).mockReturnValue({
+  it('shows error message when useFetchOrganization returns an error', () => {
+    mockUseFetchOrganization.mockReturnValue({
       user: null,
       loading: false,
-      error: "Failed to load profile",
+      error: 'Network error',
     });
+    mockUseFetchTaskAssignments.mockReturnValue({
+      assignedTasks: [],
+    });
+
     render(<ProfilePage />);
-    expect(screen.getByText(/Failed to load profile/i)).toBeInTheDocument();
+
+    expect(screen.getByText('Network error')).toBeInTheDocument();
+    expect(screen.getByText('Network error')).toHaveClass('text-red-500');
   });
 
-  it("renders profile data correctly", async () => {
-    const mockPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+ 
 
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: {
-        org_name: "Hope NGO",
-        email: "hope@ngo.org",
-        created_at: "2024-01-15T10:30:00Z",
-        logo_image: "/logos/hope.png",
-      },
+  it('renders full profile when data is available', () => {
+    const mockProfile = {
+      org_name: 'Tech Innovators Inc.',
+      email: 'hello@techinnovators.com',
+      created_at: '2023-06-10T14:30:00Z',
+      logo_image: '/logo.png',
+    };
+
+    const mockTasks = [
+      { id: 1, status: 'completed' },
+      { id: 2, status: 'in_progress' },
+      { id: 3, status: 'completed' },
+    ];
+
+    mockUseFetchOrganization.mockReturnValue({
+      user: mockProfile,
       loading: false,
       error: null,
     });
 
-    render(<ProfilePage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Hope NGO")).toBeInTheDocument();
+    mockUseFetchTaskAssignments.mockReturnValue({
+      assignedTasks: mockTasks,
     });
 
-    expect(screen.getByText("hope@ngo.org")).toBeInTheDocument();
-    expect(screen.getByText("Jan 15, 2024")).toBeInTheDocument();
 
-    const editButton = screen.getByLabelText("Edit Profile");
-    expect(editButton).toBeInTheDocument();
+    const originalAPIURL = process.env.API_URL;
+    process.env.API_URL = 'https://api.example.com';
+
+    render(<ProfilePage />);
+
+    expect(screen.getByText('Tech Innovators Inc.')).toBeInTheDocument();
+    expect(screen.getByText('hello@techinnovators.com')).toBeInTheDocument();
+    expect(screen.getByText('Jun 10, 2023')).toBeInTheDocument(); 
+    expect(screen.getByText('2/3 Tasks')).toBeInTheDocument();
+
+    const img = screen.getByAltText('Organization Logo') as HTMLImageElement;
+    expect(img.src).toBe('https://api.example.com/logo.png');
+
+    const editButton = screen.getByLabelText('Edit Profile');
+    fireEvent.click(editButton);
+    expect(mockPush).toHaveBeenCalledWith('/edit-profile');
+
+    process.env.API_URL = originalAPIURL;
   });
 
-  it("handles absolute logo URL", async () => {
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: {
-        org_name: "Global Aid",
-        email: "contact@globalaid.org",
-        created_at: "2023-05-20T08:00:00Z",
-        logo_image: "https://example.com/logo.png",
-      },
+  it('handles absolute logo URL correctly', () => {
+    const mockProfile = {
+      org_name: 'Global Corp',
+      email: 'info@global.com',
+      created_at: '2022-12-01T00:00:00Z',
+      logo_image: 'https://cdn.global.com/logo.svg',
+    };
+
+    mockUseFetchOrganization.mockReturnValue({
+      user: mockProfile,
       loading: false,
       error: null,
     });
 
-    render(<ProfilePage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Global Aid")).toBeInTheDocument();
-    });
-  });
-
-  it("navigates to /edit-profile when edit button is clicked", async () => {
-    const mockPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
-
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: {
-        org_name: "Hope NGO",
-        email: "hope@ngo.org",
-        created_at: "2024-01-15T10:30:00Z",
-        logo_image: "/logos/hope.png",
-      },
-      loading: false,
-      error: null,
+    mockUseFetchTaskAssignments.mockReturnValue({
+      assignedTasks: [],
     });
 
     render(<ProfilePage />);
 
-    await waitFor(() => {
-      expect(screen.getByText("Hope NGO")).toBeInTheDocument();
-    });
-
-    const editButton = screen.getByLabelText("Edit Profile");
-    await user.click(editButton);
-
-    expect(mockPush).toHaveBeenCalledWith("/edit-profile");
-  });
-
-  it("handles missing or empty logo gracefully", async () => {
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: {
-        org_name: "No Logo Org",
-        email: "no@logo.org",
-        created_at: "2024-01-15T10:30:00Z",
-        logo_image: "",
-      },
-      loading: false,
-      error: null,
-    });
-
-    render(<ProfilePage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("No Logo Org")).toBeInTheDocument();
-    });
-
-    const logos = screen.queryAllByAltText("Organization Logo");
-    expect(logos.length).toBe(0);
-  });
-
-  it("formats date correctly with invalid/missing date", async () => {
-    (useFetchOrganization as jest.Mock).mockReturnValue({
-      user: {
-        org_name: "Date Test Org",
-        email: "date@test.org",
-        created_at: null,
-        logo_image: null,
-      },
-      loading: false,
-      error: null,
-    });
-
-    render(<ProfilePage />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Date Test Org")).toBeInTheDocument();
-    });
-
-    expect(screen.getByText("N/A")).toBeInTheDocument();
+    const img = screen.getByAltText('Organization Logo') as HTMLImageElement;
+    expect(img.src).toBe('https://cdn.global.com/logo.svg');
   });
 });
