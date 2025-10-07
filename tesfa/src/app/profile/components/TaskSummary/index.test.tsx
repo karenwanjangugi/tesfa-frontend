@@ -1,9 +1,8 @@
-// src/app/profile/components/TaskSummary/index.test.tsx
+
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import TaskSummary from './index'; // or './TaskSummary' depending on your file
+import TaskSummary from './index'; 
 
-// Mock the hook
 const mockUseFetchTaskAssignments = jest.fn();
 
 jest.mock('@/app/hooks/useFetchTaskAssignment', () => ({
@@ -11,7 +10,6 @@ jest.mock('@/app/hooks/useFetchTaskAssignment', () => ({
   useFetchTaskAssignments: () => mockUseFetchTaskAssignments(),
 }));
 
-// Optional: mock icons for cleaner output
 jest.mock('lucide-react', () => {
   const original = jest.requireActual('lucide-react');
   return {
@@ -59,16 +57,14 @@ describe('TaskSummary', () => {
 
     render(<TaskSummary />);
 
-    // Page 1
+    
     expect(screen.getByText('Setup database')).toBeInTheDocument();
     expect(screen.queryByText('Review PR')).not.toBeInTheDocument();
 
-    // Go to page 2
     fireEvent.click(screen.getByText('Next'));
     expect(screen.getByText('Review PR')).toBeInTheDocument();
     expect(screen.queryByText('Setup database')).not.toBeInTheDocument();
 
-    // Go back to page 1
     fireEvent.click(screen.getByText('Previous'));
     expect(screen.getByText('Setup database')).toBeInTheDocument();
   });
@@ -88,7 +84,7 @@ describe('TaskSummary', () => {
     expect(prevBtn).toBeDisabled();
     expect(nextBtn).not.toBeDisabled();
 
-    fireEvent.click(nextBtn); // go to page 2
+    fireEvent.click(nextBtn); 
 
     expect(prevBtn).not.toBeDisabled();
     expect(nextBtn).toBeDisabled();
@@ -106,10 +102,9 @@ describe('TaskSummary', () => {
     expect(screen.getByText('0/0 Tasks Completed')).toBeInTheDocument();
     expect(screen.getByText('0%')).toBeInTheDocument();
 
-    // The "Recently Completed" heading is still shown (by design)
+  
     expect(screen.getByText('Recently Completed')).toBeInTheDocument();
 
-    // But no task items should appear
     expect(screen.queryByTestId('check-icon')).not.toBeInTheDocument();
   });
 });

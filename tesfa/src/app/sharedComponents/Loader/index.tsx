@@ -1,6 +1,6 @@
 const Loader = () => {
   return (
-    <div className="flex justify-center items-center h-full">
+    <div className="flex justify-center items-center h-full" data-testid="loader">
 <div className="dashed-spinner"></div>
 <svg className="svg-logo" width="121" height="94" viewBox="0 0 141 114" fill="none" xmlns="http://www.w3.org/2000/svg">
   <circle cx="83.0713" cy="60.1314" r="3.23202" transform="rotate(-0.756824 83.0713 60.1314)" fill="#00353D"/>

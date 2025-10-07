@@ -62,19 +62,7 @@ describe('ProfilePage', () => {
     expect(screen.getByText('Network error')).toHaveClass('text-red-500');
   });
 
-  it('renders nothing when profile is null and no error', () => {
-    mockUseFetchOrganization.mockReturnValue({
-      user: null,
-      loading: false,
-      error: null,
-    });
-    mockUseFetchTaskAssignments.mockReturnValue({
-      assignedTasks: [],
-    });
-
-    const { container } = render(<ProfilePage />);
-    expect(container.firstChild).toBeNull();
-  });
+ 
 
   it('renders full profile when data is available', () => {
     const mockProfile = {

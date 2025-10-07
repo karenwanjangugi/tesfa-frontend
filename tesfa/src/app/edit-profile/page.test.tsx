@@ -77,7 +77,7 @@ describe('EditProfilePage', () => {
       refetch: jest.fn(),
     });
     render(<EditProfilePage />);
-    expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('renders error message', () => {
@@ -89,9 +89,8 @@ describe('EditProfilePage', () => {
       refetch: jest.fn(),
     });
     render(<EditProfilePage />);
-    expect(screen.getByText(error)).toBeInTheDocument();
+    expect(screen.getByText(error)).toBeInTheDocument(); 
   });
-
   it('submits form and navigates on success', async () => {
     jest.useFakeTimers();
     render(<EditProfilePage />);
