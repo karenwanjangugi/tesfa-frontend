@@ -1,12 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { User as UserIcon, Mail, Calendar, Edit2 } from "lucide-react";
-import { ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import Image from "next/image";
 import useFetchOrganization from "@/app/hooks/useFetchOrganization";
 import Layout from "../sharedComponents/Layout";
 import { useFetchTaskAssignments } from "@/app/hooks/useFetchTaskAssignment";
 import TaskSummary from "./components/TaskSummary";
+import ProtectedRoute from "../sharedComponents/ProtectedRoot";
 
 function formatDate(isoString: string | undefined) {
   if (!isoString) return "N/A";
@@ -26,6 +27,7 @@ export default function ProfilePage() {
   const totalTasks = assignedTasks.length;
 
   return (
+    <ProtectedRoute>
     <Layout>
       <div className="flex flex-col w-full items-center bg-[#FCF6F7] h-screen overflow-y-auto">
         <div className="w-full px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 mt-8 xl:mt-25 mb-12">
@@ -35,7 +37,7 @@ export default function ProfilePage() {
           <div className="w-full h-[6px] bg-[#8BB2B5] rounded" />
         </div>
 
-        <div className="flex flex-col lg:flex-row items-start w-full max-w-7xl gap-10 px-4 sm:px-6 md:px-8 lg:px-10 pb-20">
+        <div className="flex flex-col lg:flex-row items-start w-full max-w-7xl mt-20 gap-10 px-4 sm:px-6 md:px-8 lg:px-10 pb-20">
           <div className="w-full lg:w-1/2 bg-[#00363E] rounded-3xl shadow-lg">
             <div className="relative flex flex-col items-center p-22 ">
       
@@ -53,8 +55,8 @@ export default function ProfilePage() {
           
               {!loading && profile && (
                 <>
-                  <div className="w-[150px] sm:w-[180px] h-[150px] sm:h-[180px] absolute  rounded-full border-4 border-[#C3A041] flex items-center justify-center overflow-hidden bg-white">
-                    {profile.logo_image && (
+                  <div className="w-[150px] sm:w-[180px] h-[150px] sm:h-[180px] absolute rounded-full border-4 border-[#C3A041] flex items-center justify-center overflow-hidden bg-white">
+                    {profile.logo_image ? (
                       <Image
                         src={profile.logo_image.startsWith("http")
                           ? profile.logo_image
@@ -64,6 +66,14 @@ export default function ProfilePage() {
                         height={150}
                         className="object-contain"
                         unoptimized={false}
+                      />
+                    ) : (
+                      <Image
+                        src="/Images/Group66.png"
+                        alt="Default Logo"
+                        width={150}
+                        height={150}
+                        className="object-contain"
                       />
                     )}
                   </div>
@@ -141,5 +151,6 @@ export default function ProfilePage() {
         </div>
       </div>
     </Layout>
+    </ProtectedRoute>
   );
 }

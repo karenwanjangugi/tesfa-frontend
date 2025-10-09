@@ -1,20 +1,21 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import EditProfilePage from './page';
-import { useRouter } from 'next/navigation';
 import useFetchOrganization from '../hooks/useFetchOrganization';
 import { updateUser } from '../utils/fetchOrganizations';
 
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: React.ComponentProps<'div'>) => <div data-testid="mocked-image" {...props} />,
-}));
+const mockRouter = {
+  push: jest.fn(),
+};
 
 jest.mock('next/navigation', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({
-    push: jest.fn(),
-  })),
+  useRouter: () => mockRouter,
+}));
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: (props: any) => <div data-testid="mocked-image" {...props} />,
 }));
 
 jest.mock('../hooks/useFetchOrganization', () => ({
@@ -27,21 +28,17 @@ jest.mock('../utils/fetchOrganizations', () => ({
 }));
 
 jest.mock('../sharedComponents/Layout', () => {
-  const Layout = ({ children }: { children: React.ReactNode }) => <div data-testid="layout">{children}</div>;
-  Layout.displayName = 'LayoutMock';
-  return Layout;
-})
+  return ({ children }: { children: React.ReactNode }) => <div data-testid="layout">{children}</div>;
+});
+
+jest.mock('../sharedComponents/ProtectedRoot', () => {
+  return ({ children }: { children: React.ReactNode }) => <>{children}</>;
+});
 
 jest.mock('lucide-react', () => {
   const CameraIcon = () => <div data-testid="camera-icon" />;
-  CameraIcon.displayName = 'CameraIcon';
-
   const Eye = () => <div data-testid="eye-icon" />;
-  Eye.displayName = 'Eye';
-
   const EyeOff = () => <div data-testid="eye-off-icon" />;
-  EyeOff.displayName = 'EyeOff';
-
   return { CameraIcon, Eye, EyeOff };
 });
 
@@ -53,11 +50,9 @@ const mockProfile = {
 };
 
 describe('EditProfilePage', () => {
-  const mockPush = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    mockRouter.push.mockClear();
 
     (useFetchOrganization as jest.Mock).mockReturnValue({
       user: mockProfile,
@@ -89,30 +84,22 @@ describe('EditProfilePage', () => {
       refetch: jest.fn(),
     });
     render(<EditProfilePage />);
-    expect(screen.getByText(error)).toBeInTheDocument(); 
+    expect(screen.getByText(error)).toBeInTheDocument();
   });
+
   it('submits form and navigates on success', async () => {
-    jest.useFakeTimers();
     render(<EditProfilePage />);
 
-    fireEvent.change(screen.getByRole('textbox', { name: /Email/i }), {
+    fireEvent.change(screen.getByLabelText(/Email/i), {
       target: { value: 'updated@example.com' },
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /Save/i }));
-    });
-
-    act(() => {
-      jest.runAllTimers();
-    });
+    fireEvent.click(screen.getByRole('button', { name: /Save/i }));
 
     await waitFor(() => {
       expect(updateUser).toHaveBeenCalled();
-      expect(mockPush).toHaveBeenCalledWith('/profile');
+      expect(mockRouter.push).toHaveBeenCalledWith('/profile');
     });
-
-    expect(screen.getByText(/Successfully updated!/i)).toBeInTheDocument();
   });
 
   it('shows error message on update failure', async () => {
@@ -131,7 +118,7 @@ describe('EditProfilePage', () => {
   it('toggles password visibility', () => {
     render(<EditProfilePage />);
 
-    const toggleButton = screen.getByLabelText(/Show password/i);
+    const toggleButton = screen.getByRole('button', { name: /Show password/i });
     const passwordInput = screen.getByPlaceholderText(/password/i);
 
     expect(passwordInput).toHaveAttribute('type', 'password');

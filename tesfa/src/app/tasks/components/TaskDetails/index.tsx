@@ -110,7 +110,6 @@ export default function TasksDetails() {
   return (
     <div className="p-4 sm:p-6 md:p-8 lg:px-10 lg:py-25">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-
         <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">
           Tasks
         </h1>
@@ -126,14 +125,12 @@ export default function TasksDetails() {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
-            className="w-100   pl-10 pr-4 py-2 border border-gray-300 text-black rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#1e4a47]"
+            className="w-100 pl-10 pr-4 py-2 border border-gray-300 text-black rounded-4xl focus:outline-none focus:ring-1 focus:ring-[#1E4A47]"
           />
         </div>
-
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           {isVisible && (
             <p className="text-gray-600 text-sm sm:text-xs md:text-sm text-center sm:text-left">
-
               Click &quot;Select Tasks&quot; to start choosing tasks from the
               list. ➤
             </p>
@@ -141,7 +138,7 @@ export default function TasksDetails() {
           {!isAddMode && (
             <Button
               onClick={handleClick}
-              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-4 sm:px-6 py-2 rounded-full cursor-pointer w-full sm:w-auto"
+              className="bg-[#1E4A47] hover:bg-[#2A5E5A] text-white px-4 sm:px-6 py-2 rounded-full cursor-pointer w-full sm:w-auto"
               aria-label="Add Task"
             >
               Select Tasks
@@ -150,10 +147,8 @@ export default function TasksDetails() {
         </div>
       </div>
       <div className="h-1.5 bg-[#266A74] opacity-50 mb-8"></div>
-
-
       <div className="h-[50vh] sm:h-[55vh] md:h-[60vh] lg:h-[60vh] xl:h-[70vh] space-y-3 sm:text-[0.5em] mb-6 overflow-y-auto pr-2">
-      {filteredTasks.length > 0 ? (
+        {filteredTasks.length > 0 ? (
           filteredTasks.map((task, index) => (
             <motion.div
               key={task.id}
@@ -161,9 +156,17 @@ export default function TasksDetails() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
               className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${
-                isAddMode ? "cursor-pointer hover:bg-gray-50" : ""
+               "cursor-pointer hover:bg-gray-50"
               }`}
-              onClick={isAddMode ? () => handleTaskToggle(task.id) : undefined}
+              onClick={() => {
+                if (isAddMode) {
+                  handleTaskToggle(task.id);
+                } else {
+                  setExpandedTaskId(
+                    expandedTaskId === task.id ? null : task.id
+                  );
+                }
+              }}
             >
               <div className="flex items-center gap-3 sm:gap-4">
                 <AnimatePresence>
@@ -181,7 +184,6 @@ export default function TasksDetails() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
                 <div
                   className={`w-3 h-3 rounded-full ${
                     priorityColors[task.priority] || "bg-gray-300"
@@ -192,15 +194,8 @@ export default function TasksDetails() {
                     {task.title}
                   </p>
                 </div>
-
                 {!isAddMode && (
                   <motion.div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setExpandedTaskId(
-                        expandedTaskId === task.id ? null : task.id
-                      );
-                    }}
                     className="cursor-pointer p-2"
                     animate={{ rotate: expandedTaskId === task.id ? 180 : 0 }}
                     transition={{ duration: 0.2 }}
@@ -222,7 +217,6 @@ export default function TasksDetails() {
                   </motion.div>
                 )}
               </div>
-
               <AnimatePresence>
                 {expandedTaskId === task.id && (
                   <motion.div
@@ -232,9 +226,7 @@ export default function TasksDetails() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="mt-2 pl-11"
                   >
-                    <p className="text-gray-600 text-lg">
-                      {task.description}
-                    </p>
+                    <p className="text-gray-600 text-lg">{task.description}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -242,7 +234,7 @@ export default function TasksDetails() {
           ))
         ) : searchQuery ? (
           <div className="flex justify-center items-center h-full">
-            <p className="text-gray-500 text-lg">
+            <p className="text-gray-500 break-words w-80 text-lg">
               No tasks found for &quot;{searchQuery}&quot;
             </p>
           </div>
@@ -251,9 +243,7 @@ export default function TasksDetails() {
             <p className="text-gray-500 text-lg">No tasks available.</p>
           </div>
         )}
-
       </div>
-
       <AnimatePresence>
         {isAddMode && (
           <div className="fixed bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col sm:flex-row gap-3 sm:gap-4 w-[90vw] sm:w-auto bg-white p-3 sm:p-4 rounded-lg shadow-lg border border-gray-200">
@@ -267,7 +257,7 @@ export default function TasksDetails() {
             <Button
               onClick={handleAddTasks}
               disabled={selectedTasks.size === 0}
-              className="bg-[#1e4a47] hover:bg-[#2a5e5a] text-white px-4 sm:px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto"
+              className="bg-[#1E4A47] hover:bg-[#2A5E5A] text-white px-4 sm:px-6 py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto"
             >
               Add ({selectedTasks.size}) to my tasks
             </Button>
