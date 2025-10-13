@@ -129,12 +129,12 @@ export default function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="p-10 xl:px-10 bg-gray-50 md:overflow-hidden relative">
-        <div className="flex items-center justify-between xl:mb-6 lg:mb-3">
+      <div className="p-10 xl:px-10 xl:py-20 bg-gray-50 md:overflow-hidden relative">
+        <div className="flex items-center justify-between  lg:mb-3">
           <h1 className="text-4xl font-semibold text-[#00353D]">Task Tracking</h1>
         </div>
         <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10 h-[75vh]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10 h-[68vh]">
           {columns.map((column) => (
             <motion.div
               key={column.id}

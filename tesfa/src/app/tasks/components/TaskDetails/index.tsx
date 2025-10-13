@@ -107,7 +107,7 @@ export default function TasksDetails() {
     );
   }
 
-  return (
+return (
     <div className="p-4 sm:p-6 md:p-8 lg:px-10 lg:py-25">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 className="text-3xl sm:text-4xl font-semibold text-[#00353D]">
@@ -155,9 +155,7 @@ export default function TasksDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06 }}
-              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${
-               "cursor-pointer hover:bg-gray-50"
-              }`}
+              className={`bg-white rounded-[50px] p-3 sm:p-4 drop-shadow-lg border border-gray-200 ${"cursor-pointer hover:bg-gray-50"}`}
               onClick={() => {
                 if (isAddMode) {
                   handleTaskToggle(task.id);
@@ -184,11 +182,22 @@ export default function TasksDetails() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    priorityColors[task.priority] || "bg-gray-300"
-                  }`}
-                ></div>
+                <div className="relative group">
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      priorityColors[task.priority] || "bg-gray-300"
+                    }`}
+                  ></div>
+                  <span
+                    className="absolute bottom-full left-[5vh] -translate-x-1/2
+               text-xs text-white bg-gray-800 rounded px-2 py-1 w-27
+               opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  >
+                    {task.priority.charAt(0).toUpperCase() +
+                      task.priority.slice(1)}{" "}
+                    Priority
+                  </span>
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-gray-800 text-xl sm:text-lg truncate">
                     {task.title}
