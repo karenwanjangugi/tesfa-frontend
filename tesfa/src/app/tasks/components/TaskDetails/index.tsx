@@ -139,7 +139,7 @@ return (
             <Button
               onClick={handleClick}
               className="bg-[#1E4A47] hover:bg-[#2A5E5A] text-white px-4 sm:px-6 py-2 rounded-full cursor-pointer w-full sm:w-auto"
-              aria-label="Add Task"
+           
             >
               Select Tasks
             </Button>
