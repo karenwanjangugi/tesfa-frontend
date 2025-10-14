@@ -13,9 +13,10 @@ jest.mock("../../../utils/fetchTaskAssignment");
 jest.mock("../../../hooks/useFetchTasks");
 
 describe("TasksDetails component", () => {
+
   const tasksMock = [
-    { id: "1", title: "Test Task 1", description: "desc1" },
-    { id: "2", title: "Test Task 2", description: "desc2" },
+    { id: "1", title: "Test Task 1", description: "desc1", priority: "high" },
+    { id: "2", title: "Test Task 2", description: "desc2", priority: "medium" },
   ];
 
   const pushMock = jest.fn();
@@ -30,12 +31,10 @@ describe("TasksDetails component", () => {
       error: null,
     });
 
-  
-  jest.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
-  if (key === "user_id") return "test-org-id";
-  return null;
-});
-
+    jest.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
+      if (key === "user_id") return "test-org-id";
+      return null;
+    });
   });
 
   it("renders tasks and toggles add mode", () => {
@@ -44,7 +43,7 @@ describe("TasksDetails component", () => {
     expect(screen.getByText("Test Task 1")).toBeInTheDocument();
     expect(screen.getByText("Test Task 2")).toBeInTheDocument();
 
-    const selectButton = screen.getByRole("button", { name: /add task/i });
+    const selectButton = screen.getByRole("button", { name: /select tasks/i });
     expect(selectButton).toBeInTheDocument();
 
     fireEvent.click(selectButton);
@@ -67,7 +66,7 @@ describe("TasksDetails component", () => {
     );
 
     render(<TasksDetails />);
-    fireEvent.click(screen.getByRole("button", { name: /add task/i }));
+    fireEvent.click(screen.getByRole("button", { name: /select tasks/i }));
 
     const task1Container = screen.getByText("Test Task 1").closest("div");
     if (!task1Container) throw new Error("Task 1 container not found");
@@ -79,32 +78,32 @@ describe("TasksDetails component", () => {
     fireEvent.click(addButton);
 
     await waitFor(() => {
-     
       expect(createTaskAssignmentMock).toHaveBeenCalledWith("1", "test-org-id");
       expect(pushMock).toHaveBeenCalledWith(expect.stringContaining("/kanban?newTasks="));
     });
   });
-it("displays loading state", () => {
-  (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
-    tasks: [],
-    setTasks: jest.fn(),
-    loading: true,
-    error: null,
+
+  it("displays loading state", () => {
+    (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
+      tasks: [],
+      setTasks: jest.fn(),
+      loading: true,
+      error: null,
+    });
+
+    render(<TasksDetails />);
+    expect(screen.getByTestId("loader")).toBeInTheDocument();
   });
 
-  render(<TasksDetails />);
-  expect(screen.getByTestId("loader")).toBeInTheDocument();
-});
+  it("displays error state", () => {
+    (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
+      tasks: [],
+      setTasks: jest.fn(),
+      loading: false,
+      error: "Failed to load",
+    });
 
-it("displays error state", () => {
-  (useFetchTasksHook.useFetchTasks as jest.Mock).mockReturnValue({
-    tasks: [],
-    setTasks: jest.fn(),
-    loading: false,
-    error: "Failed to load",
+    render(<TasksDetails />);
+    expect(screen.getByText(/Something went Wrong/i)).toBeInTheDocument();
   });
-
-  render(<TasksDetails />);
-  expect(screen.getByText(/Something went Wrong/i)).toBeInTheDocument();
-});
 });
