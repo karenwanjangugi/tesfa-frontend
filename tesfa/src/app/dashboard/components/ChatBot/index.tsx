@@ -141,7 +141,7 @@ export default function ChatWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="w-16 h-16 rounded-full bg-cyan-900 flex items-center justify-center text-white shadow-lg"
+          className="w-16 cursor-pointer h-16 rounded-full bg-cyan-900 flex items-center justify-center text-white shadow-lg"
           aria-label="Open chat"
         >
           <MessageCircle size={32} />
@@ -153,11 +153,11 @@ export default function ChatWidget() {
           animate={{ opacity: 1, y: 0 }}
           className="w-[420px] h-[540px] bg-cyan-900 shadow-lg rounded-2xl flex flex-col relative"
         >
-          <div className="p-4 border-b border-white flex justify-between items-center">
+          <div className="p-4 border-b  border-white flex justify-between items-center">
             <span className="font-semibold text-lg text-white">Chat</span>
             <button
               onClick={() => setOpen(false)}
-              className="text-white hover:text-gray-300"
+              className="text-white cursor-pointer hover:text-gray-300"
               aria-label="Close chat"
             >
               ✕
@@ -206,13 +206,13 @@ export default function ChatWidget() {
                     <div className="flex justify-center mt-2 space-x-3">
                       <button
                         onClick={handleReloadChat}
-                        className="flex items-center space-x-1 text-sm text-white/80 hover:text-white transition-colors"
+                        className="flex cursor-pointer items-center space-x-1 text-sm text-white/80 hover:text-white transition-colors"
                       >
                         <RotateCcw size={16} />
                       </button>
                       <button
                         onClick={handleDownloadChat}
-                        className="flex items-center space-x-1 text-sm text-white/80 hover:text-white transition-colors"
+                        className="flex cursor-pointer items-center space-x-1 text-sm text-white/80 hover:text-white transition-colors"
                       >
                         <Download size={16} />
                       </button>
@@ -239,7 +239,7 @@ export default function ChatWidget() {
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full text-white hover:bg-blue-600 transition-colors disabled:opacity-50"
                 aria-label="Send message"
               >
-                <Send size={22} className="transform rotate-35" />
+                <Send size={22} className="transform cursor-pointer rotate-35" />
               </button>
             </div>
           </div>

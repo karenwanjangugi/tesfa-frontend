@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Layout from '../sharedComponents/Layout';
 import ChatWidget from './components/ChatBot';
-
+import ProtectedRoute from '../sharedComponents/ProtectedRoot';
 const MapClient = dynamic(() => import('./components/Map'), {
   ssr: false,
   loading: () => <div className="p-4">Loading map...</div>,
@@ -29,7 +29,7 @@ const DashboardPage = () => {
               status: 'ignored',
               id: event.data.id,
             },
-            event.origin 
+            event.origin
           );
         }
       }
@@ -41,14 +41,16 @@ const DashboardPage = () => {
     };
   }, []);
   return (
-    <Layout>
-      <div className="flex flex-row h-screen bg-gray-100">
-        <main className="flex-1 relative">
-          <MapClient />
-          <ChatWidget />
-        </main>
-      </div>
-    </Layout>
+    <ProtectedRoute>
+      <Layout>
+        <div className="flex flex-row h-screen bg-gray-100">
+          <main className="flex-1 relative">
+            <MapClient />
+            <ChatWidget />
+          </main>
+        </div>
+      </Layout>
+    </ProtectedRoute>
   );
 };
 
