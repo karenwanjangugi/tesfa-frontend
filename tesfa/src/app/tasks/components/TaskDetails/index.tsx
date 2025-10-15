@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Search } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { createTaskAssignment } from "../../../utils/fetchTaskAssignment";
 import { Button } from "../../../sharedComponents/Button";
 import { Checkbox } from "../Checkbox/index";
@@ -12,7 +13,8 @@ import Loader from "@/app/sharedComponents/Loader";
 
 export default function TasksDetails() {
   const router = useRouter();
-  const { tasks, setTasks, loading, error } = useFetchTasks();
+  const queryClient = useQueryClient();
+  const { tasks, loading, error } = useFetchTasks();
   const [isAddMode, setIsAddMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
@@ -52,10 +54,7 @@ export default function TasksDetails() {
 
     try {
       const newAssignments = await Promise.all(assignmentPromises);
-      setTasks((prevTasks) =>
-        prevTasks.filter((task) => !selectedTasks.has(task.id))
-      );
-
+      queryClient.invalidateQueries({ queryKey: ["unassignedTasks"] });
       setSelectedTasks(new Set());
       const newTasksForKanban = newAssignments.map((assignment) => {
         const originalTask = tasks.find(

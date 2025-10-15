@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Josefin_Sans } from "next/font/google";
 
+import QueryProvider from "./providers";
+
 const josefinSans = Josefin_Sans({
   subsets: ["latin"],
   variable: "--font-josefin-sans",
@@ -25,8 +27,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body >
-        <main >{children}</main>
-    
+        <QueryProvider>
+          <main >{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

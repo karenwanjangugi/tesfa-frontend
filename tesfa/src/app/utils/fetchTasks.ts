@@ -39,7 +39,7 @@ export const fetchTasks = async (): Promise<ApiTask[]> => {
     headers["Authorization"] = `Token ${token}`;
   }
 
-  const response = await fetch("api/tasks", { headers });
+  const response = await fetch("/api/tasks", { headers });
   if (!response.ok) {
     throw new Error("Failed to fetch tasks from API");
   }

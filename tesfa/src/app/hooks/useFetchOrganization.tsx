@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchProfile } from "../utils/fetchOrganizations";
 
 export type User = {
@@ -12,29 +12,17 @@ export type User = {
 };
 
 const useFetchOrganization = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: user,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery<User>({
+    queryKey: ["organizationProfile"],
+    queryFn: fetchProfile,
+  });
 
-  const refetch = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchProfile();
-      setUser(data);
-      setError(null);
-    } catch (error) {
-      setError((error as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-
-    refetch();
-  }, [refetch]);
-
-  return { user, loading, error, refetch };
+  return { user, loading, error: error ? (error as Error).message : null, refetch };
 };
 
 export default useFetchOrganization;

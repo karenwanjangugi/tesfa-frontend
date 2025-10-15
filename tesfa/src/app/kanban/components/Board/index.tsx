@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
   closestCenter,
@@ -16,100 +17,73 @@ import {
 import { TaskCard } from '../Taskcard';
 import { DropZone } from '../Dropzone';
 import { useFetchTaskAssignments } from '../../../hooks/useFetchTaskAssignment';
-import { Task } from '../../../utils/type';
-import { TaskStatus } from '../../../utils/type';
-import { deleteTaskAssignment } from '../../../utils/fetchTaskAssignment';
+import { Task, TaskStatus } from '../../../utils/type';
 import Loader from '@/app/sharedComponents/Loader';
 
-
 const columns = [
-  { id: "pending", title: 'Tasks', color: 'bg-[#D3AC45]' },
-  { id: "in_progress", title: 'Pending', color: 'bg-[#D3AC45]' },
-  { id: 'cancelled', title: 'In progress', color: 'bg-[#D3AC45]' },
+  { id: 'pending', title: 'Tasks', color: 'bg-[#D3AC45]' },
+  { id: 'in_progress', title: 'In progress', color: 'bg-[#D3AC45]' },
   { id: 'completed', title: 'Completed', color: 'bg-[#D3AC45]' },
+  { id: 'cancelled', title: 'Cancelled', color: 'bg-[#D3AC45]' },
 ];
 
-
 export default function KanbanBoard() {
-  const { assignedTasks, setAssignedTasks, loading, error, updateTaskStatus } = useFetchTaskAssignments();
+  const queryClient = useQueryClient();
+  const { assignedTasks, loading, error, updateTaskStatus, deleteTask } = useFetchTaskAssignments();
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const sensors = useSensors(useSensor(PointerSensor));
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
-    const newTasksParam = searchParams.get('newTasks')
+    const newTasksParam = searchParams.get('newTasks');
     if (newTasksParam) {
-      try {
-        const newTasks = JSON.parse(decodeURIComponent(newTasksParam))
-
-    setAssignedTasks(prevTasks => {
-      const existingTasksIds = new Set(prevTasks.map(t => t.id));
-      const tasksToAdd = newTasks.filter((tasks:Task) => !existingTasksIds.has(tasks.id))
-      return [...prevTasks, ...tasksToAdd]
-    });
-
-    router.replace('/kanban')
-
-  } catch (error){
-    console.error("failed to parse tasks from URL", error)
-  }
-}
-}, [searchParams, setAssignedTasks, router])
-
+      queryClient.invalidateQueries({ queryKey: ['taskAssignments'] });
+      router.replace('/kanban');
+    }
+  }, [searchParams, router, queryClient]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = assignedTasks.find((task) => task.id === active.id)
+    const task = assignedTasks.find((t) => t.id === active.id);
     if (task) {
-      setActiveTask(task)
+      setActiveTask(task);
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveTask(null);
 
     if (over && active.id !== over.id) {
       const taskId = active.id as string;
-      const newStatus = over.id as TaskStatus
+      const newStatus = over.id as TaskStatus;
 
-      setAssignedTasks((prevTasks: Task[]) =>{
-        return prevTasks.map((task) => {
-          if (task.id === taskId){
-            return{...task, status: newStatus}
-          }
-          return task;
-        })
-      })
-      updateTaskStatus(taskId, newStatus);
-  }
-  setActiveTask(null);
-}
+      // Call the mutation function from the hook
+      updateTaskStatus({ taskId, newStatus });
+    }
+  };
 
   const handleDeleteTask = async (taskId: string) => {
     const taskToDelete = assignedTasks.find((task) => task.id === taskId);
 
-    if(!taskToDelete || !taskToDelete.assignmentId){
-      console.error("Cannot delete: Task or assignmentId not found.");
+    if (!taskToDelete || typeof taskToDelete.assignmentId === 'undefined') {
+      console.error('Cannot delete: Task or assignmentId not found.');
       return;
     }
-    try{
-      await deleteTaskAssignment(taskToDelete.assignmentId)
-    
-    setAssignedTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId))
-  } catch{
-    console.error("Failed to delete task assignment:", error)
-  }
-}
+    try {
+      await deleteTask(taskToDelete.assignmentId);
+    } catch (err) {
+      console.error('Failed to delete task assignment:', err);
+    }
+  };
 
   const getTasksByStatus = (status: Task['status']) => {
-    return assignedTasks.filter((task) => task.status === status)
-  }
+    return assignedTasks.filter((task) => task.status === status);
+  };
 
   if (loading) {
-    return (
-     <Loader/>
-    )
+    return <Loader />;
   }
 
   if (error) {
@@ -117,20 +91,18 @@ export default function KanbanBoard() {
       <div className="p-6 min-h-screen bg-gray-50 flex justify-center items-center">
         <p className="text-red-600">Something went Wrong, Please reload your page</p>
       </div>
-    )
+    );
   }
 
-
-  
   return (
-    <DndContext 
-      sensors={sensors} 
-      collisionDetection={closestCenter} 
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <div className="p-10 xl:px-10 xl:py-20 bg-gray-50 md:overflow-hidden relative">
-        <div className="flex items-center justify-between  lg:mb-3">
+        <div className="flex items-center justify-between lg:mb-3">
           <h1 className="text-4xl font-semibold text-[#00353D]">Task Tracking</h1>
         </div>
         <div className="h-1.5 bg-[#266A74] opacity-50 xl:mb-10 lg:mb-5"></div>
@@ -163,9 +135,8 @@ export default function KanbanBoard() {
         </div>
       </div>
       <DragOverlay>
-        {activeTask ? <TaskCard task={activeTask} index={0} onDelete={handleDeleteTask}/> : null}
+        {activeTask ? <TaskCard task={activeTask} index={0} onDelete={handleDeleteTask} /> : null}
       </DragOverlay>
     </DndContext>
-  )
+  );
 }
-
