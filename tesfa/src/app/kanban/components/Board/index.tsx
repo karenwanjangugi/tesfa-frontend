@@ -22,9 +22,9 @@ import Loader from '@/app/sharedComponents/Loader';
 
 const columns = [
   { id: 'pending', title: 'Tasks', color: 'bg-[#D3AC45]' },
-  { id: 'in_progress', title: 'In progress', color: 'bg-[#D3AC45]' },
+  { id: 'in_progress', title: 'Pending', color: 'bg-[#D3AC45]' },
+  { id: 'cancelled', title: 'In progress', color: 'bg-[#D3AC45]' },
   { id: 'completed', title: 'Completed', color: 'bg-[#D3AC45]' },
-  { id: 'cancelled', title: 'Cancelled', color: 'bg-[#D3AC45]' },
 ];
 
 export default function KanbanBoard() {
@@ -58,8 +58,6 @@ export default function KanbanBoard() {
     if (over && active.id !== over.id) {
       const taskId = active.id as string;
       const newStatus = over.id as TaskStatus;
-
-      // Call the mutation function from the hook
       updateTaskStatus({ taskId, newStatus });
     }
   };
