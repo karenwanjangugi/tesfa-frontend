@@ -26,7 +26,7 @@ export const useFetchTasks = () => {
       return unassignedTasks;
     },
     refetchInterval: 10000, 
-    staleTime: 5000, 
+    staleTime: 5000 * 60 * 5, 
     gcTime: 1000 * 60 * 60,
   });
 
