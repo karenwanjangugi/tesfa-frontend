@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, MessageCircle, RotateCcw, Download } from "lucide-react";
 import { useQueryLog } from "../../../hooks/useQueryLog";
+import jsPDF from "jspdf";
 interface Message {
   id: number;
   text: string | undefined;
@@ -115,16 +116,31 @@ export default function ChatWidget() {
     }
   };
   const handleDownloadChat = () => {
+    const doc = new jsPDF();
+
+    doc.setProperties({
+      title: "Health Report",
+    });
+
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Health Report", 105, 20, { align: "center" });
+
+
     const chatText = localLogs
-      .map((msg) => `${msg.sender === "user" ? "You" : "Bot"}: ${msg.text}`)
+      .map((msg) => {
+        const sender = msg.sender === "user" ? "You" : "Bot";
+        const text =
+          msg.text || (msg.loading ? "[Thinking...]" : "[Empty Message]");
+        return `${sender}: ${text}`;
+      })
       .join("\n\n");
-    const blob = new Blob([chatText], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "chat.txt";
-    a.click();
-    URL.revokeObjectURL(url);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    const splitText = doc.splitTextToSize(chatText, 175); 
+    doc.text(splitText, 15, 35); 
+    doc.save("health-report.pdf");
   };
   const handleReloadChat = () => {
     const greetingMessage: Message = {
