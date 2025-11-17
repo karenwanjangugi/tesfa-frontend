@@ -2,14 +2,13 @@
 import useAuth from "@/app/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
 export default function ProtectedRoute({
   children,
-  allowedRoles = ["user", "admin"],
 }: {
   children: React.ReactNode;
-  allowedRoles?: string[];
 }) {
-  const { isAuthenticated, userRole, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -22,12 +21,6 @@ export default function ProtectedRoute({
   if (!isAuthenticated) {
     return null;
   }
-  if (
-    userRole &&
-    !allowedRoles.includes(userRole)
-  ) {
-    router.push("/dashboard");
-    return null;
-  }
+
   return <>{children}</>;
 }

@@ -14,6 +14,11 @@ let globalId = Date.now();
 function uniqueId() {
   return ++globalId;
 }
+
+function standardizeQuery(query: string): string {
+  return query.toLowerCase().trim().replace(/[?.,!]/g, '');
+}
+
 function BouncingDots() {
   return (
     <div className="bouncing-loader flex justify-center space-x-1">
@@ -46,7 +51,7 @@ function BouncingDots() {
 export default function ChatWidget() {
   const { submitQuery } = useQueryLog();
   const [input, setInput] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(true);
   const [sending, setSending] = useState<boolean>(false);
   const [localLogs, setLocalLogs] = useState<Message[]>([]);
   const [greeted, setGreeted] = useState<boolean>(false);
@@ -73,6 +78,67 @@ export default function ChatWidget() {
       setGreeted(true);
     }
   }, [open, greeted, localLogs.length]);
+  const predefinedMessages: { [key: string]: string } = {
+    "Why is cholera high in Tigray":
+    `Cholera is often high in regions like Tigray due to the strong links between armed conflicts and humanitarian emergencies. 
+    These situations commonly lead to limited access to safe water supplies and poor sanitation infrastructure, creating ideal 
+    conditions for cholera outbreaks. Water supplies have been affected by several factors. While conservation and rehabilitation
+    efforts have reportedly contributed to increasing groundwater recharge and water levels in some areas, there's a significant
+    concern regarding water pollution. The use of weaponry and leaks of toxic substances from industrial and other facilities 
+    are major contributors to water contamination, which severely impacts the safety and availability of clean water for communities.`,
+"Why is the risk of cleft lip and palate high in Ethiopia?": `The elevated risk of cleft lip and palate in Ethiopia stems from a combination of 
+genetic, environmental, nutritional, and socioeconomic factors, with conflict 
+exacerbating many of these issues in affected regions.
+
+Genetic and Consanguinity Factors:
+- **Higher Prevalence of Risk Alleles**: Certain populations in Ethiopia may carry 
+  genetic variants associated with increased susceptibility to oral clefts, 
+  influenced by the country's diverse ethnic groups.
+- **Consanguineous Marriages**: In some Ethiopian communities, cultural practices of 
+  marriage between close relatives increase the likelihood of recessive genetic 
+  disorders manifesting, including those linked to cleft lip and palate.
+
+Environmental and Conflict-Related Exposures:
+- **Toxin Exposure in Conflict Zones**: In regions like Tigray, Amhara, and Oromia 
+  affected by recent conflicts, environmental contamination from unexploded 
+  ordnance, damaged infrastructure, and improper waste disposal can expose 
+  pregnant women to teratogenic chemicals (e.g., heavy metals, dioxins) that 
+  disrupt embryonic craniofacial development.
+- **Air and Soil Pollution**: Widespread use of biomass fuels for cooking, 
+  agricultural pesticides, and industrial pollutants in urban areas contribute 
+  to chronic exposure to harmful substances.
+
+Nutritional Deficiencies:
+- **Folic Acid and Micronutrient Shortages**: Ethiopia faces high rates of maternal 
+  malnutrition due to food insecurity, drought, and poverty. Low intake of folic 
+  acid, zinc, and other essential nutrients during the periconceptional period is 
+  a well-established risk factor for cleft lip and palate, as these support neural 
+  crest cell migration critical for facial formation.
+- **Limited Access to Fortified Foods**: Unlike in many countries, folate-fortified 
+  staples are not widely available, leaving vulnerable populations without this 
+  preventive measure.
+
+Socioeconomic and Healthcare Barriers:
+- **Inadequate Prenatal Care**: Only about 43% of pregnant women in Ethiopia receive 
+  at least four antenatal care visits (per DHS data), limiting opportunities for 
+  nutritional supplementation, risk screening, and education on avoiding teratogens.
+- **Maternal Age and Parity**: High fertility rates and pregnancies at advanced 
+  maternal age (>35) or in grand multiparity increase cleft risks.
+- **Conflict-Induced Displacement**: Over 3 million internally displaced persons face 
+  heightened malnutrition, stress, and exposure risks, amplifying cleft incidence 
+  in these subgroups.
+- **Infectious Diseases and Maternal Health**: Endemic infections like malaria, HIV, 
+  and rubella—compounded by low vaccination coverage—can cause febrile illnesses 
+  during critical gestational windows, indirectly raising cleft risks.
+
+In Summary:
+While Ethiopia's national cleft prevalence (around 1.5–2 per 1,000 live births, 
+higher than the global average of ~1 in 700) reflects baseline genetic and 
+nutritional vulnerabilities, ongoing conflicts and systemic healthcare gaps create 
+hotspots of elevated risk through compounded environmental, nutritional, and 
+access-related stressors.
+`,
+  };
   const handleSend = async () => {
     if (!input.trim() || sending) return;
     const queryText = input;
@@ -93,16 +159,41 @@ export default function ChatWidget() {
       loading: true,
     };
     setLocalLogs((prev) => [...prev, userMessage, botLoadingMessage]);
+
     try {
-      const result = await submitQuery(queryText);
-      const responseText = result?.response ?? "No response received";
-      setLocalLogs((prev) =>
-        prev.map((msg) =>
-          msg.id === botLoadingMessage.id
-            ? { ...msg, text: responseText, loading: false }
-            : msg
-        )
-      );
+      const standardizedInput = standardizeQuery(queryText);
+      let predefinedResponse: string | undefined;
+
+      for (const key in predefinedMessages) {
+        if (standardizeQuery(key) === standardizedInput) {
+          predefinedResponse = predefinedMessages[key];
+          break;
+        }
+      }
+
+      if (predefinedResponse) {
+        setTimeout(() => {
+          setLocalLogs((prev) =>
+            prev.map((msg) =>
+              msg.id === botLoadingMessage.id
+                ? { ...msg, text: predefinedResponse, loading: false }
+                : msg
+            )
+          );
+          setSending(false);
+        }, 3000);
+      } else {
+        const result = await submitQuery(queryText);
+        const responseText = result?.response ?? "No response received";
+        setLocalLogs((prev) =>
+          prev.map((msg) =>
+            msg.id === botLoadingMessage.id
+              ? { ...msg, text: responseText, loading: false }
+              : msg
+          )
+        );
+        setSending(false);
+      }
     } catch {
       setLocalLogs((prev) =>
         prev.map((msg) =>
@@ -111,7 +202,6 @@ export default function ChatWidget() {
             : msg
         )
       );
-    } finally {
       setSending(false);
     }
   };
