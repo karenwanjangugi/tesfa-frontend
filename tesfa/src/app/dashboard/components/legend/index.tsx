@@ -2,7 +2,7 @@ export default function MapLegend() {
     const items = [
       { color: "bg-[#BA6D58]", label: "High Health Risk Areas" },
       { color: "bg-[#386c80ff]", label: "Little or No Health Risk Areas" },
-      { color: "bg-[#5A5A5A]", label: "Not covered yet" },
+      { color: "bg-[#00353D]", label: "Not covered yet" },
     ];
     return (
       <div className="absolute z-[1150] bottom-6 left-6  p-4 rounded-2xl backdrop-blur-md shadow-lg w-70 ">

@@ -72,7 +72,7 @@ const MapClient = () => {
       leafletMapRef.current.removeLayer(geoJsonLayersRef.current.worldLand);
     }
     const layer = L.geoJSON(worldLand, {
-      style: { fillColor: '#5A5A5A', fillOpacity: 1, weight: 0, color: 'transparent' },
+      style: { fillColor: '#00353D', fillOpacity: 1, weight: 0, color: 'transparent' },
       onEachFeature: (_, layer) => {
         if (layer instanceof L.Path) {
           const el = layer.getElement();
