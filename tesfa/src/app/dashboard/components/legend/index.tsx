@@ -1,7 +1,7 @@
 export default function MapLegend() {
     const items = [
-      { color: "bg-[#BA6D58]", label: "High Health Risk Areas" },
-      { color: "bg-[#386c80ff]", label: "Little or No Health Risk Areas" },
+      { color: "bg-[#BA6D58]", label: "Post war Areas" },
+      { color: "bg-[#386c80ff]", label: "No war Areas" },
       { color: "bg-[#00353D]", label: "Not covered yet" },
     ];
     return (
