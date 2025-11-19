@@ -1,5 +1,6 @@
 'use client';
 
+import MapLegend from './components/legend';
 import React, { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Layout from '../sharedComponents/Layout';
@@ -47,6 +48,7 @@ const DashboardPage = () => {
           <main className="flex-1 relative">
             <MapClient />
             <ChatWidget />
+            <MapLegend/>
           </main>
         </div>
       </Layout>
