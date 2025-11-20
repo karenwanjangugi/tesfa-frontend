@@ -348,6 +348,7 @@ access-related stressors.
                 <Send size={22} className="transform cursor-pointer rotate-35" />
               </button>
             </div>
+            <p className="text-white text-[0.7em] mt-3 font-thin text-center">Tesfa aids decisions; experts should verify critical actions.</p>
           </div>
         </motion.div>
       )}
